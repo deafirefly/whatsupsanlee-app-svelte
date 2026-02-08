@@ -5,7 +5,7 @@
     let { children, data } = $props();
 
     // Use $derived to keep the admin status reactive
-    let isSuperAdmin = $derived(data.user?.roles?.includes('super-admin'));
+    let isSuperAdmin = $derived(data.user?.roles?.includes('superadmin'));
     let userEmail = $derived(data.user?.email ?? 'Admin');
 </script>
 

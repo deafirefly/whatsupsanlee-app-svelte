@@ -14,7 +14,7 @@
         <p class="text-sm text-gray-500">See what other members are posting.</p>
     </div>
 
-    {#if user.role === 'vip' || user.role === 'admin' || user.role === 'super-admin'}
+    {#if user.role === 'vip' || user.role === 'admin' || user.role === 'superadmin'}
         <div class="p-6 border-2 border-yellow-500 rounded-xl bg-yellow-50 shadow-md">
             <h3 class="font-bold text-lg text-yellow-800">✨ VIP Lounge</h3>
             <p class="text-sm text-yellow-700">Your exclusive benefits are ready.</p>
