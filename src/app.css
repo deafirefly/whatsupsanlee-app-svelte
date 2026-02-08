@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --brand: 79% 0.15 250; /* Modern Indigo */
+        --background: 0% 0 100%;
+        --surface: 210 20% 98%;
+    }
+
+    body {
+        @apply bg-slate-50 text-slate-900 antialiased;
+    }
+}
+
+/* Custom "Velzon-killer" Card Style */
+.glass-card {
+    @apply bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden;
+}

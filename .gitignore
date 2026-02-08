@@ -1,0 +1,31 @@
+node_modules
+.pnpm-store
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Playwright
+test-results
+
+# Local Database (Keep your schema, igrnore the actual data file)
+*.sqlite
+*.sqlite-journal
