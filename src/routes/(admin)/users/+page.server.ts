@@ -30,7 +30,13 @@ export const load = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-    toggleVip: async ({ request }) => {
+    toggleVip: async ({ request, locals }) => {
+
+        // SECURITY CHECK: If not an admin, don't even look at the data
+        if (!locals.user?.roles.includes('admin') && !locals.user?.roles.includes('super-admin')) {
+            return { success: false, message: "Unauthorized" };
+        }
+
         const formData = await request.formData();
         const id = Number(formData.get('id'));
 
