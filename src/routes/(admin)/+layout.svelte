@@ -1,5 +1,6 @@
 <script lang="ts">
     import Sidebar from '$lib/components/Sidebar.svelte';
+    import TopBar from '$lib/components/TopBar.svelte';
     import { enhance } from '$app/forms';
     let { children, data } = $props();
 
@@ -7,7 +8,6 @@
     let isSuperAdmin = $derived(data.user?.roles?.includes('super-admin'));
     let userEmail = $derived(data.user?.email ?? 'Admin');
 </script>
-
 
 
 
@@ -41,12 +41,17 @@
     </div>
 </nav>
 
-<div class="flex min-h-screen">
+
+<div class="flex min-h-screen bg-slate-50">
   <Sidebar user={data.user} />
 
-  <main class="flex-1 bg-slate-50 p-8 overflow-y-auto">
-    <div class="max-w-6xl mx-auto">
-      {@render children()}
-    </div>
-  </main>
+  <div class="flex-1 flex flex-col min-w-0">
+    <TopBar user={data.user} />
+    
+    <main class="p-8">
+      <div class="max-w-7xl mx-auto">
+        {@render children()}
+      </div>
+    </main>
+  </div>
 </div>
