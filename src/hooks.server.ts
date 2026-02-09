@@ -1,58 +1,47 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	// 1. Get user data from cookies
-	// We parse the JSON array. If it doesn't exist, they are a ["visitor"]
-	const rolesJson = event.cookies.get('user_roles') || '["visitor"]';
-	const email = event.cookies.get('user_email') || '';
-    // ADD THIS: Get the ID from the cookie
-    const id = Number(event.cookies.get('user_id')) || 0;
+    // 1. Grab auth data from cookies
+    const sessionEmail = event.cookies.get('user_email');
+    const rolesJson = event.cookies.get('user_roles') || '[]';
+    
+    let roles: string[] = [];
+    try {
+        roles = JSON.parse(rolesJson);
+    } catch {
+        roles = [];
+    }
 
-	let roles: string[];
-	
-	try {
-		roles = JSON.parse(rolesJson);
-	} catch {
-		roles = ['visitor'];
-	}
+    // 2. Define the User object
+    const user = sessionEmail ? {
+        email: sessionEmail,
+        roles: roles,
+        isAdmin: roles.includes('admin') || roles.includes('super-admin')
+    } : null;
 
-	// 2. Set the 'locals' object
-	event.locals.user = {
-		id: id,
-		email: email,
-		roles: roles
-	};
+    // Attach to locals for use in +layout.server.ts
+    event.locals.user = user;
 
-	const { pathname } = event.url;
+    const { pathname } = event.url;
 
-	// Helper flags for cleaner logic
-	const isVisitor = roles.includes('visitor');
-	const isAdmin = roles.includes('admin') || roles.includes('super-admin');
+    // 3. SECURE THE ROUTES
+    // Avoid redirecting if we are already on the login page or trying to logout
+    const isLoginPath = pathname === '/login';
+    const isLogoutPath = pathname === '/logout';
+    
+    // Protect Admin/Dashboard
+    const isProtectedPath = pathname.startsWith('/dashboard') || 
+                            pathname.startsWith('/users') || 
+                            pathname.startsWith('/admin');
 
-	// 3. DEFINE ACCESS RULES
+    if (isProtectedPath && !user) {
+        throw redirect(303, '/login');
+    }
 
-	// Rule A: Protect Admin area
-	const adminPaths = ['/users', '/settings'];
-	const isAdminPath = adminPaths.some(path => pathname.startsWith(path));
+    // Redirect logged-in users away from Login
+    if (isLoginPath && user) {
+        throw redirect(303, user.isAdmin ? '/users' : '/dashboard');
+    }
 
-	if (isAdminPath && !isAdmin) {
-		throw redirect(303, '/login');
-	}
-
-	// Rule B: Protect Member area (Dashboard)
-	if (pathname.startsWith('/dashboard') && isVisitor) {
-		throw redirect(303, '/login');
-	}
-
-	// Rule C: Redirect logged-in users away from Login/Register
-	if (pathname === '/login' && !isVisitor) {
-		if (isAdmin) {
-			throw redirect(303, '/users');
-		} else {
-			throw redirect(303, '/dashboard');
-		}
-	}
-
-	// 4. Proceed with the request
-	return await resolve(event);
+    return await resolve(event);
 };

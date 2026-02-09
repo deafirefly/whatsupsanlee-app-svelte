@@ -9,7 +9,7 @@ export const load: LayoutServerLoad = ({ locals }) => {
 
     // 2. If they ARE logged in but aren't an admin, show the 403 error
     const roles = locals.user.roles || [];
-    const isAdmin = roles.includes('admin') || roles.includes('super-admin');
+    const isAdmin = roles.includes('admin') || roles.includes('superadmin');
 
     if (!isAdmin) {
         throw error(403, 'Forbidden: Admins only');

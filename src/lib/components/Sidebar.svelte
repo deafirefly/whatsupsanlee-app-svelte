@@ -11,6 +11,9 @@
   
   let { user } = $props();
 
+  // Use a derived rune for the current path
+  let currentPath = $derived($page.url.pathname);
+
   // Helper to highlight the active link
   const isActive = (path: string) => $page.url.pathname === path;
 

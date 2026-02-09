@@ -3,16 +3,11 @@ import type { Actions } from './$types';
 
 export const actions: Actions = {
     default: async ({ cookies }) => {
-        // Clear the cookies that identify the user
-        const options = { path: '/' };
+        // Delete all auth cookies
+        cookies.delete('user_email', { path: '/' });
+        cookies.delete('user_roles', { path: '/' });
+        cookies.delete('user_id', { path: '/' });
         
-        cookies.delete('user_id', options);
-        cookies.delete('user_email', options);
-        
-        // Reset roles to visitor
-        cookies.set('user_roles', '["visitor"]', options);
-
-        // Send them back to the login page
         throw redirect(303, '/login');
     }
 };

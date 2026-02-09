@@ -1,12 +1,16 @@
 <script lang="ts">
-    import { Shield, User, Trash2, Pencil, Lock, Search } from 'lucide-svelte'; // Added Search icon
+    import * as Table from "$lib/components/ui/table";
+    import { Badge } from "$lib/components/ui/badge";
+    import { Button } from "$lib/components/ui/button";
+    import { Input } from "$lib/components/ui/input";
+    import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "$lib/components/ui/card";
+    import { Shield, User, Trash2, Lock, Search, Star, StarOff } from 'lucide-svelte'; 
     import { enhance } from '$app/forms';
     import type { PageData, SubmitFunction } from './$types';
     
     let { data }: { data: PageData } = $props();
     let searchTerm = $state(""); 
 
-    // This automatically filters whenever searchTerm changes
     let filteredUsers = $derived(
         data.userList.filter(user => 
             user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -16,7 +20,7 @@
     let isSuperAdmin = $derived(data.currentUser?.roles.includes('super-admin'));
 
     const handleDelete: SubmitFunction = ({ cancel }) => {
-        if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+        if (!confirm("Are you sure you want to delete this user?")) {
             cancel();
         }
         return async ({ result }) => {
@@ -28,92 +32,89 @@
 <div class="space-y-6">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight text-slate-900">User Management</h1>
-            <p class="text-sm text-slate-500">Manage permissions and account status for all users.</p>
+            <h1 class="text-3xl font-bold tracking-tight">User Management</h1>
+            <p class="text-muted-foreground">Manage permissions and account status for all users.</p>
         </div>
-        <div class="bg-indigo-50 border border-indigo-100 text-indigo-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
-            <User size={16} />
+        <Badge variant="outline" class="px-4 py-2 text-sm gap-2 bg-background shadow-sm">
+            <User size={14} class="text-primary" />
             Total Users: {data.userList.length}
-        </div>
+        </Badge>
     </div>
 
-    <div class="glass-card shadow-sm border border-slate-200 bg-white rounded-2xl overflow-hidden">
-        <div class="p-4 border-b border-slate-100 bg-slate-50/30">
-            <div class="relative max-w-md">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <Search size={18} />
-                </div>
-                <input
-                    type="text"
+    <Card class="border-slate-200 shadow-sm overflow-hidden">
+        <CardHeader class="bg-slate-50/50 border-b space-y-4">
+            <div class="relative max-w-sm">
+                <Search size={18} class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
                     bind:value={searchTerm}
                     placeholder="Search by email..."
-                    class="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl bg-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    class="pl-10 bg-background"
                 />
             </div>
-        </div>
-
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-200">
-                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">User Details</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Access Levels</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
+        </CardHeader>
+        
+        <CardContent class="p-0">
+            <Table.Root>
+                <Table.Header class="bg-slate-50/50">
+                    <Table.Row>
+                        <Table.Head class="w-[300px]">User Details</Table.Head>
+                        <Table.Head>Access Levels</Table.Head>
+                        <Table.Head class="text-right">Actions</Table.Head>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
                     {#each filteredUsers as user}
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-6 py-4">
+                        <Table.Row class="hover:bg-slate-50/30">
+                            <Table.Cell>
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                                    <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-muted-foreground border border-slate-200">
                                         <User size={18} />
                                     </div>
-                                    <div>
-                                        <div class="text-sm font-semibold text-slate-900">{user.email}</div>
-                                        <div class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">ID: {user.id}</div>
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-slate-900">{user.email}</span>
+                                        <span class="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">ID: {user.id}</span>
                                     </div>
                                 </div>
-                            </td>
+                            </Table.Cell>
                             
-                            <td class="px-6 py-4">
+                            <Table.Cell>
                                 <div class="flex flex-wrap gap-1.5">
                                     {#each user.roles as role}
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
-                                            {role === 'super-admin' ? 'bg-purple-100 text-purple-700' : 
-                                             role === 'admin' ? 'bg-red-100 text-red-700' : 
-                                             role === 'vip' ? 'bg-amber-100 text-amber-700' : 
-                                             'bg-blue-100 text-blue-700'}">
-                                            {#if role.includes('admin')}<Shield size={10} />{/if}
+                                        <Badge 
+                                            variant={role === 'super-admin' ? 'default' : 'secondary'}
+                                            class="text-[10px] uppercase tracking-wide font-bold"
+                                        >
+                                            {#if role.includes('admin')}<Shield size={10} class="mr-1" />{/if}
                                             {role}
-                                        </span>
+                                        </Badge>
                                     {/each}
                                 </div>
-                            </td>
+                            </Table.Cell>
 
-                            <td class="px-6 py-4">
+                            <Table.Cell>
                                 <div class="flex justify-end items-center gap-2">
                                     <form method="POST" action="?/toggleVip" use:enhance>
                                         <input type="hidden" name="id" value={user.id} />
-                                        <button
-                                            type="submit"
-                                            class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all
-                                            {user.roles.includes('vip') 
-                                                ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' 
-                                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}"
+                                        <Button 
+                                            type="submit" 
+                                            variant={user.roles.includes('vip') ? 'secondary' : 'outline'} 
+                                            size="sm"
+                                            class="h-8 gap-1"
                                         >
-                                            {user.roles.includes('vip') ? 'Revoke VIP' : 'Make VIP'}
-                                        </button>
+                                            {#if user.roles.includes('vip')}
+                                                <StarOff size={14} class="text-amber-600" /> Revoke VIP
+                                            {:else}
+                                                <Star size={14} class="text-amber-500" /> Make VIP
+                                            {/if}
+                                        </Button>
                                     </form>
 
-                                    {#if user.id !== data.currentUser?.id && 
-                                        !user.roles.includes('super-admin') &&
-                                        !(user.roles.includes('admin') && !isSuperAdmin)}
+                                    {#if user.id !== data.currentUser?.id && !user.roles.includes('super-admin')}
                                         <form method="POST" action="?/deleteUser" use:enhance={handleDelete}>
                                             <input type="hidden" name="id" value={user.id} />
-                                            <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                                <Trash2 size={18} />
-                                            </button>
+                                            <Button variant="ghost" size="icon" type="submit" class="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+                                                <Trash2 size={16} />
+                                            </Button>
                                         </form>
                                     {:else}
                                         <div class="p-2 text-slate-300" title="Account Protected">
@@ -121,17 +122,17 @@
                                         </div>
                                     {/if}
                                 </div>
-                            </td>
-                        </tr>
+                            </Table.Cell>
+                        </Table.Row>
                     {:else}
-                        <tr>
-                            <td colspan="3" class="px-6 py-12 text-center text-slate-400 text-sm">
+                        <Table.Row>
+                            <Table.Cell colspan={3} class="h-24 text-center text-muted-foreground">
                                 No users found matching "{searchTerm}"
-                            </td>
-                        </tr>
+                            </Table.Cell>
+                        </Table.Row>
                     {/each}
-                </tbody>
-            </table>
-        </div>
-    </div>
+                </Table.Body>
+            </Table.Root>
+        </CardContent>
+    </Card>
 </div>
