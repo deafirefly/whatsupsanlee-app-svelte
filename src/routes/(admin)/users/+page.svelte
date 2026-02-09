@@ -4,27 +4,76 @@
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "$lib/components/ui/card";
-    import { Shield, User, Trash2, Lock, Search, Star, StarOff } from 'lucide-svelte'; 
+    import * as Dialog from "$lib/components/ui/dialog";
+    import { Label } from "$lib/components/ui/label";
+    import { Shield, User, Trash2, Lock, Search, Star, StarOff, UserPlus } from 'lucide-svelte'; 
     import { enhance } from '$app/forms';
     import type { PageData, SubmitFunction } from './$types';
     
     let { data }: { data: PageData } = $props();
     let searchTerm = $state(""); 
+    let isCreateModalOpen = $state(false);
 
+    // 1. Create a local 'working copy' of the user list
+    let allUsers = $state(data.userList ?? []);
+
+    // 2. Keep local state in sync if the server data refreshes (e.g. on page load)
+    $effect(() => {
+        allUsers = data.userList ?? [];
+    });
+
+    // 1. Point directly to userList. No need to map/parse again!
+    // We use $derived to keep it reactive to the searchTerm.
     let filteredUsers = $derived(
-        data.userList.filter(user => 
-            user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        allUsers.filter(user => 
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
 
-    let isSuperAdmin = $derived(data.currentUser?.roles.includes('super-admin'));
+    // 2. Security Check for UI
+    // Ensure data.currentUser exists and parse roles if it's still a string
+    let userRoles = $derived(
+        typeof data.currentUser?.roles === 'string' 
+            ? JSON.parse(data.currentUser.roles) 
+            : (data.currentUser?.roles ?? [])
+    );
 
-    const handleDelete: SubmitFunction = ({ cancel }) => {
-        if (!confirm("Are you sure you want to delete this user?")) {
+    let isSuperAdmin = $derived(userRoles.includes('superadmin'));
+
+    const handleDelete: SubmitFunction = ({ cancel, formData }) => {
+        // 1. Grab the ID from the formData
+        const id = formData.get('id');
+    
+        // 2. Browser Popup (with explicit window reference)
+        if (!window.confirm("Are you sure you want to delete this user? This action is permanent.")) {
             cancel();
+            return;
         }
-        return async ({ result }) => {
-            if (result.type === 'success') console.log('User deleted successfully');
+
+        // 3. Optimistic UI: Remove it from local state immediately
+        // Make sure your each loop is using 'allUsers' or 'filteredUsers' based on 'allUsers'
+        allUsers = allUsers.filter(u => u.id !== Number(id));
+
+        return async ({ result, update }) => {
+            // If the server fails, update() will refresh the list from the DB
+            await update();
+        
+            if (result.type === 'error' || result.type === 'failure') {
+                alert("Could not delete user. They might have been restored.");
+            }
+        };
+    };
+
+
+    const handleCreateUser: SubmitFunction = () => {
+        return async ({ result, update }) => {
+            if (result.type === 'success') {
+                isCreateModalOpen = false; // Close only on success
+                await update();
+            } else if (result.type === 'failure') {
+                // You can use a toast library here!
+                alert(result.data?.message ?? "Failed to create user");
+            }
         };
     };
 </script>
@@ -40,6 +89,53 @@
             Total Users: {data.userList.length}
         </Badge>
     </div>
+
+
+    <Dialog.Root bind:open={isCreateModalOpen}>
+        <Dialog.Trigger>
+            <Button class="gap-2">
+                <UserPlus size={18} /> Add User
+            </Button>
+        </Dialog.Trigger>
+
+        <Dialog.Content class="sm:max-w-[425px] bg-white p-6 border rounded-lg shadow-lg">
+    <Dialog.Header>
+        <Dialog.Title class="text-xl font-bold">Create New User</Dialog.Title>
+        <Dialog.Description>
+            Enter details for the new account.
+        </Dialog.Description>
+    </Dialog.Header>
+
+    <form method="POST" action="?/createUser" use:enhance={handleCreateUser} class="flex flex-col gap-4 py-4">
+        
+        <div class="flex flex-col gap-2">
+            <Label for="email" class="text-sm font-medium">Email Address</Label>
+            <Input id="email" name="email" type="email" placeholder="name@example.com" required class="border p-2" />
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <Label for="password" class="text-sm font-medium">Initial Password</Label>
+            <Input id="password" name="password" type="password" required class="border p-2" />
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <Label for="roles" class="text-sm font-medium">Primary Role</Label>
+            <select name="roles" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-ring">
+                <option value='["member"]'>Member</option>
+                <option value='["member", "vip"]'>VIP Member</option>
+                <option value='["member", "admin"]'>Admin</option>
+            </select>
+        </div>
+
+        <Dialog.Footer class="pt-4">
+            <Button type="submit" class="w-full bg-blue-600 text-white hover:bg-blue-700">
+                Create Account
+            </Button>
+        </Dialog.Footer>
+    </form>
+</Dialog.Content>
+
+    </Dialog.Root>
 
     <Card class="border-slate-200 shadow-sm overflow-hidden">
         <CardHeader class="bg-slate-50/50 border-b space-y-4">
@@ -81,9 +177,10 @@
                                 <div class="flex flex-wrap gap-1.5">
                                     {#each user.roles as role}
                                         <Badge 
-                                            variant={role === 'super-admin' ? 'default' : 'secondary'}
-                                            class="text-[10px] uppercase tracking-wide font-bold"
+                                            variant={role === 'vip' ? 'outline' : (role === 'superadmin' ? 'default' : 'secondary')}
+                                            class="text-[10px] uppercase tracking-wide font-bold {role === 'vip' ? 'border-amber-200 bg-amber-50 text-amber-700' : ''}"
                                         >
+                                            {#if role === 'vip'}<Star size={10} class="mr-1 fill-amber-500 text-amber-500" />{/if}
                                             {#if role.includes('admin')}<Shield size={10} class="mr-1" />{/if}
                                             {role}
                                         </Badge>
@@ -109,7 +206,7 @@
                                         </Button>
                                     </form>
 
-                                    {#if user.id !== data.currentUser?.id && !user.roles.includes('super-admin')}
+                                    {#if user.id !== data.currentUser?.id && !user.roles.includes('superadmin')}
                                         <form method="POST" action="?/deleteUser" use:enhance={handleDelete}>
                                             <input type="hidden" name="id" value={user.id} />
                                             <Button variant="ghost" size="icon" type="submit" class="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">

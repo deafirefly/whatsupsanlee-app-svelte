@@ -17,7 +17,8 @@
 		"test": "npm run test:e2e"
 	},
 	"devDependencies": {
-		"@lucide/svelte": "^0.563.1",
+		"@internationalized/date": "^3.11.0",
+		"@lucide/svelte": "^0.561.0",
 		"@playwright/test": "^1.58.1",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/adapter-static": "^3.0.10",
@@ -25,6 +26,7 @@
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@tailwindcss/vite": "^4.1.18",
 		"autoprefixer": "^10.4.24",
+		"bits-ui": "^2.15.5",
 		"clsx": "^2.1.1",
 		"drizzle-kit": "^0.31.8",
 		"postcss": "^8.5.6",
@@ -44,6 +46,7 @@
 		"@capacitor/cli": "^8.0.2",
 		"@capacitor/core": "^8.0.2",
 		"@libsql/client": "^0.17.0",
+		"bcryptjs": "^3.0.3",
 		"drizzle-orm": "^0.45.1",
 		"lucide-svelte": "^0.563.0",
 		"version0.0.1": "link:"
