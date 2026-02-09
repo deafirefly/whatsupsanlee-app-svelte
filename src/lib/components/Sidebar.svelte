@@ -22,6 +22,7 @@
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Admin Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
     { name: 'Users', href: '/users', icon: Users },
+    { name: 'Settings', href: '/account-settings', icon: Users },
   ];
 
   const superAdminLinks = [

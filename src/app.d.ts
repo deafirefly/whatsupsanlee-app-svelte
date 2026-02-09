@@ -4,9 +4,10 @@ declare global {
 	namespace App {
 		interface Locals {
 			user?: {
-				id: number;
+				id: number | null;
 				email: string;
 				roles: string[]; // <--- Change 'role' to 'roles' here
+				isAdmin: boolean;
 			} | null;
 		}
 		interface PageData {
