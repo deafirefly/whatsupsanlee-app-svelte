@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
   import { page } from '$app/stores';
 
   // To this (Direct Imports):
@@ -8,6 +9,7 @@
   import Database from 'lucide-svelte/icons/database';
   import Settings from 'lucide-svelte/icons/settings';
   import LogOut from 'lucide-svelte/icons/log-out';
+	import type { fromAction } from 'svelte/attachments';
   
   let { user } = $props();
 
@@ -81,7 +83,7 @@
       </div>
     </div>
     
-    <form method="POST" action="/logout">
+    <form method="POST" action="/logout" use:enhance>
       <button class="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
         <LogOut size={16} />
         <span>Sign Out</span>

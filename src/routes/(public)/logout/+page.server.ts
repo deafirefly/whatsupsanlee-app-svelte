@@ -11,3 +11,8 @@ export const actions: Actions = {
         throw redirect(303, '/login');
     }
 };
+
+export const load = () => {
+    // If they just visit /logout, send them home or to login
+    throw redirect(303, '/login');
+};

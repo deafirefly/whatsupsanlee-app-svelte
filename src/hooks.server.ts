@@ -29,6 +29,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const { pathname } = event.url;
 
+    if ( pathname === '/logout') {
+        return await resolve(event);
+    }
+
     // 3. SECURE THE ROUTES
     const user = event.locals.user;
     const isLoginPath = pathname === '/login';

@@ -31,10 +31,10 @@ export const actions = {
         cookies.set('user_email', user.email, { path: '/', httpOnly: true });
 
         // 4. Check for Admin access to decide where to send them
-        const isAdmin = rolesArray.includes('admin') || rolesArray.includes('super-admin');
+        const isAdmin = rolesArray.includes('admin') || rolesArray.includes('superadmin');
 
         if (isAdmin) {
-            throw redirect(303, '/users');
+            throw redirect(303, '/admin-dashboard');
         }
         
         throw redirect(303, '/dashboard');
