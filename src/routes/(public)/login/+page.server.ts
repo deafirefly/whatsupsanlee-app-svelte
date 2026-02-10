@@ -2,14 +2,17 @@ import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+//import { createLog } from '$lib/server/logger';
+import createLog from '$lib/server/logger';
 
 // src/routes/(public)/login/+page.server.ts
 
 export const actions = {
-    default: async ({ request, cookies }) => {
+    default: async ({ request, cookies, getClientAddress }) => {
         const data = await request.formData();
         const email = data.get('email') as string;
         const password = data.get('password') as string;
+        const ip = getClientAddress();
 
         // 1. Find user in DB
         const user = await db.query.users.findFirst({
@@ -30,13 +33,27 @@ export const actions = {
         cookies.set('user_roles', JSON.stringify(rolesArray), { path: '/', httpOnly: true });
         cookies.set('user_email', user.email, { path: '/', httpOnly: true });
 
+        console.log("Saving log to DB...");
+        // After successful login:
+        try { 
+            await createLog('AUTH_LOGIN', { 
+                user: email, 
+                ipAddress: ip,
+                details: 'User logged in successfully' 
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 50)); // Simulate delay for demo
+
+            console.log("Database write confirmed. ");
+        } catch (err) {
+            console.error("Logger failed, but continuing login:", err);
+        }
+        console.log("Log saved! Now redirecting...  ");
+
         // 4. Check for Admin access to decide where to send them
         const isAdmin = rolesArray.includes('admin') || rolesArray.includes('superadmin');
+        const target = isAdmin ? '/admin-dashboard' : '/dashboard'; 
 
-        if (isAdmin) {
-            throw redirect(303, '/admin-dashboard');
-        }
-        
-        throw redirect(303, '/dashboard');
+        throw redirect(303, target);
     }
 };
