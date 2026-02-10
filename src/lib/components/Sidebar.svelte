@@ -20,8 +20,13 @@
   const isActive = (path: string) => $page.url.pathname === path;
 
   // Define the menu structure
-  const adminLinks = [
+  const memberLinks = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  ];
+  const vipLinks = [
+    { name: 'VIP Lounge', href: '/vip-lounge', icon: History},
+  ];
+  const adminLinks = [
     { name: 'Admin Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
     { name: 'Users', href: '/users', icon: Users },
     { name: 'Settings', href: '/account-settings', icon: Users },
@@ -46,30 +51,51 @@
 
   <nav class="flex-1 px-4 space-y-1">
     <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">Main Menu</p>
-    {#each adminLinks as link}
-      <a 
-        href={link.href}
-        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all {isActive(link.href) ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white'}"
-      >
-        <link.icon size={18} strokeWidth={isActive(link.href) ? 2.5 : 2} />
+
+
+    {#each memberLinks as link}
+      <a href={link.href} class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all {isActive(link.href) ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white'}">
+        <link.icon size={18} />
         {link.name}
       </a>
     {/each}
 
-    {#if user?.roles.includes('super-admin')}
-      <div class="mt-10">
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">System Control</p>
-        {#each superAdminLinks as link}
-          <a 
-            href={link.href}
-            class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all {isActive(link.href) ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white'}"
-          >
-            <link.icon size={18} strokeWidth={isActive(link.href) ? 2.5 : 2} />
+    {#if user?.roles.includes('vip') || user?.roles.includes('admin') || user?.roles.includes('superadmin')}
+      <div class="mt-6">
+        <p class="text-[10px] font-bold text-amber-500 uppercase tracking-widest px-3 mb-2">Premium</p>
+        {#each vipLinks as link}
+          <a href={link.href} class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all {isActive(link.href) ? 'bg-amber-600/10 text-amber-400' : 'hover:bg-slate-800 hover:text-white'}">
+            <link.icon size={18} />
             {link.name}
           </a>
         {/each}
       </div>
     {/if}
+
+    {#if user?.roles.includes('admin') || user?.roles.includes('superadmin')}
+      <div class="mt-6">
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">Management</p>
+        {#each adminLinks as link}
+          <a href={link.href} class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all {isActive(link.href) ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white'}">
+            <link.icon size={18} />
+            {link.name}
+          </a>
+        {/each}
+      </div>
+    {/if}
+
+    {#if user?.roles.includes('superadmin')}
+      <div class="mt-6">
+        <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest px-3 mb-2">System Control</p>
+        {#each superAdminLinks as link}
+          <a href={link.href} class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all {isActive(link.href) ? 'bg-rose-600/10 text-rose-400' : 'hover:bg-slate-800 hover:text-white'}">
+            <link.icon size={18} />
+            {link.name}
+          </a>
+        {/each}
+      </div>
+    {/if}
+
   </nav>
 
   <div class="p-4 bg-slate-950/50 mt-auto border-t border-slate-800">
