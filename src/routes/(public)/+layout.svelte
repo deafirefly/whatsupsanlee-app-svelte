@@ -20,7 +20,7 @@
 </script>
 
 <nav class="p-4 border-b bg-white flex justify-between items-center relative">
-  <div class="font-bold text-xl text-indigo-600 tracking-tight">MyProject</div>
+  <div class="font-bold text-xl text-indigo-600 tracking-tight">What's up, SanLee!</div>
 
   <div class="hidden md:flex gap-6 items-center">
     <a href="/" class="hover:text-indigo-600 transition-colors">Home</a>
