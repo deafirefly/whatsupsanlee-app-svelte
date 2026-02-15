@@ -6,21 +6,33 @@
     
     const user = data.user; 
 
-    // This "listens" to the URL for ?message=Listing%20submitted...
-    let message = $derived(page.url.searchParams.get('message'));
+    // 1. Create a local 'visible' state
+    // We initialize it based on whether the URL has a message
+    let showMessage = $state(!!page.url.searchParams.get('message'));
+    
+    // 2. Grab the actual text
+    let messageText = page.url.searchParams.get('message');
+
+    function closeMessage() {
+        showMessage = false;
+        // Optional: Clean up the URL so if they refresh, the message stays gone
+        window.history.replaceState({}, '', window.location.pathname);
+    }
 </script>
 
 <div class="max-w-4xl mx-auto p-6 space-y-6">
-    
-    {#if message}
-        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between shadow-sm">
+   
+    {#if showMessage && messageText}
+        <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top-2">
             <div class="flex items-center gap-3">
                 <span class="text-xl">✨</span>
-                <p class="text-emerald-800 font-medium">{message}</p>
+                <p class="text-emerald-800 font-medium">{messageText}</p>
             </div>
+        
             <button 
-                onclick={() => window.history.replaceState({}, '', window.location.pathname)} 
-                class="text-emerald-400 hover:text-emerald-600 font-bold px-2"
+                onclick={closeMessage} 
+                class="text-emerald-400 hover:text-emerald-600 font-bold px-2 py-1 transition-colors"
+                aria-label="Close message"
             >
                 ✕
             </button>
