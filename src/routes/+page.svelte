@@ -35,8 +35,11 @@
 	<main class="flex-1 flex flex-col items-center justify-center p-6 text-center">
 		<div class="max-w-3xl space-y-6">
 			<h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter text-indigo-600">
-				Welcome to your <span class="italic text-indigo-600">Next-Gen</span> Workspace
+				Welcome to 
 			</h1>
+			<h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter text-indigo-600">
+                <span class="italic text-indigo-600">What's Up SanLee!</span>
+            </h1>
 			<p class="text-lg text-muted-foreground max-w-[600px] mx-auto">
 				Experience the power of tiered access. Whether you're a Member or a VIP, 
 				everything you need is just one click away.

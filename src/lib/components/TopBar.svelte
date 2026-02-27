@@ -11,7 +11,7 @@
 
 <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
   <nav class="flex items-center gap-2 text-sm">
-    <span class="text-slate-400 hover:text-slate-600 transition-colors cursor-default">Admin</span>
+    <span class="text-slate-400 hover:text-slate-600 transition-colors cursor-default">Member</span>
     {#each pathSegments as segment}
       <ChevronRight size={14} class="text-slate-300" />
       <span class="font-medium text-slate-700 capitalize">{segment.replace(/-/g, ' ')}</span>

@@ -6,6 +6,8 @@
     
     const user = data.user; 
 
+    const  { userListing } = data;
+
     // 1. Create a local 'visible' state
     // We initialize it based on whether the URL has a message
     let showMessage = $state(!!page.url.searchParams.get('message'));
@@ -61,4 +63,39 @@
             </div>
         {/if}
     </div>
+</div>
+
+<div class="space-y-8">
+    <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">Your Community Presence</h2>
+        
+        {#if userListing}
+            <div class="bg-white border rounded-3xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="text-4xl bg-slate-50 p-4 rounded-2xl">
+                        {userListing.category === 'food_truck' ? '🚚' : '🎨'}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl">{userListing.businessName}</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold uppercase tracking-widest {userListing.status === 'approved' ? 'text-emerald-500' : 'text-amber-500'}">
+                                ● {userListing.status}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="/dashboard/edit-listing" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all">
+                    Edit Listing Details
+                </a>
+            </div>
+        {:else}
+            <div class="bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-3xl p-12 text-center">
+                <p class="text-indigo-900 font-bold mb-4">You haven't created a listing yet!</p>
+                <a href="/dashboard/create-listing" class="inline-block bg-indigo-600 text-white px-8 py-4 rounded-full font-black shadow-lg hover:scale-105 transition-all">
+                    Create Your Listing
+                </a>
+            </div>
+        {/if}
+    </section>
 </div>
