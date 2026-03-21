@@ -29,3 +29,5 @@ test-results
 # Local Database (Keep your schema, igrnore the actual data file)
 *.sqlite
 *.sqlite-journal
+local.db
+local.dbbk

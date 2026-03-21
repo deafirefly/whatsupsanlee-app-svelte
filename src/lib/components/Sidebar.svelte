@@ -4,13 +4,13 @@
 
   // To this (Direct Imports):
   import LayoutDashboard from 'lucide-svelte/icons/layout-dashboard';
-  import Users from 'lucide-svelte/icons/users';
-  import History from 'lucide-svelte/icons/history';
-  import Database from 'lucide-svelte/icons/database';
-  import Settings from 'lucide-svelte/icons/settings';
-  import LogOut from 'lucide-svelte/icons/log-out';
-	import type { fromAction } from 'svelte/attachments';
-  
+import Users from 'lucide-svelte/icons/users';
+import History from 'lucide-svelte/icons/history';
+import Database from 'lucide-svelte/icons/database';
+import Settings from 'lucide-svelte/icons/settings';
+import LogOut from 'lucide-svelte/icons/log-out';
+import ListFilter from 'lucide-svelte/icons/list-filter';
+
   let { user } = $props();
 
   // Use a derived rune for the current path
@@ -29,8 +29,9 @@
   const adminLinks = [
     { name: 'Admin Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
     { name: 'Users', href: '/users', icon: Users },
-    { name: 'Settings', href: '/account-settings', icon: Users },
-  ];
+    { name: 'Listings', href: '/listings-admin', icon: ListFilter },
+    { name: 'Settings', href: '/account-settings', icon: Settings },
+];
 
   const superAdminLinks = [
     { name: 'System Logs', href: '/admin/logs', icon: History },
