@@ -28,6 +28,9 @@
             <a href="/about" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:bg-slate-800 transition-all ">
                 About Us
             </a>
+            <a href="/feed" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:bg-slate-800 transition-all ">
+            📣 Feed
+            </a>
 			<a href="/login" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:bg-slate-800 transition-all shadow-sm">Login</a>
 			<a href="/register" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:opacity-90 transition-all">
 				Get Started

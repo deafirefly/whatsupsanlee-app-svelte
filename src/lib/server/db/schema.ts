@@ -194,3 +194,52 @@ export const contactMessages = sqliteTable('contact_messages', {
     status: text('status').default('unread').notNull(), // 'unread' | 'read'
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
 });
+
+// --- Community Posts ---
+export const posts = sqliteTable('posts', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+
+    // Content
+    content: text('content'),
+    imageUrl: text('image_url'),
+    linkUrl: text('link_url'),
+    linkTitle: text('link_title'),
+
+    // Location context
+    areaId: integer('area_id').references(() => areas.id),
+    communityId: integer('community_id').references(() => communities.id),
+
+    // Status
+    status: text('status').default('published').notNull(), // 'published' | 'removed'
+    isPinned: integer('is_pinned', { mode: 'boolean' }).default(false),
+
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});
+
+// --- Post Likes ---
+export const postLikes = sqliteTable('post_likes', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    postId: integer('post_id').references(() => posts.id, { onDelete: 'cascade' }).notNull(),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// --- Post Comments ---
+export const postComments = sqliteTable('post_comments', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    postId: integer('post_id').references(() => posts.id, { onDelete: 'cascade' }).notNull(),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    content: text('content').notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});
+
+// --- Post Reports ---
+export const postReports = sqliteTable('post_reports', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    postId: integer('post_id').references(() => posts.id, { onDelete: 'cascade' }).notNull(),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    reason: text('reason').notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});

@@ -135,6 +135,11 @@
             <span class="text-2xl group-hover:scale-110 transition-transform">📅</span>
             <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">Post Event</span>
         </a>
+        <a href="/feed/create"
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center gap-3 hover:border-indigo-300 hover:shadow-md transition-all group">
+            <span class="text-2xl group-hover:scale-110 transition-transform">📣</span>
+            <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">Post to Feed</span>
+        </a>
     </div>
 
     <!-- Community Presence -->
