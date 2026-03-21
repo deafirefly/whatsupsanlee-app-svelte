@@ -29,9 +29,17 @@ export const actions = {
         
         // 3. Set Cookies (Plural!)
         // We stringify the array so 'hooks.server.ts' can parse it later
-        cookies.set('user_id', user.id.toString(), { path: '/' });
-        cookies.set('user_roles', JSON.stringify(rolesArray), { path: '/', httpOnly: true });
-        cookies.set('user_email', user.email, { path: '/', httpOnly: true });
+        const cookieOptions = {
+            path: '/',
+            httpOnly: true,
+            sameSite: 'lax' as const,
+            secure: false, // false for local dev over http
+            maxAge: 60 * 60 * 24 * 7 // 7 days
+        };
+
+        cookies.set('user_id', user.id.toString(), cookieOptions);
+        cookies.set('user_roles', JSON.stringify(rolesArray), cookieOptions);
+        cookies.set('user_email', user.email, cookieOptions);
 
         console.log("Saving log to DB...");
         // After successful login:

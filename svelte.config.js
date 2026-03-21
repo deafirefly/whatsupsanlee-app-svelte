@@ -7,7 +7,9 @@ const config = {
 
   kit: {
     adapter: adapter(),
-    // ADD THIS BLOCK IF IT'S MISSING
+    csrf: {
+      trustedOrigins: ['http://192.168.1.16:5173']
+    },
     alias: {
       "$lib": "./src/lib",
       "$lib/*": "./src/lib/*"
