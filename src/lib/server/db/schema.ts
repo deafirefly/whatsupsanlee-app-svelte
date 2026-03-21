@@ -150,3 +150,38 @@ export const profiles = sqliteTable('profiles', {
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
+
+export const events = sqliteTable('events', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').references(() => users.id).notNull(),
+
+    // Core Info
+    title: text('title').notNull(),
+    description: text('description'),
+    category: text('category').notNull(),
+    imageUrl: text('image_url'),
+
+    // Date & Time
+    startDate: text('start_date').notNull(),
+    endDate: text('end_date').notNull(),
+    startTime: text('start_time'),
+    endTime: text('end_time'),
+
+    // Location
+    locationName: text('location_name'),
+    address: text('address'),
+    latitude: real('latitude'),
+    longitude: real('longitude'),
+    locationPin: text('location_pin'),
+
+    // Area & Community
+    areaId: integer('area_id').references(() => areas.id),
+    communityId: integer('community_id').references(() => communities.id),
+
+    // Status
+    status: text('status').default('pending').notNull(),
+    isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
+
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});

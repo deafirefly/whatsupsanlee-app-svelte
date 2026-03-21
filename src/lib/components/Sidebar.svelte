@@ -12,6 +12,7 @@
   import ListFilter from 'lucide-svelte/icons/list-filter';
   import MapPin from 'lucide-svelte/icons/map-pin';
   import Home from 'lucide-svelte/icons/home';
+  import Calendar from 'lucide-svelte/icons/calendar';
 
   let { user } = $props();
 
@@ -33,6 +34,7 @@
     { name: 'Admin Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
     { name: 'Users', href: '/users', icon: Users },
     { name: 'Listings', href: '/listings-admin', icon: ListFilter },
+    { name: 'Events', href: '/events-admin', icon: Calendar },
     { name: 'Areas', href: '/areas', icon: MapPin },
     { name: 'Communities', href: '/communities', icon: Home },
     { name: 'Settings', href: '/account-settings', icon: Settings },

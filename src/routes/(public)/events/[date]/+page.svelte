@@ -1,0 +1,250 @@
+<script lang="ts">
+    import type { PageData } from './$types';
+
+    let { data } = $props();
+    const {
+        date, displayDate, isToday, dayEvents,
+        foodTruckLocations, prevDate, nextDate, isLoggedIn
+    } = data;
+
+    // Category config
+    const categoryConfig: Record<string, { emoji: string; label: string; color: string }> = {
+        food_truck:     { emoji: '🚚', label: 'Food Truck',     color: 'bg-orange-50 text-orange-600 border-orange-100' },
+        open_house:     { emoji: '🏠', label: 'Open House',     color: 'bg-blue-50 text-blue-600 border-blue-100' },
+        yard_sale:      { emoji: '🛍️', label: 'Yard Sale',      color: 'bg-pink-50 text-pink-600 border-pink-100' },
+        farmers_market: { emoji: '🌽', label: "Farmer's Market", color: 'bg-green-50 text-green-600 border-green-100' },
+        movie:          { emoji: '🎬', label: 'Movie',          color: 'bg-purple-50 text-purple-600 border-purple-100' },
+        community:      { emoji: '🎉', label: 'Community',      color: 'bg-yellow-50 text-yellow-600 border-yellow-100' },
+        arts:           { emoji: '🎨', label: 'Arts & Crafts',  color: 'bg-rose-50 text-rose-600 border-rose-100' },
+        church:         { emoji: '⛪', label: 'Church',         color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
+        school:         { emoji: '🏫', label: 'School',         color: 'bg-teal-50 text-teal-600 border-teal-100' },
+        other:          { emoji: '📦', label: 'Other',          color: 'bg-slate-50 text-slate-600 border-slate-100' },
+    };
+
+    function getCategory(cat: string) {
+        return categoryConfig[cat] ?? categoryConfig.other;
+    }
+
+    function formatTime(time: string | null) {
+        if (!time) return '';
+        const [h, m] = time.split(':');
+        const hour = parseInt(h);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${m} ${ampm}`;
+    }
+
+    // Active filter
+    let activeFilter = $state('all');
+
+    const filters = [
+        { value: 'all', label: 'All', emoji: '📅' },
+        { value: 'food_truck', label: 'Food Trucks', emoji: '🚚' },
+        { value: 'open_house', label: 'Open Houses', emoji: '🏠' },
+        { value: 'yard_sale', label: 'Yard Sales', emoji: '🛍️' },
+        { value: 'farmers_market', label: "Farmer's Market", emoji: '🌽' },
+        { value: 'movie', label: 'Movies', emoji: '🎬' },
+        { value: 'community', label: 'Community', emoji: '🎉' },
+        { value: 'other', label: 'Other', emoji: '📦' },
+    ];
+
+    // Combine food truck locations with events for filtering
+    let allItems = $derived([
+        ...dayEvents,
+        ...foodTruckLocations.map(ft => ({
+            id: ft.id,
+            title: ft.businessName,
+            category: 'food_truck',
+            locationName: ft.locationName,
+            address: ft.address,
+            latitude: ft.latitude,
+            longitude: ft.longitude,
+            startTime: ft.startTime,
+            endTime: ft.endTime,
+            description: ft.notes,
+            imageUrl: ft.imageUrl,
+            isFoodTruckSchedule: true
+        }))
+    ]);
+
+    let filteredItems = $derived(
+        activeFilter === 'all'
+            ? allItems
+            : allItems.filter(item => item.category === activeFilter)
+    );
+
+    // Total count
+    let totalCount = $derived(allItems.length);
+</script>
+
+<div class="min-h-screen bg-slate-50/50 pb-20">
+
+    <!-- Back Nav -->
+    <div class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="/" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                ← Back to Community
+            </a>
+            {#if isLoggedIn}
+                <a href="/events/create"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 transition-all">
+                    + Post Event
+                </a>
+            {:else}
+                <a href="/login"
+                    class="px-4 py-2 border border-indigo-200 text-indigo-600 rounded-xl text-xs font-black hover:bg-indigo-50 transition-all">
+                    Login to Post Event
+                </a>
+            {/if}
+        </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-6 py-8 space-y-8">
+
+        <!-- Date Header -->
+        <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-8 text-white relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 text-white/10 text-[120px] font-black select-none leading-none">
+                📅
+            </div>
+            <div class="relative z-10">
+                {#if isToday}
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block">
+                        Today
+                    </span>
+                {/if}
+                <h1 class="text-3xl font-black">{displayDate}</h1>
+                <p class="text-indigo-200 mt-1">
+                    {totalCount} {totalCount === 1 ? 'event' : 'events'} in Lee County
+                </p>
+
+                <!-- Date Navigation -->
+                <div class="flex items-center gap-3 mt-6">
+                    <a href={`/events/${prevDate}`}
+                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+                        ← Previous
+                    </a>
+                    <a href={`/events/${new Date().toISOString().split('T')[0]}`}
+                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+                        Today
+                    </a>
+                    <a href={`/events/${nextDate}`}
+                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+                        Next →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {#each filters as filter}
+                <button
+                    onclick={() => activeFilter = filter.value}
+                    class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black transition-all border
+                    {activeFilter === filter.value
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'}"
+                >
+                    {filter.emoji} {filter.label}
+                </button>
+            {/each}
+        </div>
+
+        <!-- Events List -->
+        {#if filteredItems.length === 0}
+            <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+                <span class="text-4xl block mb-4">📭</span>
+                <h3 class="text-xl font-bold text-slate-900">No events for this day</h3>
+                <p class="text-slate-500 text-sm mt-1">
+                    {activeFilter !== 'all' ? 'Try selecting a different category or ' : ''}
+                    Check back later or post your own event!
+                </p>
+                {#if isLoggedIn}
+                    <a href="/events/create"
+                        class="mt-6 inline-block bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-sm hover:bg-indigo-700 transition-all">
+                        + Post an Event
+                    </a>
+                {/if}
+            </div>
+        {:else}
+            <div class="space-y-4">
+                {#each filteredItems as item}
+                    {@const cat = getCategory(item.category)}
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden">
+                        <div class="flex gap-4 p-6">
+
+                            <!-- Category Icon -->
+                            <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-slate-50 border border-slate-100">
+                                {cat.emoji}
+                            </div>
+
+                            <!-- Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between gap-4 flex-wrap">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border {cat.color}">
+                                                {cat.label}
+                                            </span>
+                                            {#if item.isFeatured}
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-50 text-amber-600 border border-amber-100">
+                                                    ⭐ Featured
+                                                </span>
+                                            {/if}
+                                        </div>
+                                        <h3 class="font-black text-slate-900 text-lg">{item.title}</h3>
+                                    </div>
+
+                                    <!-- Time -->
+                                    {#if item.startTime}
+                                        <div class="flex-shrink-0 text-right">
+                                            <p class="font-black text-indigo-600 text-sm">
+                                                {formatTime(item.startTime)}
+                                                {#if item.endTime} – {formatTime(item.endTime)}{/if}
+                                            </p>
+                                        </div>
+                                    {/if}
+                                </div>
+
+                                <!-- Description -->
+                                {#if item.description}
+                                    <p class="text-sm text-slate-500 mt-2 line-clamp-2">{item.description}</p>
+                                {/if}
+
+                                <!-- Location -->
+                                <div class="flex items-center gap-4 mt-3 flex-wrap">
+                                    {#if item.locationName || item.address}
+                                        <div class="flex items-center gap-1.5 text-xs text-slate-500">
+                                            <span>📍</span>
+                                            <span>{item.locationName ?? item.address}</span>
+                                        </div>
+                                    {/if}
+                                    {#if item.latitude && item.longitude}
+
+                                        <a
+                                        href={`https://maps.google.com/?q=${item.latitude},${item.longitude}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="flex items-center gap-1 text-xs font-black text-indigo-600 hover:underline"
+                                 >
+                                        Get Directions →
+                                        </a>
+                                    {/if}
+                                </div>
+                            </div>
+
+                            <!-- Image -->
+                            {#if item.imageUrl}
+                                <div class="flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 hidden sm:block">
+                                    <img src={item.imageUrl} alt={item.title} class="w-full h-full object-cover" />
+                                </div>
+                            {/if}
+
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        {/if}
+
+    </div>
+</div>
