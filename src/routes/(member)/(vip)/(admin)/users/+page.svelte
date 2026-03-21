@@ -190,21 +190,40 @@
 
                             <Table.Cell>
                                 <div class="flex justify-end items-center gap-2">
-                                    <form method="POST" action="?/toggleVip" use:enhance>
-                                        <input type="hidden" name="id" value={user.id} />
-                                        <Button 
-                                            type="submit" 
-                                            variant={user.roles.includes('vip') ? 'secondary' : 'outline'} 
-                                            size="sm"
-                                            class="h-8 gap-1"
-                                        >
-                                            {#if user.roles.includes('vip')}
-                                                <StarOff size={14} class="text-amber-600" /> Revoke VIP
-                                            {:else}
-                                                <Star size={14} class="text-amber-500" /> Make VIP
-                                            {/if}
-                                        </Button>
-                                    </form>
+    <form method="POST" action="?/toggleVip" use:enhance>
+        <input type="hidden" name="id" value={user.id} />
+        <Button 
+            type="submit" 
+            variant={user.roles.includes('vip') ? 'secondary' : 'outline'} 
+            size="sm"
+            class="h-8 gap-1"
+        >
+            {#if user.roles.includes('vip')}
+                <StarOff size={14} class="text-amber-600" /> Revoke VIP
+            {:else}
+                <Star size={14} class="text-amber-500" /> Make VIP
+            {/if}
+        </Button>
+    </form>
+
+    <!-- Only superadmin can toggle admin role, and not on themselves or other superadmins -->
+    {#if isSuperAdmin && user.id !== data.currentUser?.id && !user.roles.includes('superadmin')}
+        <form method="POST" action="?/toggleAdmin" use:enhance>
+            <input type="hidden" name="id" value={user.id} />
+            <Button
+                type="submit"
+                variant={user.roles.includes('admin') ? 'secondary' : 'outline'}
+                size="sm"
+                class="h-8 gap-1"
+            >
+                {#if user.roles.includes('admin')}
+                    <Shield size={14} class="text-red-500" /> Revoke Admin
+                {:else}
+                    <Shield size={14} class="text-indigo-500" /> Make Admin
+                {/if}
+            </Button>
+        </form>
+    {/if}
 
                                     {#if user.id !== data.currentUser?.id && !user.roles.includes('superadmin')}
                                         <form method="POST" action="?/deleteUser" use:enhance={handleDelete}>

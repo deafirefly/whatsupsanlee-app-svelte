@@ -80,6 +80,46 @@ export const actions: Actions = {
         return { success: true };
     },
 
+    toggleAdmin: async ({ request, locals }) => {
+    // Only superadmin can make/revoke admins
+    if (!locals.user?.roles.includes('superadmin')) {
+        return fail(403, { message: 'Only superadmin can manage admin roles.' });
+    }
+
+    const formData = await request.formData();
+    const id = Number(formData.get('id'));
+
+    const user = await db.query.users.findFirst({
+        where: eq(users.id, id)
+    });
+
+    if (!user) return fail(404, { message: 'User not found' });
+
+    let roles: string[] = [];
+    try {
+        if (Array.isArray(user.roles)) {
+            roles = user.roles;
+        } else if (typeof user.roles === 'string') {
+            roles = JSON.parse(user.roles);
+        }
+    } catch (e) {
+        roles = ['member'];
+    }
+
+    // Toggle admin role
+    if (roles.includes('admin')) {
+        roles = roles.filter(r => r !== 'admin');
+    } else {
+        roles = [...roles, 'admin'];
+    }
+
+    await db.update(users)
+        .set({ roles: JSON.stringify(roles) as any })
+        .where(eq(users.id, id));
+
+    return { success: true };
+},
+
     deleteUser: async ({ request, locals }) => {
         const formData = await request.formData();
         const idToDelete = Number(formData.get('id'));
