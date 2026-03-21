@@ -13,6 +13,7 @@
   import MapPin from 'lucide-svelte/icons/map-pin';
   import Home from 'lucide-svelte/icons/home';
   import Calendar from 'lucide-svelte/icons/calendar';
+  import MessageSquare from 'lucide-svelte/icons/message-square';
 
   let { user } = $props();
 
@@ -32,6 +33,7 @@
 
   const adminLinks = [
     { name: 'Admin Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
+    { name: 'Messages', href: '/messages-admin', icon: MessageSquare },
     { name: 'Users', href: '/users', icon: Users },
     { name: 'Listings', href: '/listings-admin', icon: ListFilter },
     { name: 'Events', href: '/events-admin', icon: Calendar },
