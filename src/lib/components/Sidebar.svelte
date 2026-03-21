@@ -4,12 +4,14 @@
 
   // To this (Direct Imports):
   import LayoutDashboard from 'lucide-svelte/icons/layout-dashboard';
-import Users from 'lucide-svelte/icons/users';
-import History from 'lucide-svelte/icons/history';
-import Database from 'lucide-svelte/icons/database';
-import Settings from 'lucide-svelte/icons/settings';
-import LogOut from 'lucide-svelte/icons/log-out';
-import ListFilter from 'lucide-svelte/icons/list-filter';
+  import Users from 'lucide-svelte/icons/users';
+  import History from 'lucide-svelte/icons/history';
+  import Database from 'lucide-svelte/icons/database';
+  import Settings from 'lucide-svelte/icons/settings';
+  import LogOut from 'lucide-svelte/icons/log-out';
+  import ListFilter from 'lucide-svelte/icons/list-filter';
+  import MapPin from 'lucide-svelte/icons/map-pin';
+  import Home from 'lucide-svelte/icons/home';
 
   let { user } = $props();
 
@@ -26,12 +28,15 @@ import ListFilter from 'lucide-svelte/icons/list-filter';
   const vipLinks = [
     { name: 'VIP Lounge', href: '/vip-lounge', icon: History},
   ];
+
   const adminLinks = [
     { name: 'Admin Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
     { name: 'Users', href: '/users', icon: Users },
     { name: 'Listings', href: '/listings-admin', icon: ListFilter },
+    { name: 'Areas', href: '/areas', icon: MapPin },
+    { name: 'Communities', href: '/communities', icon: Home },
     { name: 'Settings', href: '/account-settings', icon: Settings },
-];
+  ];
 
   const superAdminLinks = [
     { name: 'System Logs', href: '/admin/logs', icon: History },
