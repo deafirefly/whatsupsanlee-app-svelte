@@ -177,7 +177,19 @@
         <!-- Community Location -->
         <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
             <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest">Your Community</h3>
-            <p class="text-xs text-slate-400">Select your area and neighborhood in Lee County.</p>
+            <p class="text-xs text-slate-400 mb-4">Select your area and neighborhood in Lee County.</p>
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+                <span class="text-lg flex-shrink-0">💡</span>
+                <div>
+                    <p class="text-xs font-bold text-amber-700">Don't see your area or community?</p>
+                    <p class="text-xs text-amber-600 mt-0.5 leading-relaxed">
+                        Send us a message and we'll add it for you!
+                        <a href="/contact" class="font-black underline hover:text-amber-800 transition-colors">Contact us →</a>
+                        or join our 
+                        <a href="https://discord.gg/W5mxkJgz" target="_blank" rel="noopener noreferrer" class="font-black underline hover:text-amber-800 transition-colors">Discord →</a>
+                    </p>
+                </div>
+            </div>
 
             {#if allAreas.length === 0}
                 <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl">
@@ -218,7 +230,10 @@
                             {/each}
                         </select>
                         {#if selectedAreaId && filteredCommunities.length === 0}
-                            <p class="text-[11px] text-amber-500 mt-1">No communities added for this area yet.</p>
+                            <p class="text-[11px] text-amber-500 mt-1">
+                                No communities added for this area yet. 
+                                <a href="/contact" class="font-black underline hover:text-amber-700">Request one →</a>
+                            </p>
                         {/if}
                     </div>
                 </div>

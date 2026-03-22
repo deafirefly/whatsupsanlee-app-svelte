@@ -23,7 +23,6 @@
         return `${hour12}:${m} ${ampm}`;
     }
 
-    // Group menu items by category
     let menuByCategory = $derived(
         menu.reduce((grouped: Record<string, typeof menu>, item) => {
             const cat = item.category ?? 'Other';
@@ -54,43 +53,57 @@
             <div class="lg:col-span-2 space-y-6">
 
                 <!-- Hero Card -->
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                    <header class="mb-8">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span class="px-3 py-1 bg-indigo-600 text-white text-[10px] font-black rounded-full uppercase tracking-tighter">
-                                {categoryLabel}
-                            </span>
-                            <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                            <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                                <span class="relative flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                </span>
-                                Verified Member
-                            </span>
-                            {#if listing.isFeatured}
-                                <span class="px-3 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full uppercase tracking-tighter border border-amber-100">
-                                    ⭐ Featured
-                                </span>
-                            {/if}
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+
+                    <!-- Cover Image -->
+                    {#if listing.imageUrl}
+                        <div class="w-full overflow-hidden">
+                            <img src={listing.imageUrl} alt={listing.businessName} class="w-full h-auto" />
                         </div>
-
-                        <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-none">
-                            {listing.businessName}
-                        </h1>
-                        <p class="text-xl text-slate-500 mt-4 font-medium italic">
-                            hosted by {listing.contactPerson}
-                        </p>
-                    </header>
-
-                    {#if listing.bio}
-                    <div class="space-y-4">
-                        <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest">The Story</h3>
-                        <p class="text-lg text-slate-700 leading-relaxed whitespace-pre-wrap font-serif">
-                            {listing.bio}
-                        </p>
-                    </div>
+                    {:else}
+                        <div class="w-full h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-6xl opacity-30">{getCategoryEmoji(listing.category)}</span>
+                        </div>
                     {/if}
+
+                    <div class="p-8">
+                        <header class="mb-8">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="px-3 py-1 bg-indigo-600 text-white text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                    {categoryLabel}
+                                </span>
+                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    Verified Member
+                                </span>
+                                {#if listing.isFeatured}
+                                    <span class="px-3 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full uppercase tracking-tighter border border-amber-100">
+                                        ⭐ Featured
+                                    </span>
+                                {/if}
+                            </div>
+
+                            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-none">
+                                {listing.businessName}
+                            </h1>
+                            <p class="text-xl text-slate-500 mt-4 font-medium italic">
+                                hosted by {listing.contactPerson}
+                            </p>
+                        </header>
+
+                        {#if listing.bio}
+                            <div class="space-y-4">
+                                <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest">The Story</h3>
+                                <p class="text-lg text-slate-700 leading-relaxed whitespace-pre-wrap font-serif">
+                                    {listing.bio}
+                                </p>
+                            </div>
+                        {/if}
+                    </div>
                 </div>
 
                 <!-- Photo Gallery -->
@@ -159,7 +172,6 @@
                     <div class="space-y-4">
                         {#each schedule as slot}
                             <div class="flex gap-4 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 transition-colors">
-                                <!-- Date Badge -->
                                 <div class="flex-shrink-0 text-center bg-white rounded-xl p-3 shadow-sm min-w-[56px]">
                                     <p class="text-[10px] font-black text-indigo-600 uppercase">
                                         {new Date(slot.date).toLocaleDateString('en-US', { month: 'short' })}
@@ -168,7 +180,6 @@
                                         {new Date(slot.date).getDate()}
                                     </p>
                                 </div>
-                                <!-- Details -->
                                 <div class="flex-1 min-w-0">
                                     <p class="font-black text-slate-900">{slot.locationName ?? 'Location TBD'}</p>
                                     {#if slot.address}
@@ -184,15 +195,14 @@
                                         <p class="text-xs text-amber-600 mt-1 italic">⚠ {slot.notes}</p>
                                     {/if}
                                 </div>
-                                <!-- Map Button -->
                                 {#if slot.latitude && slot.longitude}
                                     <a
-                                        href="https://maps.google.com/?q={slot.latitude},{slot.longitude}"
+                                        href={`https://maps.google.com/?q=${slot.latitude},${slot.longitude}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="flex-shrink-0 self-center px-3 py-2 bg-white rounded-xl text-xs font-black text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all"
                                     >
-                                            📍 Map
+                                        📍 Map
                                     </a>
                                 {/if}
                             </div>
@@ -203,32 +213,32 @@
 
             </div>
 
-            <!-- RIGHT COLUMN (Sidebar) -->
+            <!-- RIGHT COLUMN -->
             <div class="space-y-6">
 
-                <!-- Schedule & Location Card (your original style) -->
+                <!-- Schedule & Location -->
                 <div class="bg-indigo-600 rounded-3xl p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 text-white/10 text-9xl font-black select-none">
                         {getCategoryEmoji(listing.category)}
                     </div>
                     <div class="relative z-10 space-y-8">
                         {#if listing.scheduleSummary}
-                        <div>
-                            <h4 class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-3">When to find us</h4>
-                            <p class="text-xl font-bold leading-snug">{listing.scheduleSummary}</p>
-                        </div>
+                            <div>
+                                <h4 class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-3">When to find us</h4>
+                                <p class="text-xl font-bold leading-snug">{listing.scheduleSummary}</p>
+                            </div>
                         {/if}
                         {#if listing.address}
-                        <div>
-                            <h4 class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-3">Where we're at</h4>
-                            <p class="text-lg font-medium mb-4 leading-snug">{listing.address}</p>
-                            {#if listing.locationPin}
-                                <a href={listing.locationPin} target="_blank" rel="noopener noreferrer"
-                                    class="flex items-center justify-center gap-2 w-full py-3 bg-white text-indigo-600 rounded-xl font-black text-sm hover:bg-indigo-50 transition-all active:scale-95 shadow-lg">
-                                    📍 GET DIRECTIONS
-                                </a>
-                            {/if}
-                        </div>
+                            <div>
+                                <h4 class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-3">Where we're at</h4>
+                                <p class="text-lg font-medium mb-4 leading-snug">{listing.address}</p>
+                                {#if listing.locationPin}
+                                    <a href={listing.locationPin} target="_blank" rel="noopener noreferrer"
+                                        class="flex items-center justify-center gap-2 w-full py-3 bg-white text-indigo-600 rounded-xl font-black text-sm hover:bg-indigo-50 transition-all active:scale-95 shadow-lg">
+                                        📍 GET DIRECTIONS
+                                    </a>
+                                {/if}
+                            </div>
                         {/if}
                     </div>
                 </div>
@@ -262,7 +272,7 @@
                     <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Follow us</h4>
                     <div class="grid grid-cols-2 gap-4">
                         {#if listing.instagram}
-                            <a href="https://instagram.com/{listing.instagram}" target="_blank" rel="noopener noreferrer"
+                            <a href={`https://instagram.com/${listing.instagram}`} target="_blank" rel="noopener noreferrer"
                                 class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-pink-50 hover:text-pink-600 transition-all group">
                                 <span class="text-2xl group-hover:scale-110 transition-transform">📸</span>
                                 <span class="text-[10px] font-black uppercase">Instagram</span>
@@ -297,7 +307,4 @@
         </div>
     </div>
 
-    <footer class="p-8 border-t text-center text-xs text-muted-foreground mt-8">
-        &copy; 2026 Portal OS. All rights reserved.
-    </footer>
 </div>
