@@ -120,11 +120,11 @@
       </div>
     </div>
     
-    <form method="POST" action="/logout" use:enhance>
-      <button class="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
+    <form method="POST" action="/logout" data-sveltekit-reload>
+    <button class="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
         <LogOut size={16} />
         <span>Sign Out</span>
-      </button>
-    </form>
+    </button>
+</form>
   </div>
 </aside>

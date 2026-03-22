@@ -8,6 +8,8 @@ declare global {
 				email: string;
 				roles: string[]; // <--- Change 'role' to 'roles' here
 				isAdmin: boolean;
+				createdAt?: Date | null;
+
 			} | null;
 		}
 		interface PageData {
@@ -15,6 +17,7 @@ declare global {
 				id: number;
 				email: string;
 				roles: string[]; // <--- Change 'role' to 'roles' here
+				createdAt?: Date | null;
 			} | null;
 		}
 		// ... other interfaces
