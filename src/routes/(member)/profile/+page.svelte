@@ -55,7 +55,7 @@
 
         <!-- Avatar + Info -->
         <div class="px-8 pb-8">
-            <div class="flex items-end justify-between -mt-12 mb-6">
+            <div class="flex items-end justify-between -mt-8 mb-6">
                 <!-- Avatar -->
                 {#if profile?.avatarUrl}
                     <img src={profile.avatarUrl} alt="Avatar"
@@ -84,8 +84,12 @@
 
             <div class="flex flex-wrap items-center gap-2 mt-3">
                 <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-black rounded-full uppercase tracking-widest border border-indigo-100">
-                    {user?.roles?.[0] ?? 'member'}
-                </span>
+    {#if user?.roles && user.roles.length > 0}
+        {typeof user.roles === 'string' ? JSON.parse(user.roles)[0] : user.roles[0]}
+    {:else}
+        member
+    {/if}
+</span>
                 <span class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-bold rounded-full border border-slate-100">
                     Member since {memberSince}
                 </span>

@@ -47,9 +47,10 @@
     <div class="max-w-3xl mx-auto p-6 space-y-6">
 
         <!-- Profile Header -->
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <!-- Banner -->
-            <div class="h-32 bg-gradient-to-br from-indigo-500 to-purple-600 relative">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm">
+
+            <!-- Banner with Avatar -->
+            <div class="h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-t-3xl relative">
                 {#if isOwnProfile}
                     <div class="absolute top-4 right-4">
                         <span class="px-3 py-1 bg-white/20 text-white text-[10px] font-black rounded-full uppercase tracking-widest">
@@ -57,11 +58,8 @@
                         </span>
                     </div>
                 {/if}
-            </div>
-
-            <!-- Avatar + Info -->
-            <div class="px-8 pb-8">
-                <div class="-mt-12 mb-6">
+                <!-- Avatar positioned at bottom of banner -->
+                <div class="absolute -bottom-12 left-8">
                     {#if profile?.avatarUrl}
                         <img src={profile.avatarUrl} alt="Avatar"
                             class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" />
@@ -71,12 +69,21 @@
                         </div>
                     {/if}
                 </div>
+            </div>
+
+            <!-- Info -->
+            <div class="px-8 pb-8">
+                <div class="mt-14 mb-2"></div>
 
                 <h1 class="text-2xl font-black text-slate-900 capitalize">{username}</h1>
 
                 <div class="flex flex-wrap items-center gap-2 mt-3">
                     <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-black rounded-full uppercase tracking-widest border border-indigo-100">
-                        {user?.roles?.[0] ?? 'member'}
+                        {#if user?.roles && user.roles.length > 0}
+                            {typeof user.roles === 'string' ? JSON.parse(user.roles)[0] : user.roles[0]}
+                        {:else}
+                            member
+                        {/if}
                     </span>
                     <span class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-bold rounded-full border border-slate-100">
                         Member since {memberSince}

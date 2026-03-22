@@ -29,22 +29,27 @@ export const actions = {
         if (!locals.user) throw redirect(302, '/login');
 
         const formData = await request.formData();
+        const areaIdRaw = formData.get('areaId') as string;
+const communityIdRaw = formData.get('communityId') as string;
 
-        const data = {
-            userId: locals.user.id,
-            displayName: (formData.get('displayName') as string) || null,
-            bio: (formData.get('bio') as string) || null,
-            areaId: formData.get('areaId') ? Number(formData.get('areaId')) : null,
-            communityId: formData.get('communityId') ? Number(formData.get('communityId')) : null,
-            instagram: (formData.get('instagram') as string) || null,
-            facebook: (formData.get('facebook') as string) || null,
-            twitter: (formData.get('twitter') as string) || null,
-            tiktok: (formData.get('tiktok') as string) || null,
-            website: (formData.get('website') as string) || null,
-            visibility: (formData.get('visibility') as string) || 'public',
-            avatarUrl: (formData.get('avatarUrl') as string) || null,
-            updatedAt: new Date()
-        };
+const data = {
+    userId: locals.user.id,
+    displayName: (formData.get('displayName') as string)?.trim() || null,
+    bio: (formData.get('bio') as string)?.trim() || null,
+    areaId: areaIdRaw && areaIdRaw !== '' && Number(areaIdRaw) > 0 ? Number(areaIdRaw) : null,
+    communityId: communityIdRaw && communityIdRaw !== '' && Number(communityIdRaw) > 0 ? Number(communityIdRaw) : null,
+    instagram: (formData.get('instagram') as string)?.trim() || null,
+    facebook: (formData.get('facebook') as string)?.trim() || null,
+    twitter: (formData.get('twitter') as string)?.trim() || null,
+    tiktok: (formData.get('tiktok') as string)?.trim() || null,
+    website: (formData.get('website') as string)?.trim() || null,
+    visibility: (formData.get('visibility') as string) || 'public',
+    avatarUrl: (formData.get('avatarUrl') as string) || null,
+    updatedAt: new Date()
+};
+
+console.log('Saving profile data:', data);
+console.log('User ID:', locals.user.id);
 
         try {
             // Upsert — insert if no profile, update if exists
