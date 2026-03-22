@@ -1,22 +1,92 @@
 <script lang="ts">
-    let { form } = $props(); // Access error messages from the server
+    import { enhance } from '$app/forms';
+    let { form } = $props();
+    let isSubmitting = $state(false);
 </script>
 
-<div class="max-w-md mx-auto mt-20 p-8 border rounded-xl shadow-lg bg-white">
-    <h1 class="text-2xl font-bold mb-6">Login</h1>
+<div class="min-h-[80vh] flex items-center justify-center px-6 py-16">
+    <div class="w-full max-w-md space-y-6">
 
-    <form method="POST" class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium mb-1">Email Address</label>
-            <input name="email" type="email" required class="w-full p-2 border rounded" />
+        <!-- Header -->
+        <div class="text-center space-y-2">
+            <h1 class="text-4xl font-black text-slate-900">Welcome back!</h1>
+            <p class="text-slate-500">Sign in to your WhatsUp SanLee account.</p>
         </div>
-        
-        {#if form?.message}
-            <p class="text-red-500 text-sm">{form.message}</p>
-        {/if}
 
-        <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded font-bold">
-            Sign In
-        </button>
-    </form>
+        <!-- Card -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
+
+            <!-- Error Message -->
+            {#if form?.message}
+                <div class="p-4 bg-red-50 border border-red-200 rounded-2xl">
+                    <p class="text-red-700 font-bold text-sm">⚠ {form.message}</p>
+                </div>
+            {/if}
+
+            <form
+                method="POST"
+                use:enhance={() => {
+                    isSubmitting = true;
+                    return async ({ update }) => {
+                        await update();
+                        isSubmitting = false;
+                    };
+                }}
+                class="space-y-4"
+            >
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Email Address</label>
+                    <input
+                        name="email"
+                        type="email"
+                        required
+                        placeholder="you@example.com"
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-50 outline-none text-sm"
+                    />
+                </div>
+
+                <!--- TODO: Add password field back before deploying to production -->
+
+                <!--
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Password</label>
+                    <input
+                        name="password"
+                        type="password"
+                        required
+                        placeholder="Your password"
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-50 outline-none text-sm"
+                    />
+                </div>
+            -->
+
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    class="w-full py-3 bg-indigo-600 text-white rounded-xl font-black hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-lg shadow-indigo-200"
+                >
+                    {isSubmitting ? 'Signing in...' : 'Sign In →'}
+                </button>
+            </form>
+        </div>
+
+        <!-- Register Link -->
+        <p class="text-center text-sm text-slate-500">
+            Don't have an account?
+            <a href="/register" class="text-indigo-600 font-black hover:underline">Get Started →</a>
+        </p>
+
+        <!-- Discord -->
+        <div class="text-center">
+            <p class="text-xs text-slate-400 mb-2">Join our community</p>
+            <a href="https://discord.gg/W5mxkJgz" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-[#5865F2] text-white rounded-xl text-xs font-black hover:opacity-90 transition-all">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.031.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+                </svg>
+                Join WhatsUp SanLee on Discord
+            </a>
+        </div>
+
+    </div>
 </div>

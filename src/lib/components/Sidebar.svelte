@@ -36,6 +36,7 @@
     { name: 'Messages', href: '/messages-admin', icon: MessageSquare },
     { name: 'Users', href: '/users', icon: Users },
     { name: 'Listings', href: '/listings-admin', icon: ListFilter },
+    { name: 'Posts', href: '/posts-admin', icon: MessageSquare },
     { name: 'Events', href: '/events-admin', icon: Calendar },
     { name: 'Areas', href: '/areas', icon: MapPin },
     { name: 'Communities', href: '/communities', icon: Home },
