@@ -147,6 +147,13 @@ export const profiles = sqliteTable('profiles', {
     // Privacy setting
     visibility: text('visibility').default('public').notNull(), // 'public' | 'members' | 'private'
 
+    // Onboarding
+onboardingComplete: integer('onboarding_complete', { mode: 'boolean' }).default(false),
+hasSetupProfile: integer('has_setup_profile', { mode: 'boolean' }).default(false),
+hasMadePost: integer('has_made_post', { mode: 'boolean' }).default(false),
+hasCreatedListing: integer('has_created_listing', { mode: 'boolean' }).default(false),
+hasPostedEvent: integer('has_posted_event', { mode: 'boolean' }).default(false),
+
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });

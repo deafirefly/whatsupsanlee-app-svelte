@@ -5,7 +5,7 @@
     let { data }: { data: PageData } = $props();
 
     const user = data.user;
-    const { userListing } = data;
+    const { userListing, onboardingSteps, onboardingComplete, onboardingProgress, totalSteps } = data;
 
     // URL message (e.g. after submitting a listing)
     let showMessage = $state(!!page.url.searchParams.get('message'));
@@ -77,6 +77,55 @@
             </div>
         </div>
     </div>
+
+    <!-- Onboarding Checklist -->
+{#if !onboardingComplete}
+    <div class="bg-white rounded-3xl border border-indigo-100 shadow-sm p-6 space-y-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="font-black text-slate-900">Getting Started 🚀</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Complete these steps to get the most out of WhatsUp SanLee!</p>
+            </div>
+            <div class="flex-shrink-0 text-right">
+                <p class="text-2xl font-black text-indigo-600">{onboardingProgress}/{totalSteps}</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest">complete</p>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-100 rounded-full h-2">
+            <div
+                class="bg-indigo-600 h-2 rounded-full transition-all duration-500"
+                style="width: {Math.round((onboardingProgress / totalSteps) * 100)}%"
+            ></div>
+        </div>
+
+        <!-- Steps -->
+        <div class="space-y-2">
+            {#each onboardingSteps as step}
+                <div class="flex items-center gap-3 p-3 rounded-2xl {step.done ? 'bg-emerald-50' : 'bg-slate-50'} transition-all">
+                    <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center
+                        {step.done ? 'bg-emerald-500 text-white' : 'bg-white border-2 border-slate-200'}">
+                        {#if step.done}
+                            <span class="text-xs font-black">✓</span>
+                        {/if}
+                    </div>
+                    <p class="flex-1 text-sm font-bold {step.done ? 'text-emerald-700 line-through opacity-60' : 'text-slate-700'}">
+                        {step.label}
+                    </p>
+                    {#if !step.done && step.href}
+                        <a href={step.href}
+                            class="flex-shrink-0 px-3 py-1 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 transition-all">
+                            Go →
+                        </a>
+                    {/if}
+                </div>
+            {/each}
+        </div>
+    </div>
+{/if}
+
+
 
     <!-- Quick Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
