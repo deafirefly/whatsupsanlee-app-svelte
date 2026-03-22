@@ -107,15 +107,5 @@
             </div>
         </div>
 
-        <!-- Built With Love -->
-        <div class="text-center space-y-3">
-            <p class="text-slate-400 text-sm">Built with ❤️ for the Sanford & Lee County community</p>
-            <div class="flex justify-center gap-6 text-xs text-slate-400">
-                <a href="/contact" class="hover:text-indigo-600 transition-colors font-bold">Contact Us</a>
-                <a href="/privacy" class="hover:text-indigo-600 transition-colors font-bold">Privacy Policy</a>
-                <a href="/terms" class="hover:text-indigo-600 transition-colors font-bold">Terms of Service</a>
-            </div>
-        </div>
-
     </div>
 </div>
