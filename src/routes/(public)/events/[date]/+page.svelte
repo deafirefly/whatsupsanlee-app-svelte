@@ -2,10 +2,38 @@
     import type { PageData } from './$types';
 
     let { data } = $props();
-    const {
-        date, displayDate, isToday, dayEvents,
-        foodTruckLocations, prevDate, nextDate, isLoggedIn
-    } = data;
+
+    // Use $derived so these update reactively when data changes
+    let date = $derived(data.date);
+    let displayDate = $derived(data.displayDate);
+    let isToday = $derived(data.isToday);
+    let dayEvents = $derived(data.dayEvents);
+    let foodTruckLocations = $derived(data.foodTruckLocations);
+    let prevDate = $derived(data.prevDate);
+    let nextDate = $derived(data.nextDate);
+    let isLoggedIn = $derived(data.isLoggedIn);
+
+    let dateLabel = $derived(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+    const twoDaysAgo = new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0];
+    const twoDaysFromNow = new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0];
+    const threeDaysAgo = new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0];
+    const threeDaysFromNow = new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0];
+
+    switch (date) {
+        case today: return { text: 'Today', color: 'bg-white/20' };
+        case yesterday: return { text: 'Yesterday', color: 'bg-white/20' };
+        case tomorrow: return { text: 'Tomorrow', color: 'bg-white/20' };
+        case twoDaysAgo: return { text: '2 Days Ago', color: 'bg-white/20' };
+        case twoDaysFromNow: return { text: 'In 2 Days', color: 'bg-white/20' };
+        case threeDaysAgo: return { text: '3 Days Ago', color: 'bg-white/20' };
+        case threeDaysFromNow: return { text: 'In 3 Days', color: 'bg-white/20' };
+        default: return null;
+    }
+});
+
 
     // Category config
     const categoryConfig: Record<string, { emoji: string; label: string; color: string }> = {
@@ -107,11 +135,11 @@
                 📅
             </div>
             <div class="relative z-10">
-                {#if isToday}
-                    <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block">
-                        Today
+                {#if dateLabel()}
+                    <span class="px-3 py-1 {dateLabel()?.color} rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block">
+                        {dateLabel()?.text}
                     </span>
-                {/if}
+                {/if}   
                 <h1 class="text-3xl font-black">{displayDate}</h1>
                 <p class="text-indigo-200 mt-1">
                     {totalCount} {totalCount === 1 ? 'event' : 'events'} in Lee County
