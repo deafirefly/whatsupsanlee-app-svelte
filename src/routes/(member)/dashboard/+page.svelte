@@ -106,41 +106,88 @@
         </div>
     </div>
 
+
     <!-- Quick Links -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {#if userListing?.status === 'approved'}
-            <a href={`/listings/${userListing.id}`}
-                class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center gap-3 hover:border-indigo-300 hover:shadow-md transition-all group">
-                <span class="text-2xl group-hover:scale-110 transition-transform">👁</span>
-                <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">View Profile</span>
+<div class="space-y-4">
+
+    <!-- Profile -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Profile</h3>
+        <div class="grid grid-cols-3 gap-3">
+            <a href="/profile"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                <span class="text-2xl group-hover:scale-110 transition-transform">👤</span>
+                <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">My Profile</span>
             </a>
-        {/if}
-        <a href="/account-settings"
-            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center gap-3 hover:border-indigo-300 hover:shadow-md transition-all group">
-            <span class="text-2xl group-hover:scale-110 transition-transform">⚙️</span>
-            <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">Account Settings</span>
-        </a>
-        <a href="/profile"
-            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center gap-3 hover:border-indigo-300 hover:shadow-md transition-all group">
-            <span class="text-2xl group-hover:scale-110 transition-transform">👤</span>
-            <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">My Profile</span>
-        </a>
-        <a href="/profile/edit"
-            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center gap-3 hover:border-indigo-300 hover:shadow-md transition-all group">
-            <span class="text-2xl group-hover:scale-110 transition-transform">✏️</span>
-            <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">Edit Profile</span>
-        </a>
-        <a href="/events/create"
-            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center gap-3 hover:border-indigo-300 hover:shadow-md transition-all group">
-            <span class="text-2xl group-hover:scale-110 transition-transform">📅</span>
-            <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">Post Event</span>
-        </a>
-        <a href="/feed/create"
-            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center gap-3 hover:border-indigo-300 hover:shadow-md transition-all group">
-            <span class="text-2xl group-hover:scale-110 transition-transform">📣</span>
-            <span class="text-xs font-black text-slate-700 uppercase tracking-widest text-center">Post to Feed</span>
-        </a>
+            <a href="/profile/edit"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                <span class="text-2xl group-hover:scale-110 transition-transform">✏️</span>
+                <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Edit Profile</span>
+            </a>
+            <a href="/account-settings"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                <span class="text-2xl group-hover:scale-110 transition-transform">⚙️</span>
+                <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Settings</span>
+            </a>
+        </div>
     </div>
+
+    <!-- Community -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Community</h3>
+        <div class="grid grid-cols-2 gap-3">
+            <a href="/feed/create"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                <span class="text-2xl group-hover:scale-110 transition-transform">📣</span>
+                <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Post to Feed</span>
+            </a>
+            <a href="/events/create"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                <span class="text-2xl group-hover:scale-110 transition-transform">📅</span>
+                <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Post Event</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Business (only if they have a listing) -->
+    {#if userListing}
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Your Business</h3>
+            <div class="grid grid-cols-3 gap-3">
+                <a href="/dashboard/edit-listing"
+                    class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                    <span class="text-2xl group-hover:scale-110 transition-transform">🏪</span>
+                    <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Edit Listing</span>
+                </a>
+                <a href="/dashboard/bookings"
+                    class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                    <span class="text-2xl group-hover:scale-110 transition-transform">📋</span>
+                    <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Bookings</span>
+                </a>
+                <a href="/dashboard/availability"
+                    class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-transparent transition-all group">
+                    <span class="text-2xl group-hover:scale-110 transition-transform">🗓️</span>
+                    <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Availability</span>
+                </a>
+            </div>
+        </div>
+    {:else}
+        <!-- No listing yet — prompt to create one -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Your Business</h3>
+            <a href="/listings/create"
+                class="flex items-center gap-4 p-4 rounded-2xl bg-indigo-50 border border-indigo-100 hover:border-indigo-300 transition-all group">
+                <span class="text-3xl group-hover:scale-110 transition-transform">🏪</span>
+                <div>
+                    <p class="font-black text-indigo-900 text-sm">Create a Listing</p>
+                    <p class="text-xs text-indigo-500 mt-0.5">Share your business with the Lee County community</p>
+                </div>
+                <span class="ml-auto text-indigo-400 font-black">→</span>
+            </a>
+        </div>
+    {/if}
+
+</div>
 
     <!-- Community Presence -->
     <div>

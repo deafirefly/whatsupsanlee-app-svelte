@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db';
 import { listings, listingPhotos, menuItems, listingSchedule } from '$lib/server/db/schema';
+import { bookings, availability } from '$lib/server/db/schema';
 import { eq, and, gte } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
@@ -42,5 +43,48 @@ export const load = async ({ params }) => {
         ))
         .orderBy(listingSchedule.date);
 
-    return { listing, photos, menu, schedule };
+        // Load availability for booking form
+        const vendorAvailability = await db.select()
+            .from(availability)
+            .where(and(
+                eq(availability.listingId, listingId),
+                eq(availability.isAvailable, true)
+        ));
+
+    return { listing, photos, menu, schedule, vendorAvailability };
 };
+
+requestBooking: async ({ request }) => {
+    const formData = await request.formData();
+
+    const clientName = (formData.get('clientName') as string)?.trim();
+    const clientEmail = (formData.get('clientEmail') as string)?.trim();
+    const clientPhone = (formData.get('clientPhone') as string) || null;
+    const date = formData.get('date') as string;
+    const startTime = formData.get('startTime') as string;
+    const endTime = (formData.get('endTime') as string) || null;
+    const serviceType = (formData.get('serviceType') as string) || null;
+    const notes = (formData.get('notes') as string) || null;
+    const listingId = Number(formData.get('listingId'));
+
+    if (!clientName || !clientEmail || !date || !startTime) {
+        return fail(400, { bookingMessage: 'Please fill in all required fields.' });
+    }
+
+    await db.insert(bookings).values({
+        listingId,
+        clientName,
+        clientEmail,
+        clientPhone,
+        date,
+        startTime,
+        endTime,
+        serviceType,
+        notes,
+        status: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    });
+
+    return { bookingSuccess: true };
+}

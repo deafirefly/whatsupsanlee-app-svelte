@@ -243,3 +243,39 @@ export const postReports = sqliteTable('post_reports', {
     reason: text('reason').notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
 });
+
+// --- Availability (vendor sets their available days/times) ---
+export const availability = sqliteTable('availability', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    listingId: integer('listing_id').references(() => listings.id, { onDelete: 'cascade' }).notNull(),
+    dayOfWeek: text('day_of_week').notNull(), // 'monday', 'tuesday', etc.
+    startTime: text('start_time').notNull(),  // '09:00'
+    endTime: text('end_time').notNull(),      // '17:00'
+    isAvailable: integer('is_available', { mode: 'boolean' }).default(true),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// --- Bookings ---
+export const bookings = sqliteTable('bookings', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    listingId: integer('listing_id').references(() => listings.id, { onDelete: 'cascade' }).notNull(),
+
+    // Client Info
+    clientName: text('client_name').notNull(),
+    clientEmail: text('client_email').notNull(),
+    clientPhone: text('client_phone'),
+
+    // Booking Details
+    date: text('date').notNull(),           // '2026-03-25'
+    startTime: text('start_time').notNull(), // '10:00'
+    endTime: text('end_time'),               // '11:00'
+    serviceType: text('service_type'),       // 'Portrait Session', 'Event Coverage'
+    notes: text('notes'),                    // Client's special requests
+
+    // Status
+    status: text('status').default('pending').notNull(), // 'pending' | 'confirmed' | 'declined'
+    vendorNotes: text('vendor_notes'),       // Vendor's response message
+
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});

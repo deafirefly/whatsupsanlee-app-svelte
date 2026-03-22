@@ -211,6 +211,110 @@
                 </div>
                 {/if}
 
+
+                <!-- Booking Request Form -->
+{#if data.vendorAvailability && data.vendorAvailability.length > 0}
+<div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+    <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-2">Book an Appointment</h3>
+    <p class="text-xs text-slate-400 mb-6">
+        Fill out the form below to request a booking. Payment arrangements are made directly with {listing.contactPerson}.
+    </p>
+
+    {#if form?.bookingSuccess}
+        <div class="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
+            <span class="text-4xl block mb-3">🎉</span>
+            <h4 class="font-black text-emerald-800 text-lg">Booking Request Sent!</h4>
+            <p class="text-emerald-600 text-sm mt-1">
+                {listing.contactPerson} will get back to you soon to confirm your appointment.
+            </p>
+        </div>
+    {:else}
+        {#if form?.bookingMessage}
+            <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-2xl">
+                <p class="text-red-700 font-bold text-sm">⚠ {form.bookingMessage}</p>
+            </div>
+        {/if}
+
+        <!-- Available Days -->
+        <div class="mb-4 p-4 bg-slate-50 rounded-2xl">
+            <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Available Days</p>
+            <div class="flex flex-wrap gap-2">
+                {#each data.vendorAvailability as slot}
+                    <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 capitalize">
+                        {slot.dayOfWeek} · {slot.startTime} – {slot.endTime}
+                    </span>
+                {/each}
+            </div>
+        </div>
+
+        <form method="POST" action="?/requestBooking" use:enhance class="space-y-4">
+            <input type="hidden" name="listingId" value={listing.id} />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Your Name *</label>
+                    <input name="clientName" required placeholder="John Smith"
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Email *</label>
+                    <input name="clientEmail" type="email" required placeholder="you@example.com"
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Phone <span class="text-slate-400 font-normal">(optional)</span></label>
+                    <input name="clientPhone" type="tel" placeholder="(910) 555-0123"
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Service Type <span class="text-slate-400 font-normal">(optional)</span></label>
+                    <input name="serviceType" placeholder="e.g. Portrait Session, Event Coverage"
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Date *</label>
+                    <input name="date" type="date" required
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Start Time *</label>
+                    <input name="startTime" type="time" required
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">End Time <span class="text-slate-400 font-normal">(optional)</span></label>
+                    <input name="endTime" type="time"
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-1">Notes <span class="text-slate-400 font-normal">(optional)</span></label>
+                <textarea name="notes" rows={3}
+                    placeholder="Tell them about your project, special requests, location ideas..."
+                    class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm resize-none"
+                ></textarea>
+            </div>
+
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                <p class="text-xs text-amber-700 font-bold">💡 Payment info: Payments are arranged directly with {listing.contactPerson} — not through this site.</p>
+            </div>
+
+            <button type="submit"
+                class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 text-lg">
+                Request Booking →
+            </button>
+        </form>
+    {/if}
+</div>
+{/if}
+
             </div>
 
             <!-- RIGHT COLUMN -->
