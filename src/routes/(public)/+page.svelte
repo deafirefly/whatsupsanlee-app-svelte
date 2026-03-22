@@ -22,22 +22,6 @@
 </script>
 
 <div class="min-h-screen flex flex-col bg-background">
-	<header class="p-6 flex justify-between items-center border-b text-indigo-600">
-		<span class="font-bold text-xl tracking-tight">What's Up SanLee!</span>
-		<nav class="flex gap-4">
-            <a href="/about" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:bg-slate-800 transition-all ">
-                About Us
-            </a>
-            <a href="/feed" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:bg-slate-800 transition-all ">
-            📣 Feed
-            </a>
-			<a href="/login" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:bg-slate-800 transition-all shadow-sm">Login</a>
-			<a href="/register" class="px-4 py-2 bg-indigo-600 text-slate-50 rounded-md text-sm font-medium hover:opacity-90 transition-all">
-				Get Started
-			</a>
-		</nav>
-	</header>
-
 	<main class="flex-1 flex flex-col items-center justify-center p-6 text-center">
 		<div class="max-w-3xl space-y-6">
 			<h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter text-indigo-600">
