@@ -15,7 +15,10 @@
 
 <!-- Main Nav -->
 <header class="p-4 border-b bg-white flex justify-between items-center sticky top-0 z-50 shadow-sm">
+    <div class="flex flex-col">
     <a href="/" class="font-bold text-xl text-indigo-600 tracking-tight">What's Up SanLee!</a>
+    <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Beta</span>
+</div>
 
     <!-- Desktop Nav -->
     <nav class="hidden md:flex gap-2 items-center">
@@ -81,7 +84,7 @@
     <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
         <p class="text-xs text-muted-foreground">Built with ❤️ for the Sanford & Lee County community</p>
-        <p class="text-xs text-muted-foreground">&copy; 2026 WhatsUp SanLee. All rights reserved.</p>
+        <p class="text-xs text-muted-foreground">&copy; 2026 WhatsUp SanLee. All rights reserved. <span class="text-slate-300">v0.2.0</span></p>
     </div>
         <div class="flex items-center gap-6 text-xs">
             <a href="/about" class="text-slate-500 hover:text-indigo-600 font-bold transition-colors">About</a>
