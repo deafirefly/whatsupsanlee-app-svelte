@@ -1,11 +1,13 @@
 <script lang="ts">
     import { page } from '$app/state';
     import type { PageData } from './$types';
+    import { enhance } from '$app/forms';
+
 
     let { data }: { data: PageData } = $props();
 
     const user = data.user;
-    const { userListing, onboardingSteps, onboardingComplete, onboardingProgress, totalSteps } = data;
+    const { userListing, onboardingSteps, onboardingComplete, onboardingDismissed, onboardingProgress, totalSteps } = data;
 
     // URL message (e.g. after submitting a listing)
     let showMessage = $state(!!page.url.searchParams.get('message'));
@@ -79,16 +81,18 @@
     </div>
 
     <!-- Onboarding Checklist -->
-{#if !onboardingComplete}
+    {#if !onboardingDismissed}
     <div class="bg-white rounded-3xl border border-indigo-100 shadow-sm p-6 space-y-4">
         <div class="flex items-center justify-between">
             <div>
                 <h3 class="font-black text-slate-900">Getting Started 🚀</h3>
                 <p class="text-xs text-slate-400 mt-0.5">Complete these steps to get the most out of WhatsUp SanLee!</p>
             </div>
-            <div class="flex-shrink-0 text-right">
-                <p class="text-2xl font-black text-indigo-600">{onboardingProgress}/{totalSteps}</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest">complete</p>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <p class="text-2xl font-black text-indigo-600">{onboardingProgress}/{totalSteps}</p>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest">complete</p>
+                </div>
             </div>
         </div>
 
@@ -122,9 +126,26 @@
                 </div>
             {/each}
         </div>
-    </div>
-{/if}
 
+        <!-- Dismiss Buttons -->
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-3">
+            {#if onboardingComplete}
+                <p class="text-xs text-emerald-600 font-bold">🎉 All steps complete! You're all set!</p>
+            {:else}
+                <p class="text-xs text-slate-400">You can dismiss this anytime</p>
+            {/if}
+            <form method="POST" action="?/dismissOnboarding" use:enhance>
+                <button type="submit"
+                    class="px-4 py-2 text-xs font-black rounded-xl transition-all
+                    {onboardingComplete
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
+                    {onboardingComplete ? '🎉 Done! Dismiss' : 'Dismiss'}
+                </button>
+            </form>
+        </div>
+    </div>
+{/if} 
 
 
     <!-- Quick Stats -->

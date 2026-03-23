@@ -149,6 +149,7 @@ export const profiles = sqliteTable('profiles', {
 
     // Onboarding
 onboardingComplete: integer('onboarding_complete', { mode: 'boolean' }).default(false),
+onboardingDismissed: integer('onboarding_dismissed', { mode: 'boolean' }).default(false),
 hasSetupProfile: integer('has_setup_profile', { mode: 'boolean' }).default(false),
 hasMadePost: integer('has_made_post', { mode: 'boolean' }).default(false),
 hasCreatedListing: integer('has_created_listing', { mode: 'boolean' }).default(false),
