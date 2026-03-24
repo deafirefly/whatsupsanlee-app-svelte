@@ -33,7 +33,7 @@ export const actions = {
             path: '/',
             httpOnly: true,
             sameSite: 'lax' as const,
-            secure: false, // false for local dev over http
+            secure: true, // false for local dev over http
             maxAge: 60 * 60 * 24 * 7 // 7 days
         };
 
