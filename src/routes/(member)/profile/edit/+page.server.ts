@@ -5,8 +5,6 @@ import { redirect, fail } from '@sveltejs/kit';
 import { UTApi } from 'uploadthing/server';
 import { env } from '$env/dynamic/private';
 
-const utapi = new UTApi({ token: UPLOADTHING_TOKEN });
-
 export const load = async ({ locals }) => {
     if (!locals.user) throw redirect(302, '/login');
 
@@ -76,16 +74,17 @@ console.log('User ID:', locals.user.id);
     },
 
     deleteAvatar: async ({ request, locals }) => {
-        if (!locals.user) throw redirect(302, '/login');
+    if (!locals.user) throw redirect(302, '/login');
+    const utapi = new UTApi({ token: env.UPLOADTHING_TOKEN });
 
-        const formData = await request.formData();
-        const avatarUrl = formData.get('avatarUrl') as string;
+    const formData = await request.formData();
+    const avatarUrl = formData.get('avatarUrl') as string;
 
-        if (avatarUrl) {
-            const fileKey = avatarUrl.split('/').pop();
-            if (fileKey) {
-                try {
-                    await utapi.deleteFiles(fileKey);
+    if (avatarUrl) {
+        const fileKey = avatarUrl.split('/').pop();
+        if (fileKey) {
+            try {
+                await utapi.deleteFiles(fileKey);
                 } catch (err) {
                     console.error('Failed to delete avatar from UploadThing:', err);
                 }

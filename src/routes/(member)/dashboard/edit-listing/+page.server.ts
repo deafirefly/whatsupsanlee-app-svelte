@@ -55,6 +55,9 @@ export const actions = {
         const formData = await request.formData();
         const imageUrl = formData.get("imageUrl") as string;
         const id = Number(formData.get("id"));
+        const utapi = new UTApi({ token: env.UPLOADTHING_TOKEN });
+
+
 
         if (!id) return fail(400, { message: "Missing listing ID" });
 
