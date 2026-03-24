@@ -54,7 +54,6 @@
 		"bcryptjs": "^3.0.3",
 		"drizzle-orm": "^0.45.1",
 		"lucide-svelte": "^0.563.0",
-		"uploadthing": "^7.7.4",
-		"version0.0.1": "link:"
+		"uploadthing": "^7.7.4"
 	}
 }
