@@ -3,12 +3,9 @@ import { profiles, areas, communities } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect, fail } from '@sveltejs/kit';
 import { UTApi } from 'uploadthing/server';
-import { UPLOADTHING_TOKEN } from '$env/static/private';
-
+import { env } from '$env/dynamic/private';
 
 const utapi = new UTApi({ token: UPLOADTHING_TOKEN });
-
-$env/static/private
 
 export const load = async ({ locals }) => {
     if (!locals.user) throw redirect(302, '/login');
