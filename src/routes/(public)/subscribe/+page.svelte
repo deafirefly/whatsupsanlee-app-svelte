@@ -127,9 +127,10 @@
         <div class="flex items-center justify-center gap-4 mt-6">
             <span class="text-sm font-bold {billing === 'monthly' ? 'text-slate-900' : 'text-slate-400'}">Monthly</span>
             <button
-                onclick={() => billing = billing === 'monthly' ? 'yearly' : 'monthly'}
-                class="relative w-14 h-7 rounded-full transition-colors {billing === 'yearly' ? 'bg-indigo-600' : 'bg-slate-200'}"
-            >
+    onclick={() => billing = billing === 'monthly' ? 'yearly' : 'monthly'}
+    aria-label="Toggle billing period"
+    class="relative w-14 h-7 rounded-full transition-colors {billing === 'yearly' ? 'bg-indigo-600' : 'bg-slate-200'}"
+>
                 <span class="absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-all {billing === 'yearly' ? 'left-8' : 'left-1'}"></span>
             </button>
             <span class="text-sm font-bold {billing === 'yearly' ? 'text-slate-900' : 'text-slate-400'}">
