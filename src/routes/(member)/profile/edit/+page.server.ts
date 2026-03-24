@@ -5,7 +5,10 @@ import { redirect, fail } from '@sveltejs/kit';
 import { UTApi } from 'uploadthing/server';
 import { UPLOADTHING_TOKEN } from '$env/static/private';
 
+
 const utapi = new UTApi({ token: UPLOADTHING_TOKEN });
+
+$env/static/private
 
 export const load = async ({ locals }) => {
     if (!locals.user) throw redirect(302, '/login');
