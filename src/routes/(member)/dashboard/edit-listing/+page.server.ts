@@ -4,10 +4,10 @@ import { eq, and } from 'drizzle-orm';
 import { redirect, fail } from '@sveltejs/kit';
 
 import { UTApi } from "uploadthing/server";
-import { UPLOADTHING_TOKEN } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 
 // Initialize the UploadThing API
-const utapi = new UTApi({ token: UPLOADTHING_TOKEN });
+const utapi = new UTApi({ token: env.UPLOADTHING_TOKEN });
 
 export const load = async ({ locals }) => {
     if (!locals.user) throw redirect(302, '/login');
