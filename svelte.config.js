@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -8,7 +8,7 @@ const config = {
   kit: {
     adapter: adapter(),
     csrf: {
-      trustedOrigins: ['http://192.168.1.16:5173']
+      trustedOrigins: ['https://whatsupsanlee.com']
     },
     alias: {
       "$lib": "./src/lib",
