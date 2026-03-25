@@ -145,23 +145,38 @@
                     {totalCount} {totalCount === 1 ? 'event' : 'events'} in Lee County
                 </p>
 
+
                 <!-- Date Navigation -->
-                <div class="flex items-center gap-3 mt-6">
-                    <a href={`/events/${prevDate}`}
-                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
-                        ← Previous
-                    </a>
-                    <a href={`/events/${new Date().toISOString().split('T')[0]}`}
-                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
-                        Today
-                    </a>
-                    <a href={`/events/${nextDate}`}
-                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
-                        Next →
-                    </a>
-                </div>
-            </div>
-        </div>
+<div class="flex items-center gap-3 mt-6 flex-wrap">
+    <a href={`/events/${prevDate}`}
+        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+        ← Previous
+    </a>
+    <a href={`/events/${new Date().toISOString().split('T')[0]}`}
+        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+        Today
+    </a>
+    <a href={`/events/${nextDate}`}
+        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+        Next →
+    </a>
+
+    <!-- Date Picker -->
+    <input
+        type="date"
+        value={date}
+        onchange={(e) => {
+            const target = e.target as HTMLInputElement;
+            if (target.value) {
+                window.location.href = `/events/${target.value}`;
+            }
+        }}
+        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all text-white cursor-pointer outline-none border-none [color-scheme:dark]"
+    />
+</div>
+
+</div>
+</div>
 
         <!-- Category Filters -->
         <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
