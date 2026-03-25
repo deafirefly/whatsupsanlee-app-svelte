@@ -45,20 +45,16 @@
                     />
                 </div>
 
-                <!--- TODO: Add password field back before deploying to production -->
-
-                <!--
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">Password</label>
-                    <input
-                        name="password"
-                        type="password"
-                        required
-                        placeholder="Your password"
-                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-50 outline-none text-sm"
-                    />
-                </div>
-            -->
+    <label class="block text-sm font-bold text-slate-700 mb-1">Password</label>
+    <input
+        name="password"
+        type="password"
+        required
+        placeholder="Your password"
+        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-50 outline-none text-sm"
+    />
+</div>
 
                 <button
                     type="submit"
