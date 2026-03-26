@@ -68,7 +68,7 @@
                 <p class="text-xs text-slate-400 mb-3">We'll get back to you soon</p>
                 <a href="mailto:hello@whatsupsanlee.com"
                     class="text-sm font-bold text-indigo-600 hover:underline">
-                    rodney@whatsupsanlee.com
+                    contact@whatsupsanlee.com
                 </a>
             </div>
             <a href="https://discord.gg/W5mxkJgz" target="_blank" rel="noopener noreferrer"
