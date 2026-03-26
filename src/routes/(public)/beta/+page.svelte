@@ -11,7 +11,6 @@
                 'Community events calendar',
                 'Community feed & posts',
                 'Admin dashboard & moderation',
-                'Booking system for service businesses',
                 'Lee County areas & communities',
             ]
         },
@@ -28,6 +27,7 @@
                 'Email notifications',
                 'Mobile app (iOS & Android)',
                 'Event ticketing & RSVPs',
+                'Booking system for service businesses',
             ]
         },
         {
