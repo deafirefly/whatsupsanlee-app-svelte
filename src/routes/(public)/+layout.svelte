@@ -93,6 +93,7 @@
             <a href="/contact" class="text-slate-500 hover:text-indigo-600 font-bold transition-colors">Contact</a>
             <a href="/privacy" class="text-slate-500 hover:text-indigo-600 font-bold transition-colors">Privacy</a>
             <a href="/terms" class="text-slate-500 hover:text-indigo-600 font-bold transition-colors">Terms</a>
+            <a href="/support" class="text-slate-500 hover:text-amber-500 font-bold transition-colors">☕ Support Us</a>
             <a href="https://discord.gg/W5mxkJgz" target="_blank" rel="noopener noreferrer"
                 class="flex items-center gap-1.5 px-3 py-1.5 bg-[#5865F2] text-white rounded-lg font-black hover:opacity-90 transition-all">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
