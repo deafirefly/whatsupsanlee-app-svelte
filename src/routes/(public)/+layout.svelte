@@ -17,7 +17,9 @@
 <header class="p-4 border-b bg-white flex justify-between items-center sticky top-0 z-50 shadow-sm">
     <div class="flex flex-col">
     <a href="/" class="font-bold text-xl text-indigo-600 tracking-tight">What's Up SanLee!</a>
+    {#if data.betaMode}
     <a href="/beta" class="text-[10px] font-black text-amber-500 uppercase tracking-widest hover:text-amber-600 transition-colors">Beta →</a>
+{/if}
 </div>
 
     <!-- Desktop Nav -->

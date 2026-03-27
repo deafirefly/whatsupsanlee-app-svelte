@@ -32,10 +32,12 @@
 
             <!-- Error Message -->
             {#if form?.message}
-                <div class="p-4 bg-red-50 border border-red-200 rounded-2xl">
-                    <p class="text-red-700 font-bold text-sm">⚠ {form.message}</p>
-                </div>
-            {/if}
+    <div class="p-4 {form.message.includes('closed') ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'} border rounded-2xl">
+        <p class="{form.message.includes('closed') ? 'text-amber-700' : 'text-red-700'} font-bold text-sm">
+            {form.message.includes('closed') ? '🔒' : '⚠'} {form.message}
+        </p>
+    </div>
+{/if}
 
             <form
                 method="POST"

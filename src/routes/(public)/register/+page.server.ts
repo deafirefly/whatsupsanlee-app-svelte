@@ -1,11 +1,20 @@
 import { db } from '$lib/server/db';
-import { users } from '$lib/server/db/schema';
+import { users, systemMeta } from '$lib/server/db/schema';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import bcrypt from 'bcryptjs';
+import { eq } from 'drizzle-orm';
 
 export const actions: Actions = {
     default: async ({ request, cookies }) => {
+        // Check if registration is open
+        const regSetting = await db.query.systemMeta.findFirst({
+            where: eq(systemMeta.key, 'registration_open')
+        });
+        if (regSetting?.value === 'false') {
+            return fail(403, { message: 'Registration is currently closed. Please check back later!' });
+        }
+
         const data = await request.formData();
         const email = data.get('email') as string;
         const password = data.get('password') as string;
@@ -27,12 +36,11 @@ export const actions: Actions = {
                 roles: JSON.stringify(['member']) as any
             }).returning();
 
-            // Match cookie options from login
             const cookieOptions = {
                 path: '/',
                 httpOnly: true,
                 sameSite: 'lax' as const,
-                secure: false, // TODO: change to true before deploying to production
+                secure: true,
                 maxAge: 60 * 60 * 24 * 7
             };
 
