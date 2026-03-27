@@ -1,8 +1,10 @@
 import { redirect, type Handle } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { systemMeta } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const handle: Handle = async ({ event, resolve }) => {
     // 1. Grab auth data from cookies
-    // These names must match exactly what you have in cookies.set()
     const userId = event.cookies.get('user_id');
     const sessionEmail = event.cookies.get('user_email');
     const rolesJson = event.cookies.get('user_roles') || '[]';
@@ -14,11 +16,9 @@ export const handle: Handle = async ({ event, resolve }) => {
         roles = [];
     }
 
-    // 2. Define the User object and attach to locals
-    // We check for both email and id to ensure a valid session
     if (sessionEmail && userId) {
         event.locals.user = {
-            id: Number(userId), // Convert string cookie back to number for DB queries
+            id: Number(userId),
             email: sessionEmail,
             roles: roles,
             isAdmin: roles.includes('admin') || roles.includes('superadmin')
@@ -29,33 +29,47 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const { pathname } = event.url;
 
-    if ( pathname === '/logout') {
+    // 2. Check maintenance mode (skip for admins, login, and maintenance page itself)
+    const isAdmin = roles.includes('admin') || roles.includes('superadmin');
+    const isMaintenancePage = pathname === '/maintenance';
+    const isLoginPage = pathname === '/login';
+    const isLogoutPage = pathname === '/logout';
+
+    if (!isAdmin && !isMaintenancePage && !isLoginPage && !isLogoutPage) {
+        try {
+            const maintenanceSetting = await db.query.systemMeta.findFirst({
+                where: eq(systemMeta.key, 'maintenance_mode')
+            });
+            if (maintenanceSetting?.value === 'true') {
+                throw redirect(303, '/maintenance');
+            }
+        } catch (err: any) {
+            // If it's a redirect let it through
+            if (err?.status === 303) throw err;
+            // Otherwise ignore DB errors so site doesn't break
+        }
+    }
+
+    if (pathname === '/logout') {
         return await resolve(event);
     }
 
     // 3. SECURE THE ROUTES
     const user = event.locals.user;
-    const isLoginPath = pathname === '/login';
-    
-    // Define which paths require a logged-in session
     const isProtectedPath = 
         pathname.startsWith('/dashboard') || 
         pathname.startsWith('/users') || 
         pathname.startsWith('/admin') ||
         pathname.startsWith('/account-settings');
 
-    // Redirect to login if trying to access protected area without a session
     if (isProtectedPath && !user) {
         throw redirect(303, '/login');
     }
 
-    // Redirect logged-in users away from Login page
-    if (isLoginPath && user) {
-        // Send admins to the users list, others to the dashboard
-        throw redirect(303, user.isAdmin ? '/users' : '/dashboard');
+    if (isLoginPage && user) {
+        throw redirect(303, user.isAdmin ? '/admin-dashboard' : '/dashboard');
     }
 
-    // 4. Resolve the request
     const response = await resolve(event);
     return response;
 };
