@@ -46,8 +46,6 @@ const data = {
     updatedAt: new Date()
 };
 
-console.log('Saving profile data:', data);
-console.log('User ID:', locals.user.id);
 
         try {
             // Upsert — insert if no profile, update if exists
@@ -70,7 +68,7 @@ console.log('User ID:', locals.user.id);
             return fail(500, { message: 'Could not save profile.' });
         }
 
-        redirect(303, '/profile?message=Profile+saved+successfully!');
+        return { success: true };
     },
 
     deleteAvatar: async ({ request, locals }) => {
