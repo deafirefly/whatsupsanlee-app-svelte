@@ -1,21 +1,34 @@
 import { db } from '$lib/server/db';
-import { users } from '$lib/server/db/schema';
-import { error } from '@sveltejs/kit';
-import { desc } from 'drizzle-orm';
+import { users, listings, events, posts, bookings, contactMessages } from '$lib/server/db/schema';
+import { error, redirect } from '@sveltejs/kit';
+import { desc, eq, count } from 'drizzle-orm';
 
 export const load = async ({ locals }) => {
-    // Security check: only admins/superadmins should see the dashboard
-    if (!locals.user) throw error(401, 'Unauthorized');
+    if (!locals.user) throw redirect(302, '/login');
+    if (!locals.user.isAdmin) throw error(403, 'Forbidden');
 
     try {
-        // 1. Get all users, sorted by newest first directly in the query
         const allUsers = await db.select().from(users).orderBy(desc(users.id));
 
-        // 2. Helper to safely check roles regardless of DB format
         const hasRole = (user: any, roleName: string) => {
             const r = typeof user.roles === 'string' ? JSON.parse(user.roles) : user.roles;
             return Array.isArray(r) && r.includes(roleName);
         };
+
+        // Get counts
+        const allListings = await db.select().from(listings);
+        const allEvents = await db.select().from(events);
+        const allPosts = await db.select().from(posts);
+        const allBookings = await db.select().from(bookings);
+        const allMessages = await db.select().from(contactMessages);
+
+        // Check DB connection
+        let dbStatus = 'healthy';
+        try {
+            await db.select().from(users).limit(1);
+        } catch {
+            dbStatus = 'error';
+        }
 
         return {
             stats: {
@@ -23,14 +36,35 @@ export const load = async ({ locals }) => {
                 vips: allUsers.filter(u => hasRole(u, 'vip')).length,
                 admins: allUsers.filter(u => hasRole(u, 'admin') || hasRole(u, 'superadmin')).length,
             },
-            // 3. Pass the first 5 sorted users
+            contentStats: {
+                totalListings: allListings.length,
+                pendingListings: allListings.filter(l => l.status === 'pending').length,
+                totalEvents: allEvents.length,
+                pendingEvents: allEvents.filter(e => e.status === 'pending').length,
+                totalPosts: allPosts.length,
+                totalBookings: allBookings.length,
+                pendingBookings: allBookings.filter(b => b.status === 'pending').length,
+                unreadMessages: allMessages.filter(m => m.status === 'unread').length,
+            },
+            systemStatus: {
+                database: dbStatus,
+                uptime: 'operational',
+                version: '0.3.0'
+            },
             recentUsers: allUsers.slice(0, 5)
         };
-    } catch (err) {  
-        console.error("Dashboard Load Error:", err)
+    } catch (err) {
+        console.error("Dashboard Load Error:", err);
         return {
-                stats: { total: 0, vips:0, admins:0 },
-                recentUsers: []
+            stats: { total: 0, vips: 0, admins: 0 },
+            contentStats: {
+                totalListings: 0, pendingListings: 0,
+                totalEvents: 0, pendingEvents: 0,
+                totalPosts: 0, totalBookings: 0,
+                pendingBookings: 0, unreadMessages: 0
+            },
+            systemStatus: { database: 'error', uptime: 'unknown', version: '0.3.0' },
+            recentUsers: []
         };
     }
 };
