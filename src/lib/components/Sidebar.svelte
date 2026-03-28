@@ -14,6 +14,7 @@
   import Home from 'lucide-svelte/icons/home';
   import Calendar from 'lucide-svelte/icons/calendar';
   import MessageSquare from 'lucide-svelte/icons/message-square';
+  import Star from 'lucide-svelte/icons/star';
 
   let { user } = $props();
 
