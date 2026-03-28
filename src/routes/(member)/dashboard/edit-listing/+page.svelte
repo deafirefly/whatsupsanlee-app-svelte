@@ -3,13 +3,29 @@
     import { enhance } from '$app/forms';
 
     let { data, form } = $props();
-    const { listing } = data;
+const { listing, isVip, photos } = data;
 
-    let imageUrl = $state(listing.imageUrl || '');
-    let isUploading = $state(false);
-    let isSaving = $state(false);
-    let showSuccess = $state(false);
-    let uploader: any = null;
+let imageUrl = $state(listing.imageUrl || '');
+let isUploading = $state(false);
+let isUploadingGallery = $state(false);
+let isSaving = $state(false);
+let showSuccess = $state(false);
+let uploader: any = null;
+let newPhotoUrl = $state('');
+
+async function handleGalleryChange(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file || !uploader) return;
+    try {
+        isUploadingGallery = true;
+        const res = await uploader.uploadFiles('listingImage', { files: [file] });
+        if (res?.[0]) newPhotoUrl = res[0].url;
+        isUploadingGallery = false;
+    } catch (err: any) {
+        isUploadingGallery = false;
+        console.error('Gallery upload failed:', err);
+    }
+}
 
     onMount(async () => {
         try {
@@ -261,10 +277,104 @@
             </div>
         </div>
 
-        <!-- Save Button -->
-        <button
-            type="submit"
-            disabled={isSaving}
+        <!-- VIP Photo Gallery -->
+{#if isVip}
+    <div class="bg-white rounded-3xl border border-amber-200 shadow-sm p-8 space-y-4">
+        <div class="flex items-center gap-2">
+            <h3 class="text-xs font-black text-amber-600 uppercase tracking-widest">⭐ VIP Photo Gallery</h3>
+            <span class="text-[10px] font-black text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                {photos.length}/4 photos
+            </span>
+        </div>
+        <p class="text-xs text-slate-400">Add up to 4 additional photos to your listing gallery.</p>
+
+        <!-- Existing Gallery Photos -->
+        {#if photos.length > 0}
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {#each photos as photo}
+                    <div class="relative group rounded-2xl overflow-hidden border border-slate-200 aspect-square bg-slate-100">
+                        <img src={photo.url} alt={photo.altText ?? ''} class="w-full h-full object-cover" />
+                        <form method="POST" action="?/deletePhoto" use:enhance={() => {
+                            return async ({ update }) => { await update(); };
+                        }}
+                            class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100"
+                        >
+                            <input type="hidden" name="photoId" value={photo.id} />
+                            <input type="hidden" name="url" value={photo.url} />
+                            <button type="submit"
+                                class="bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs font-black hover:bg-red-600 transition-all">
+                                🗑 Remove
+                            </button>
+                        </form>
+                    </div>
+                {/each}
+            </div>
+        {/if}
+
+        <!-- Add New Photo -->
+        {#if photos.length < 4}
+            {#if newPhotoUrl}
+                <div class="space-y-3">
+                    <div class="relative rounded-2xl overflow-hidden border border-amber-200 aspect-video bg-slate-100">
+                        <img src={newPhotoUrl} alt="Preview" class="w-full h-full object-cover" />
+                    </div>
+                    <form method="POST" action="?/addPhoto" use:enhance={() => {
+                        return async ({ update }) => {
+                            await update();
+                            newPhotoUrl = '';
+                        };
+                    }} class="flex gap-3">
+                        <input type="hidden" name="listingId" value={listing.id} />
+                        <input type="hidden" name="url" value={newPhotoUrl} />
+                        <button type="submit"
+                            class="flex-1 py-3 bg-amber-500 text-white rounded-xl font-black text-sm hover:bg-amber-600 transition-all">
+                            ✓ Add to Gallery
+                        </button>
+                        <button type="button" onclick={() => newPhotoUrl = ''}
+                            class="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-black text-sm hover:bg-slate-200 transition-all">
+                            Cancel
+                        </button>
+                    </form>
+                </div>
+            {:else}
+                <div class="p-6 border-2 border-dashed border-amber-200 rounded-2xl bg-amber-50 flex flex-col items-center gap-3">
+                    {#if isUploadingGallery}
+                        <div class="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-xs font-black text-amber-600 uppercase animate-pulse">Uploading...</p>
+                    {:else}
+                        <span class="text-3xl">📸</span>
+                        <label class="cursor-pointer bg-amber-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-amber-600 transition-all">
+                            Add Gallery Photo
+                            <input type="file" accept="image/*" class="hidden" onchange={handleGalleryChange} />
+                        </label>
+                        <p class="text-[10px] text-amber-500 uppercase font-black tracking-widest">Max 4MB · {4 - photos.length} slots remaining</p>
+                    {/if}
+                </div>
+            {/if}
+        {:else}
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+                <p class="text-xs font-black text-amber-700">Gallery full! Remove a photo to add another.</p>
+            </div>
+        {/if}
+    </div>
+{:else}
+    <!-- Non-VIP upgrade prompt -->
+    <div class="bg-amber-50 rounded-3xl border border-amber-200 shadow-sm p-6 text-center space-y-3">
+        <span class="text-3xl block">⭐</span>
+        <h3 class="font-black text-amber-900">VIP Photo Gallery</h3>
+        <p class="text-sm text-amber-600">Upgrade to VIP to add up to 4 additional photos to your listing!</p>
+        <a href="/subscribe"
+            class="inline-block px-6 py-3 bg-amber-500 text-white rounded-xl font-black text-sm hover:bg-amber-600 transition-all">
+            Upgrade to VIP →
+        </a>
+    </div>
+{/if}
+
+<!-- Save Button -->
+<button
+    type="submit"
+    disabled={isSaving}
+
             class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
         >
             {isSaving ? 'Saving...' : 'Save Changes →'}
