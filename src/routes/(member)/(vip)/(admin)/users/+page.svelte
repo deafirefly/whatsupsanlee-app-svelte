@@ -185,6 +185,18 @@
                                             {role}
                                         </Badge>
                                     {/each}
+
+                                    {#if user.vipExpiresAt}
+    {@const expiry = new Date(user.vipExpiresAt)}
+    {@const isExpired = expiry < new Date()}
+    <Badge variant="outline" class="text-[10px] {isExpired ? 'border-red-200 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'}">
+        {isExpired ? '⚠ Expired' : `Expires ${expiry.toLocaleDateString()}`}
+    </Badge>
+{:else if user.roles.includes('vip')}
+    <Badge variant="outline" class="text-[10px] border-emerald-200 bg-emerald-50 text-emerald-600">
+        ♾️ Lifetime
+    </Badge>
+{/if}
                                 </div>
                             </Table.Cell>
 
@@ -205,6 +217,22 @@
             {/if}
         </Button>
     </form>
+
+    <!-- VIP Expiry -->
+{#if user.roles.includes('vip')}
+    <form method="POST" action="?/setVipExpiry" use:enhance class="flex items-center gap-1">
+        <input type="hidden" name="id" value={user.id} />
+        <input
+            type="date"
+            name="expiryDate"
+            class="h-8 px-2 text-xs border border-slate-200 rounded-lg focus:border-amber-400 outline-none"
+            title="Set VIP expiry date (leave blank for lifetime)"
+        />
+        <Button type="submit" variant="outline" size="sm" class="h-8 text-xs">
+            Set Expiry
+        </Button>
+    </form>
+{/if}
 
     <!-- Only superadmin can toggle admin role, and not on themselves or other superadmins -->
     {#if isSuperAdmin && user.id !== data.currentUser?.id && !user.roles.includes('superadmin')}

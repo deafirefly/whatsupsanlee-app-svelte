@@ -1,11 +1,12 @@
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
-	id: integer('id').primaryKey({ autoIncrement: true }),
-	email: text('email').notNull().unique(),
-	password: text('password').notNull(),
-	roles: text('roles').$type<string[]>().notNull().default(['member']),
-	createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    email: text('email').notNull().unique(),
+    password: text('password').notNull(),
+    roles: text('roles').$type<string[]>().notNull().default(['member']),
+    vipExpiresAt: integer('vip_expires_at', { mode: 'timestamp' }),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
 
 export const logs = sqliteTable('logs', {

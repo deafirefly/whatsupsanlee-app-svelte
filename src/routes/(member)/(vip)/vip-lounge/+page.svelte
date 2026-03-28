@@ -18,6 +18,33 @@
         </div>
     </div>
 
+    <!-- VIP Status -->
+{#if data.vipExpiresAt}
+    {@const expiry = new Date(data.vipExpiresAt)}
+    {@const daysLeft = Math.ceil((expiry.getTime() - Date.now()) / (1000 * 60 * 60 * 24))}
+    <div class="bg-white rounded-2xl border {daysLeft < 7 ? 'border-red-200' : 'border-amber-200'} p-5 flex items-center gap-4">
+        <span class="text-3xl">{daysLeft < 7 ? '⚠️' : '⏳'}</span>
+        <div class="flex-1">
+            <p class="font-black text-slate-900">VIP Membership Expires</p>
+            <p class="text-sm {daysLeft < 7 ? 'text-red-600' : 'text-slate-500'}">
+                {expiry.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                ({daysLeft} {daysLeft === 1 ? 'day' : 'days'} left)
+            </p>
+        </div>
+        <a href="/support" class="px-4 py-2 bg-amber-500 text-white rounded-xl text-xs font-black hover:bg-amber-600 transition-all">
+            Renew →
+        </a>
+    </div>
+{:else}
+    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-center gap-4">
+        <span class="text-3xl">♾️</span>
+        <div>
+            <p class="font-black text-emerald-900">Lifetime VIP Membership</p>
+            <p class="text-sm text-emerald-600">Your VIP membership never expires!</p>
+        </div>
+    </div>
+{/if}
+
     <!-- VIP Benefits -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {#each [

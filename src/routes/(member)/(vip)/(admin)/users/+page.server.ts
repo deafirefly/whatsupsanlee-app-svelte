@@ -193,5 +193,39 @@ export const actions: Actions = {
             console.error("DATABASE ERROR:", err); 
             return fail(500, { message: 'Could not create user. Check if email is unique.' });
         }
+    },
+
+    setVipExpiry: async ({ request, locals }) => {
+    if (!locals.user?.isAdmin) return fail(403, { message: 'Unauthorized' });
+
+    const formData = await request.formData();
+    const id = Number(formData.get('id'));
+    const expiryDate = formData.get('expiryDate') as string;
+
+    if (!id) return fail(400, { message: 'Missing user ID' });
+
+    const expiresAt = expiryDate ? new Date(expiryDate) : null;
+
+    // Also make sure they have VIP role
+    const user = await db.query.users.findFirst({
+        where: eq(users.id, id)
+    });
+
+    if (!user) return fail(404, { message: 'User not found' });
+
+    let roles: string[] = typeof user.roles === 'string' ? JSON.parse(user.roles) : user.roles;
+    if (!roles.includes('vip')) {
+        roles = [...roles, 'vip'];
     }
+
+    await db.update(users)
+        .set({
+            roles: JSON.stringify(roles) as any,
+            vipExpiresAt: expiresAt
+        })
+        .where(eq(users.id, id));
+
+    return { success: true };
+},
+
 };
