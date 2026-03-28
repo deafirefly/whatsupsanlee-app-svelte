@@ -107,14 +107,32 @@
                             {/if}
 
                             <!-- Title overlay -->
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                                <h2 class="text-white font-black text-lg leading-tight line-clamp-1">
-                                    {item.businessName}
-                                </h2>
-                                <span class="text-white/70 text-xs font-bold uppercase tracking-widest">
-                                    {item.category?.replace('_', ' ')}
-                                </span>
-                            </div>
+<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+    <!-- Badges -->
+    {#if item.isFeatured || item.isVip}
+        <div class="flex items-center gap-2 mb-1">
+            {#if item.isFeatured}
+                <span class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-black rounded-full uppercase tracking-widest">
+                    ✨ Featured
+                </span>
+            {/if}
+            {#if item.isVip}
+                <span class="px-2 py-0.5 bg-amber-400 text-slate-900 text-[10px] font-black rounded-full uppercase tracking-widest">
+                    ⭐ VIP
+                </span>
+            {/if}
+        </div>
+    {/if}
+    <h2 class="text-white font-black text-lg leading-tight line-clamp-1">
+        {item.businessName}
+    </h2>
+    <span class="text-white/70 text-xs font-bold uppercase tracking-widest">
+        {item.category?.replace('_', ' ')}
+    </span>
+</div>
+
+
+
                         </div>
 
                         <!-- Card Content -->
