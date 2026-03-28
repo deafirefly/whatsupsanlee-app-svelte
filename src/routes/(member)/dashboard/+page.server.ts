@@ -44,17 +44,18 @@ export const load = async ({ locals }) => {
     const onboardingDismissed = profile?.onboardingDismissed ?? false;
 
     return {
-        userListing,
-        user: {
-            ...locals.user,
-            createdAt: fullUser?.createdAt ?? null
-        },
-        onboardingSteps,
-        onboardingComplete,
-        onboardingDismissed,
-        onboardingProgress: completedCount,
-        totalSteps: onboardingSteps.length
-    };
+    userListing,
+    user: {
+        ...locals.user,
+        createdAt: fullUser?.createdAt ?? null,
+        displayName: profile?.displayName ?? null
+    },
+    onboardingSteps,
+    onboardingComplete,
+    onboardingDismissed,
+    onboardingProgress: completedCount,
+    totalSteps: onboardingSteps.length
+};
 };
 
 export const actions = {

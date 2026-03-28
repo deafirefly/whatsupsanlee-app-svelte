@@ -44,7 +44,7 @@
     );
 
     // Username from email
-    let username = $derived(user?.email?.split('@')[0] ?? 'Member');
+    let username = $derived(user?.displayName || user?.email?.split('@')[0] || 'Member');
 </script>
 
 <div class="space-y-8 pb-20">
