@@ -57,6 +57,9 @@ export const listings = sqliteTable('listings', {
 	specificDates: text('specific_dates'),
 	scheduleSummary: text('schedule_summary'),
 
+    // Vanity URL
+    slug: text('slug'),
+
 	// Status Logic
 	status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
 	isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
@@ -219,8 +222,6 @@ export const posts = sqliteTable('posts', {
     areaId: integer('area_id').references(() => areas.id),
     communityId: integer('community_id').references(() => communities.id),
 
-    // Vanity URL
-    slug: text('slug'),
 
     // Status
     status: text('status').default('published').notNull(), // 'published' | 'removed'
