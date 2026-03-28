@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { enhance } from '$app/forms';
+    import { page } from '$app/stores';
+
 
     let { data, form } = $props();
 const { listing, isVip, photos } = data;
@@ -9,7 +11,11 @@ let imageUrl = $state(listing.imageUrl || '');
 let isUploading = $state(false);
 let isUploadingGallery = $state(false);
 let isSaving = $state(false);
-let showSuccess = $state(false);
+
+let showSuccess = $state($page.url.searchParams.get('saved') === '1');
+if (showSuccess) setTimeout(() => showSuccess = false, 3000);
+
+
 let uploader: any = null;
 let newPhotoUrl = $state('');
 let QRCode: any = null;
@@ -135,16 +141,17 @@ async function downloadQR(format: 'png' | 'svg') {
     <form
         method="POST"
         action="?/updateListing"
+
         use:enhance={() => {
-            isSaving = true;
-            return async ({ result, update }) => {
-                isSaving = false;
-                if (result.type === 'success') {
-                    await update({ reset: false, invalidateAll: true });
-                    showSavedToast();
-                }
-            };
-        }}
+    isSaving = true;
+    return async ({ update }) => {
+        isSaving = false;
+        await update();
+    };
+}}
+
+
+
         class="space-y-6"
     >
         <input type="hidden" name="id" value={listing.id} />
