@@ -140,7 +140,7 @@ async function downloadQR(format: 'png' | 'svg') {
             return async ({ result, update }) => {
                 isSaving = false;
                 if (result.type === 'success') {
-                    await update({ reset: false });
+                    await update({ reset: false, invalidateAll: true });
                     showSavedToast();
                 }
             };
