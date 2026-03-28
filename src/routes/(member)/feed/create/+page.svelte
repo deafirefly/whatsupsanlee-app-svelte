@@ -3,7 +3,7 @@
     import { enhance } from '$app/forms';
 
     let { data, form } = $props();
-    const { allAreas, allCommunities } = data;
+const { allAreas, allCommunities, isVip } = data;
 
     let imageUrl = $state('');
     let isUploading = $state(false);
@@ -202,9 +202,29 @@
             </div>
         {/if}
 
-        <!-- Submit -->
-        <button
-            type="submit"
+            <!-- VIP Only Toggle -->
+{#if isVip}
+    <div class="bg-amber-50 rounded-3xl border border-amber-200 shadow-sm p-6">
+        <label class="flex items-center justify-between cursor-pointer">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">⭐</span>
+                <div>
+                    <p class="font-black text-amber-900">VIP Members Only</p>
+                    <p class="text-xs text-amber-600 mt-0.5">Only VIP members can see this post</p>
+                </div>
+            </div>
+            <input
+                type="checkbox"
+                name="isVipOnly"
+                class="w-5 h-5 rounded accent-amber-500"
+            />
+        </label>
+    </div>
+{/if}
+
+<!-- Submit -->
+<button
+    type="submit"
             disabled={isSubmitting || isUploading}
             class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50 text-lg"
         >

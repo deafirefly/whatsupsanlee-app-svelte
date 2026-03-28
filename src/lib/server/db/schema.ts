@@ -222,6 +222,8 @@ export const posts = sqliteTable('posts', {
     // Status
     status: text('status').default('published').notNull(), // 'published' | 'removed'
     isPinned: integer('is_pinned', { mode: 'boolean' }).default(false),
+    isVipOnly: integer('is_vip_only', { mode: 'boolean' }).default(false),
+
 
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),

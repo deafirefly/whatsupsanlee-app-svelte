@@ -3,7 +3,7 @@
     import type { PageData } from './$types';
 
     let { data } = $props();
-    const { posts, allAreas, areaFilter, isLoggedIn, currentUserId } = data;
+    const { posts, allAreas, areaFilter, isLoggedIn, isVip, currentUserId } = data;
 
     // Local posts state for optimistic UI
     let localPosts = $state(posts);
@@ -111,7 +111,7 @@
             </div>
         {:else}
             {#each localPosts as post}
-                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="bg-white rounded-3xl border {post.isVipOnly ? 'border-amber-200' : 'border-slate-200'} shadow-sm overflow-hidden">
 
                     <!-- Post Header -->
                     <div class="flex items-center justify-between p-5 pb-3">
@@ -134,12 +134,17 @@
                         </div>
 
                         <!-- Pin badge & Delete -->
-                        <div class="flex items-center gap-2">
-                            {#if post.isPinned}
-                                <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full border border-amber-100">
-                                    📌 Pinned
-                                </span>
-                            {/if}
+<div class="flex items-center gap-2">
+    {#if post.isVipOnly}
+        <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full border border-amber-200">
+            ⭐ VIP
+        </span>
+    {/if}
+    {#if post.isPinned}
+        <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full border border-amber-100">
+            📌 Pinned
+        </span>
+    {/if}
                             {#if isLoggedIn && (post.userId === currentUserId)}
                                 <form method="POST" action="?/deletePost" use:enhance
                                     onsubmit={(e) => {
@@ -156,30 +161,54 @@
                     </div>
 
                     <!-- Post Content -->
-                    <div class="px-5 pb-3">
-                        {#if post.content}
-                            <p class="text-slate-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                        {/if}
+{#if post.isVipOnly && !isVip}
+    <!-- Locked VIP Content -->
+    <div class="px-5 pb-3 relative">
+        <div class="blur-sm select-none pointer-events-none">
+            <p class="text-slate-800 leading-relaxed">
+                This is exclusive VIP content that only VIP members can see. Upgrade to VIP to unlock this post and many more exclusive features!
+            </p>
+        </div>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 text-center shadow-lg">
+                <span class="text-3xl block mb-2">⭐</span>
+                <p class="font-black text-amber-900 text-sm">VIP Members Only</p>
+                <p class="text-xs text-amber-600 mt-1 mb-3">Upgrade to see this post</p>
+                <a href="/subscribe"
+                    class="px-4 py-2 bg-amber-500 text-white rounded-xl text-xs font-black hover:bg-amber-600 transition-all">
+                    Upgrade to VIP →
+                </a>
+            </div>
+        </div>
+    </div>
+{:else}
+    <div class="px-5 pb-3">
+        {#if post.content}
+            <p class="text-slate-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+        {/if}
 
-                        {#if post.imageUrl}
-                            <div class="mt-3 rounded-2xl overflow-hidden bg-slate-100">
-                                <img src={post.imageUrl} alt="Post image" class="w-full object-cover max-h-96" />
-                            </div>
-                        {/if}
+        {#if post.imageUrl}
+            <div class="mt-3 rounded-2xl overflow-hidden bg-slate-100">
+                <img src={post.imageUrl} alt="Post photo" class="w-full object-cover max-h-96" />
+            </div>
+        {/if}
 
-                        {#if post.linkUrl}
-                            <a href={post.linkUrl} target="_blank" rel="noopener noreferrer"
-                                class="mt-3 flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all">
-                                <span class="text-xl flex-shrink-0">🔗</span>
-                                <div class="min-w-0">
-                                    {#if post.linkTitle}
-                                        <p class="font-bold text-slate-900 text-sm truncate">{post.linkTitle}</p>
-                                    {/if}
-                                    <p class="text-xs text-indigo-600 truncate">{post.linkUrl}</p>
-                                </div>
-                            </a>
-                        {/if}
-                    </div>
+        {#if post.linkUrl}
+            <a href={post.linkUrl} target="_blank" rel="noopener noreferrer"
+                class="mt-3 flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all">
+                <span class="text-xl flex-shrink-0">🔗</span>
+                <div class="min-w-0">
+                    {#if post.linkTitle}
+                        <p class="font-bold text-slate-900 text-sm truncate">{post.linkTitle}</p>
+                    {/if}
+                    <p class="text-xs text-indigo-600 truncate">{post.linkUrl}</p>
+                </div>
+            </a>
+        {/if}
+    </div>
+{/if}                    
+
+
 
                     <!-- Post Actions -->
                     <div class="px-5 py-3 border-t border-slate-100 flex items-center gap-4">

@@ -8,20 +8,22 @@ export const load = async ({ locals, url }) => {
 
     // Load all published posts with author info
     const allPosts = await db.select({
-        id: posts.id,
-        content: posts.content,
-        imageUrl: posts.imageUrl,
-        linkUrl: posts.linkUrl,
-        linkTitle: posts.linkTitle,
-        isPinned: posts.isPinned,
-        createdAt: posts.createdAt,
-        areaId: posts.areaId,
-        userId: posts.userId,
-        // Author info
-        authorEmail: users.email,
-        authorName: profiles.displayName,
-        authorAvatar: profiles.avatarUrl,
-    })
+    id: posts.id,
+    content: posts.content,
+    imageUrl: posts.imageUrl,
+    linkUrl: posts.linkUrl,
+    linkTitle: posts.linkTitle,
+    isPinned: posts.isPinned,
+    isVipOnly: posts.isVipOnly,
+    createdAt: posts.createdAt,
+    areaId: posts.areaId,
+    userId: posts.userId,
+    // Author info
+    authorEmail: users.email,
+    authorName: profiles.displayName,
+    authorAvatar: profiles.avatarUrl,
+    authorRoles: users.roles,
+})
     .from(posts)
     .innerJoin(users, eq(posts.userId, users.id))
     .leftJoin(profiles, eq(posts.userId, profiles.userId))
@@ -65,13 +67,23 @@ export const load = async ({ locals, url }) => {
     // Load areas for filter
     const allAreas = await db.select().from(areas).orderBy(areas.name);
 
-    return {
-        posts: postsWithCounts,
-        allAreas,
-        areaFilter,
-        isLoggedIn: !!locals.user,
-        currentUserId: locals.user?.id ?? null
-    };
+    const currentUserRoles = typeof locals.user?.roles === 'string' 
+    ? JSON.parse(locals.user.roles) 
+    : locals.user?.roles ?? [];
+
+const isVip = currentUserRoles.includes('vip') || 
+              currentUserRoles.includes('admin') || 
+              currentUserRoles.includes('superadmin');
+
+return {
+    posts: postsWithCounts,
+    allAreas,
+    areaFilter,
+    isLoggedIn: !!locals.user,
+    isVip,
+    currentUserId: locals.user?.id ?? null
+};
+
 };
 
 export const actions = {

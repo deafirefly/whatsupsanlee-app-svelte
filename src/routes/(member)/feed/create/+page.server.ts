@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { posts, areas, communities } from '$lib/server/db/schema';
+import { posts, areas, communities, users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { fail, redirect } from '@sveltejs/kit';
 
@@ -9,7 +9,20 @@ export const load = async ({ locals }) => {
     const allAreas = await db.select().from(areas).orderBy(areas.name);
     const allCommunities = await db.select().from(communities).orderBy(communities.name);
 
-    return { allAreas, allCommunities };
+    // Check if user is VIP
+    const user = await db.query.users.findFirst({
+        where: eq(users.id, locals.user.id)
+    });
+
+    const roles = typeof user?.roles === 'string' ? JSON.parse(user.roles) : user?.roles ?? [];
+    const isVip = roles.includes('vip') || roles.includes('admin') || roles.includes('superadmin');
+
+    // Check VIP expiry
+    const isVipActive = isVip && (
+        !user?.vipExpiresAt || new Date(user.vipExpiresAt) > new Date()
+    );
+
+    return { allAreas, allCommunities, isVip: isVipActive };
 };
 
 export const actions = {
@@ -23,9 +36,22 @@ export const actions = {
         const linkTitle = (formData.get('linkTitle') as string) || null;
         const areaId = formData.get('areaId') ? Number(formData.get('areaId')) : null;
         const communityId = formData.get('communityId') ? Number(formData.get('communityId')) : null;
+        const isVipOnly = formData.get('isVipOnly') === 'on';
 
         if (!content && !imageUrl && !linkUrl) {
             return fail(400, { message: 'Post must have some content, image, or link' });
+        }
+
+        // Verify VIP status if trying to post VIP-only
+        if (isVipOnly) {
+            const user = await db.query.users.findFirst({
+                where: eq(users.id, locals.user.id)
+            });
+            const roles = typeof user?.roles === 'string' ? JSON.parse(user.roles) : user?.roles ?? [];
+            const isVip = roles.includes('vip') || roles.includes('admin') || roles.includes('superadmin');
+            if (!isVip) {
+                return fail(403, { message: 'Only VIP members can post VIP-only content.' });
+            }
         }
 
         try {
@@ -37,6 +63,7 @@ export const actions = {
                 linkTitle,
                 areaId,
                 communityId,
+                isVipOnly,
                 status: 'published',
                 createdAt: new Date(),
                 updatedAt: new Date()
