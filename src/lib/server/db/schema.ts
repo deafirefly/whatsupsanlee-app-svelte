@@ -219,6 +219,9 @@ export const posts = sqliteTable('posts', {
     areaId: integer('area_id').references(() => areas.id),
     communityId: integer('community_id').references(() => communities.id),
 
+    // Vanity URL
+    slug: text('slug'),
+
     // Status
     status: text('status').default('published').notNull(), // 'published' | 'removed'
     isPinned: integer('is_pinned', { mode: 'boolean' }).default(false),

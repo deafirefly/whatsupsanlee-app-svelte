@@ -12,6 +12,8 @@ let isSaving = $state(false);
 let showSuccess = $state(false);
 let uploader: any = null;
 let newPhotoUrl = $state('');
+let QRCode: any = null;
+
 
 async function handleGalleryChange(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
@@ -28,13 +30,55 @@ async function handleGalleryChange(e: Event) {
 }
 
     onMount(async () => {
+    try {
+        const { genUploader } = await import("uploadthing/client");
+        uploader = genUploader({ url: "/api/uploadthing" });
+    } catch (err) {
+        console.error("Initialization error:", err);
+    }
+
+    // Load QR code library
+    if (listing.slug) {
         try {
-            const { genUploader } = await import("uploadthing/client");
-            uploader = genUploader({ url: "/api/uploadthing" });
+            const qr = await import('qrcode');
+            QRCode = qr.default;
+            generateQR();
         } catch (err) {
-            console.error("Initialization error:", err);
+            console.error('QR code library error:', err);
         }
-    });
+    }
+});
+
+async function generateQR() {
+    if (!QRCode || !listing.slug) return;
+    const url = `${window.location.origin}/${listing.slug}`;
+    const container = document.getElementById('qr-container');
+    if (!container) return;
+    container.innerHTML = '';
+    const canvas = document.createElement('canvas');
+    await QRCode.toCanvas(canvas, url, { width: 200, margin: 2 });
+    container.appendChild(canvas);
+}
+
+async function downloadQR(format: 'png' | 'svg') {
+    if (!QRCode || !listing.slug) return;
+    const url = `${window.location.origin}/${listing.slug}`;
+
+    if (format === 'png') {
+        const dataUrl = await QRCode.toDataURL(url, { width: 400, margin: 2 });
+        const link = document.createElement('a');
+        link.download = `${listing.slug}-qrcode.png`;
+        link.href = dataUrl;
+        link.click();
+    } else {
+        const svg = await QRCode.toString(url, { type: 'svg', width: 400, margin: 2 });
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const link = document.createElement('a');
+        link.download = `${listing.slug}-qrcode.svg`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+    }
+}
 
     async function handleFileChange(e: Event) {
         const file = (e.target as HTMLInputElement).files?.[0];
@@ -236,6 +280,53 @@ async function handleGalleryChange(e: Event) {
                 <p class="text-[11px] text-slate-400 mt-1">This shows on your public listing card.</p>
             </div>
         </div>
+
+
+        <!-- Vanity URL -->
+<div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
+    <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest">Your Vanity URL</h3>
+    <p class="text-xs text-slate-400">Customize your listing URL. Auto-generated from your business name if left blank.</p>
+    
+    <div class="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+        <span class="text-xs text-slate-400 font-bold flex-shrink-0">whatsupsanlee.com/</span>
+        <input
+            name="slug"
+            value={listing.slug ?? ''}
+            placeholder="your-business-name"
+            class="flex-1 bg-transparent outline-none text-sm font-bold text-indigo-600"
+        />
+    </div>
+    <p class="text-[11px] text-slate-400">Only lowercase letters, numbers and hyphens allowed.</p>
+
+    {#if listing.slug}
+        <!-- QR Code Section -->
+        <div class="mt-4 p-6 bg-indigo-50 rounded-2xl border border-indigo-100 text-center space-y-4">
+            <p class="text-xs font-black text-indigo-600 uppercase tracking-widest">Your QR Code</p>
+            <div id="qr-container" class="flex justify-center"></div>
+            <p class="text-xs text-slate-500">
+                Scan to visit: <span class="font-black text-indigo-600">whatsupsanlee.com/{listing.slug}</span>
+            </p>
+            <div class="flex gap-3 justify-center">
+                <button
+                    type="button"
+                    onclick={() => downloadQR('png')}
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 transition-all">
+                    ⬇ Download PNG
+                </button>
+                <button
+                    type="button"
+                    onclick={() => downloadQR('svg')}
+                    class="px-4 py-2 bg-white text-indigo-600 border border-indigo-200 rounded-xl text-xs font-black hover:bg-indigo-50 transition-all">
+                    ⬇ Download SVG
+                </button>
+            </div>
+        </div>
+    {:else}
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+            <p class="text-xs text-slate-400">Save your listing to generate your QR code!</p>
+        </div>
+    {/if}
+</div>
 
         <!-- Social Media -->
         <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
