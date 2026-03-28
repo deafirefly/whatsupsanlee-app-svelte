@@ -159,15 +159,18 @@ async function downloadQR(format: 'png' | 'svg') {
                         type="submit"
                         formaction="?/deleteImage"
                         class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs font-black hover:bg-red-600 transition-all shadow-lg"
-                        use:enhance={({ cancel }) => {
-                            if (!confirm("Delete this image?")) return cancel();
-                            return async ({ result, update }) => {
-                                if (result.type === 'success') {
-                                    imageUrl = '';
-                                    await update({ reset: false });
-                                }
-                            };
-                        }}
+                        use:enhance={() => {
+    isSaving = true;
+    return async ({ result }) => {
+        isSaving = false;
+        if (result.type === 'success') {
+            showSavedToast();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+    };
+}}
                     >
                         🗑 Remove
                     </button>
