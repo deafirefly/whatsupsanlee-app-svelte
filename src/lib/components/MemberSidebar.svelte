@@ -29,6 +29,20 @@
             <LayoutDashboard size={18} />
             Dashboard
         </a>
+
+        {#if user?.roles?.includes('vip') || user?.roles?.includes('admin') || user?.roles?.includes('superadmin')}
+    <a href="/vip-lounge"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+        {isActive('/vip-lounge') ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+        ⭐ VIP Lounge
+    </a>
+    <a href="/vip-directory"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+        {isActive('/vip-directory') ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+        👥 VIP Directory
+    </a>
+{/if}
+
         <a href="/profile"
             class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
             {isActive('/profile') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">

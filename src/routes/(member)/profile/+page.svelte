@@ -83,13 +83,17 @@
             <p class="text-sm text-slate-400 mt-0.5">{user?.email}</p>
 
             <div class="flex flex-wrap items-center gap-2 mt-3">
-                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-black rounded-full uppercase tracking-widest border border-indigo-100">
-    {#if user?.roles && user.roles.length > 0}
-        {typeof user.roles === 'string' ? JSON.parse(user.roles)[0] : user.roles[0]}
-    {:else}
-        member
-    {/if}
-</span>
+            {#each (typeof user?.roles === 'string' ? JSON.parse(user.roles) : user?.roles ?? []) as role}
+    <span class="px-3 py-1 text-xs font-black rounded-full uppercase tracking-widest border
+        {role === 'vip' ? 'bg-amber-50 text-amber-600 border-amber-200' :
+         role === 'superadmin' ? 'bg-rose-50 text-rose-600 border-rose-200' :
+         role === 'admin' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+         'bg-slate-50 text-slate-500 border-slate-200'}">
+        {#if role === 'vip'}⭐ {/if}
+        {#if role === 'admin' || role === 'superadmin'}🛡️ {/if}
+        {role}
+    </span>
+{/each}
                 <span class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-bold rounded-full border border-slate-100">
                     Member since {memberSince}
                 </span>

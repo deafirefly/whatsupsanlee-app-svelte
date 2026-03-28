@@ -27,8 +27,10 @@
   const memberLinks = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   ];
+
   const vipLinks = [
-    { name: 'VIP Lounge', href: '/vip-lounge', icon: History},
+    { name: 'VIP Lounge', href: '/vip-lounge', icon: History },
+    { name: 'VIP Directory', href: '/vip-directory', icon: Star },
   ];
 
   const adminLinks = [
