@@ -1,7 +1,7 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     let { data, form } = $props();
-    const { listing, photos, menu, schedule } = data;
+    const { listing, photos, menu, schedule, specificDates, confirmedBookings, vendorAvailability } = data;
 
     const categoryLabel = listing.category?.replace('_', ' ') || 'Community';
 
@@ -47,7 +47,7 @@ let availableSlots = $derived(() => {
     let endTime: string;
 
     if (listing.availabilityMode === 'specific') {
-        const specificDate = data.specificDates.find(d => d.date === selectedDate);
+        const specificDate = specificDates.find(d => d.date === selectedDate);
         if (!specificDate) return [];
         startTime = specificDate.startTime;
         endTime = specificDate.endTime;
@@ -55,7 +55,7 @@ let availableSlots = $derived(() => {
         const parts = selectedDate.split('-').map(Number);
         const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
         const dayOfWeek = localDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-        const dayAvailability = data.vendorAvailability.find(a => a.dayOfWeek === dayOfWeek);
+        const dayAvailability = vendorAvailability.find(a => a.dayOfWeek === dayOfWeek);
         if (!dayAvailability) return [];
         startTime = dayAvailability.startTime;
         endTime = dayAvailability.endTime;
@@ -83,7 +83,7 @@ let availableSlots = $derived(() => {
         const endStr = `${String(endHour).padStart(2, '0')}:${String(endMin).padStart(2, '0')}`;
 
         // Check if slot is already booked
-        const isTaken = data.confirmedBookings.some(b => 
+        const isTaken = confirmedBookings.some(b =>
             b.date === selectedDate && b.startTime === startStr
         );
 
@@ -102,13 +102,13 @@ let dateHasAvailability = $derived(() => {
     if (!selectedDate) return true;
 
     if (listing.availabilityMode === 'specific') {
-        return data.specificDates.some(d => d.date === selectedDate);
+        return specificDates.some(d => d.date === selectedDate);
     }
 
     const parts = selectedDate.split('-').map(Number);
     const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
     const dayOfWeek = localDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    return data.vendorAvailability.some(a => a.dayOfWeek === dayOfWeek);
+    return vendorAvailability.some(a => a.dayOfWeek === dayOfWeek);
 });
 
 // Min date = today
@@ -326,14 +326,14 @@ let today = new Date().toISOString().split('T')[0];
     </p>
     <div class="flex flex-wrap gap-2">
         {#if listing.availabilityMode === 'specific'}
-            {#each data.specificDates as sd}
+            {#each specificDates as sd}
                 <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100">
                     {new Date(sd.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · {sd.startTime} – {sd.endTime}
                     {#if sd.notes}<span class="text-slate-400"> ({sd.notes})</span>{/if}
                 </span>
             {/each}
         {:else}
-            {#each data.vendorAvailability as slot}
+            {#each vendorAvailability as slot}
                 <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 capitalize">
                     {slot.dayOfWeek} · {slot.startTime} – {slot.endTime}
                 </span>
