@@ -68,7 +68,7 @@
     <div class="text-center space-y-4">
         <div class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-600 rounded-full text-xs font-black uppercase tracking-widest border border-amber-200">
             <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse inline-block"></span>
-            Beta v0.3.0
+            Beta v0.3.5
         </div>
         <h1 class="text-5xl font-black text-slate-900 tracking-tight">
             We're just getting started! 🚀

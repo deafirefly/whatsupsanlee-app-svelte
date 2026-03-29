@@ -86,7 +86,7 @@
     <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
         <p class="text-xs text-muted-foreground">Built with ❤️ for the Sanford & Lee County community</p>
-        <p class="text-xs text-muted-foreground">&copy; 2026 WhatsUp SanLee. All rights reserved. <span class="text-slate-300">v0.3.0</span></p>
+        <p class="text-xs text-muted-foreground">&copy; 2026 WhatsUp SanLee. All rights reserved. <span class="text-slate-300">v0.3.5</span></p>
     </div>
         <div class="flex items-center gap-6 text-xs">
             <a href="/about" class="text-slate-500 hover:text-indigo-600 font-bold transition-colors">About</a>

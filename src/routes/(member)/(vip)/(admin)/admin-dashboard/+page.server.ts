@@ -49,7 +49,7 @@ export const load = async ({ locals }) => {
             systemStatus: {
                 database: dbStatus,
                 uptime: 'operational',
-                version: '0.3.0'
+                version: '0.3.5'
             },
             recentUsers: allUsers.slice(0, 5)
         };
@@ -63,7 +63,7 @@ export const load = async ({ locals }) => {
                 totalPosts: 0, totalBookings: 0,
                 pendingBookings: 0, unreadMessages: 0
             },
-            systemStatus: { database: 'error', uptime: 'unknown', version: '0.3.0' },
+            systemStatus: { database: 'error', uptime: 'unknown', version: '0.3.5' },
             recentUsers: []
         };
     }

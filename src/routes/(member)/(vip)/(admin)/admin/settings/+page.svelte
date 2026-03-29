@@ -140,7 +140,7 @@
             </h3>
             <div class="grid grid-cols-2 gap-3">
                 {#each [
-                    { label: 'Version', value: 'v0.3.0' },
+                    { label: 'Version', value: 'v0.3.5' },
                     { label: 'Environment', value: 'Production' },
                     { label: 'Database', value: 'Turso (libSQL)' },
                     { label: 'File Storage', value: 'Uploadthing' },
