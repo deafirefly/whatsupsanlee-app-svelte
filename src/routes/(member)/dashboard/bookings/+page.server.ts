@@ -52,5 +52,27 @@ export const actions = {
         const id = Number(formData.get('id'));
         await db.delete(bookings).where(eq(bookings.id, id));
         return { success: true };
+    },
+    edit: async ({ request, locals }) => {
+    if (!locals.user) throw redirect(302, '/login');
+    const formData = await request.formData();
+    const id = Number(formData.get('id'));
+
+    await db.update(bookings)
+        .set({
+            clientName: formData.get('clientName') as string,
+            clientEmail: formData.get('clientEmail') as string,
+            clientPhone: (formData.get('clientPhone') as string) || null,
+            date: formData.get('date') as string,
+            startTime: formData.get('startTime') as string,
+            endTime: (formData.get('endTime') as string) || null,
+            serviceType: (formData.get('serviceType') as string) || null,
+            notes: (formData.get('notes') as string) || null,
+            vendorNotes: (formData.get('vendorNotes') as string) || null,
+            updatedAt: new Date()
+        })
+        .where(eq(bookings.id, id));
+
+    return { success: true };
     }
 };

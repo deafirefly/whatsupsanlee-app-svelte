@@ -214,7 +214,7 @@
 
 
                 <!-- Booking Request Form -->
-{#if data.vendorAvailability && data.vendorAvailability.length > 0}
+                 {#if listing.bookingEnabled && data.vendorAvailability && data.vendorAvailability.length > 0}
 <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
     <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-2">Book an Appointment</h3>
     <p class="text-xs text-slate-400 mb-6">
@@ -283,16 +283,47 @@
                     <input name="date" type="date" required
                         class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
                 </div>
+
+
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">Start Time *</label>
-                    <input name="startTime" type="time" required
-                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">End Time <span class="text-slate-400 font-normal">(optional)</span></label>
-                    <input name="endTime" type="time"
-                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
-                </div>
+    <label class="block text-sm font-bold text-slate-700 mb-1">Start Time *</label>
+    <input
+        name="startTime"
+        type="time"
+        required
+        onchange={(e) => {
+            const slotDuration = listing.bookingSlotDuration;
+            if (!slotDuration) return;
+            const [h, m] = (e.target as HTMLInputElement).value.split(':').map(Number);
+            const totalMinutes = h * 60 + m + slotDuration;
+            const endH = Math.floor(totalMinutes / 60) % 24;
+            const endM = totalMinutes % 60;
+            const endInput = document.querySelector('input[name="endTime"]') as HTMLInputElement;
+            if (endInput) endInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+        }}
+        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm"
+    />
+</div>
+<div>
+    <label class="block text-sm font-bold text-slate-700 mb-1">
+        End Time
+        {#if listing.bookingSlotDuration}
+            <span class="text-slate-400 font-normal">(auto-calculated)</span>
+        {:else}
+            <span class="text-slate-400 font-normal">(optional)</span>
+        {/if}
+    </label>
+    <input
+        name="endTime"
+        type="time"
+        readonly={!!listing.bookingSlotDuration}
+        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm
+        {listing.bookingSlotDuration ? 'bg-slate-50 text-slate-500' : ''}"
+    />
+</div>
+
+
+
             </div>
 
             <div>

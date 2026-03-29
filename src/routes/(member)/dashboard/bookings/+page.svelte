@@ -14,8 +14,10 @@
         data.bookings.filter(b => b.status === activeTab)
     );
 
+
     let respondingId = $state<number | null>(null);
-    let vendorNotes = $state('');
+let vendorNotes = $state('');
+let editingId = $state<number | null>(null);
 
     function formatDate(date: string) {
         return new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
@@ -181,7 +183,88 @@
 
                     <!-- Actions for pending bookings -->
                     {#if booking.status === 'pending'}
-                        {#if respondingId === booking.id}
+    {#if editingId === booking.id}
+        <!-- Edit Form -->
+        <form method="POST" action="?/edit" use:enhance={() => {
+            return async ({ update }) => {
+                await update();
+                editingId = null;
+            };
+        }} class="space-y-3 mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+            <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Edit Booking</p>
+            <input type="hidden" name="id" value={booking.id} />
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Client Name</label>
+                    <input name="clientName" value={booking.clientName}
+                        class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Email</label>
+                    <input name="clientEmail" type="email" value={booking.clientEmail}
+                        class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Phone</label>
+                    <input name="clientPhone" value={booking.clientPhone ?? ''}
+                        class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Service Type</label>
+                    <input name="serviceType" value={booking.serviceType ?? ''}
+                        class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Date</label>
+                    <input name="date" type="date" value={booking.date}
+                        class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Start Time</label>
+                    <input name="startTime" type="time" value={booking.startTime}
+                        class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">End Time</label>
+                    <input name="endTime" type="time" value={booking.endTime ?? ''}
+                        class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Client Notes</label>
+                <textarea name="notes" rows={2}
+                    class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm resize-none"
+                >{booking.notes ?? ''}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Your Response Notes</label>
+                <textarea name="vendorNotes" rows={2}
+                    class="w-full p-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm resize-none"
+                >{booking.vendorNotes ?? ''}</textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit"
+                    class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-sm hover:bg-indigo-700 transition-all">
+                    💾 Save Changes
+                </button>
+                <button type="button" onclick={() => editingId = null}
+                    class="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-black text-sm hover:bg-slate-200 transition-all">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    {:else if respondingId === booking.id}
+
                             <div class="space-y-3 mt-4">
                                 <textarea
                                     bind:value={vendorNotes}
@@ -214,13 +297,24 @@
                                     </button>
                                 </div>
                             </div>
+
                         {:else}
-                            <button
-                                onclick={() => respondingId = booking.id}
-                                class="w-full py-3 bg-indigo-600 text-white rounded-xl font-black text-sm hover:bg-indigo-700 transition-all mt-2">
-                                Respond to Booking →
-                            </button>
+                            <div class="flex gap-3 mt-2">
+                                <button
+                                    onclick={() => respondingId = booking.id}
+                                    class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-black text-sm hover:bg-indigo-700 transition-all">
+                                    Respond →
+                                </button>
+                                <button
+                                    onclick={() => editingId = booking.id}
+                                    class="px-4 py-3 bg-slate-100 text-slate-700 rounded-xl font-black text-sm hover:bg-slate-200 transition-all">
+                                    ✏️ Edit
+                                </button>
+                            </div>
                         {/if}
+
+
+
                     {:else}
                         <form method="POST" action="?/delete" use:enhance
                             onsubmit={(e) => {

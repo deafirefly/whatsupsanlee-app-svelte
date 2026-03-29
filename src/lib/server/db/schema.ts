@@ -60,6 +60,10 @@ export const listings = sqliteTable('listings', {
     // Vanity URL
     slug: text('slug'),
 
+    // Booking
+    bookingEnabled: integer('booking_enabled', { mode: 'boolean' }).default(false),
+    bookingSlotDuration: integer('booking_slot_duration').default(60), // minutes
+
 	// Status Logic
 	status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
 	isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),

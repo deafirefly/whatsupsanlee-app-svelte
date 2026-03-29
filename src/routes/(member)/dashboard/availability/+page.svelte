@@ -46,6 +46,29 @@
         <p class="text-slate-500 mt-1">Let clients know when you're available for bookings.</p>
     </div>
 
+    <!-- Booking Toggle -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 mb-6">
+        <form method="POST" action="?/toggleBooking" use:enhance={() => {
+            return async ({ update }) => { await update({ reset: false }); };
+        }}>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-black text-slate-900">Booking System</p>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        {listing.bookingEnabled ? '✅ Clients can request bookings from your listing' : '❌ Booking is disabled on your listing'}
+                    </p>
+                </div>
+                <button type="submit"
+                    class="px-4 py-2 rounded-xl text-xs font-black transition-all
+                    {listing.bookingEnabled
+                        ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'}">
+                    {listing.bookingEnabled ? 'Disable Bookings' : 'Enable Bookings'}
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Success Toast -->
     {#if showSuccess}
         <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3">

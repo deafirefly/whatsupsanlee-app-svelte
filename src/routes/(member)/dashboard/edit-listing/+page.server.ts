@@ -95,6 +95,8 @@ export const actions = {
             tiktok: formData.get('tiktok') as string,
             imageUrl: formData.get('imageUrl') as string,
             slug,
+            bookingEnabled: formData.get('bookingEnabled') === 'on',
+            bookingSlotDuration: Number(formData.get('bookingSlotDuration')) || 60,
             updatedAt: new Date()
         };
 

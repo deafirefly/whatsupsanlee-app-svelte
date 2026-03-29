@@ -459,11 +459,56 @@
     </div>
 {/if}
 
+<!-- Booking Settings -->
+<div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
+    <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest">📅 Booking Settings</h3>
+    
+    <!-- Enable/Disable Toggle -->
+    <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
+        <div>
+            <p class="font-black text-slate-900 text-sm">Enable Bookings</p>
+            <p class="text-xs text-slate-500 mt-0.5">Allow clients to request appointments from your listing</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input
+                type="checkbox"
+                name="bookingEnabled"
+                checked={listing.bookingEnabled ?? false}
+                class="sr-only peer"
+            />
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+        </label>
+    </div>
+
+    <!-- Slot Duration -->
+    <div>
+        <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Slot Duration</label>
+        <select
+            name="bookingSlotDuration"
+            class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none bg-white text-sm"
+        >
+            {#each [
+                { value: 15, label: '15 minutes' },
+                { value: 30, label: '30 minutes' },
+                { value: 45, label: '45 minutes' },
+                { value: 60, label: '1 hour' },
+                { value: 90, label: '1.5 hours' },
+                { value: 120, label: '2 hours' },
+                { value: 0, label: 'Custom (client chooses)' },
+            ] as slot}
+                <option value={slot.value} selected={listing.bookingSlotDuration === slot.value}>
+                    {slot.label}
+                </option>
+            {/each}
+        </select>
+        <p class="text-[11px] text-slate-400 mt-1">How long each appointment slot lasts.</p>
+    </div>
+</div>
+
 <!-- Save Button -->
 <button
     type="submit"
     disabled={isSaving}
-
             class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
         >
             {isSaving ? 'Saving...' : 'Save Changes →'}
