@@ -91,6 +91,7 @@ export const actions = {
             return fail(500, { message: 'Could not update listing.' });
         }
 
+        await new Promise(resolve => setTimeout(resolve, 500));
         redirect(303, '/dashboard/edit-listing?saved=1');
     },
 
