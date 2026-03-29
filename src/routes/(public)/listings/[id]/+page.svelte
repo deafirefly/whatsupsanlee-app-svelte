@@ -65,9 +65,9 @@ let availableSlots = $derived(() => {
     const slots = [];
     const duration = Number(listing.bookingSlotDuration);
 
-    // Parse start and end times
-    const [startH, startM] = dayAvailability.startTime.split(':').map(Number);
-    const [endH, endM] = dayAvailability.endTime.split(':').map(Number);
+    // Parse start and end times from the variables set above
+    const [startH, startM] = startTime.split(':').map(Number);
+    const [endH, endM] = endTime.split(':').map(Number);
     const startTotal = startH * 60 + startM;
     const endTotal = endH * 60 + endM;
 
@@ -293,7 +293,10 @@ let today = new Date().toISOString().split('T')[0];
 
 
                 <!-- Booking Request Form -->
-                 {#if listing.bookingEnabled && data.vendorAvailability && data.vendorAvailability.length > 0}
+                 {#if listing.bookingEnabled && (
+    (listing.availabilityMode === 'specific' && data.specificDates && data.specificDates.length > 0) ||
+    (listing.availabilityMode !== 'specific' && data.vendorAvailability && data.vendorAvailability.length > 0)
+)}
 <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
     <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-2">Book an Appointment</h3>
     <p class="text-xs text-slate-400 mb-6">
