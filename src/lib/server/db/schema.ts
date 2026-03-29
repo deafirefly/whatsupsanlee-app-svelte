@@ -62,7 +62,8 @@ export const listings = sqliteTable('listings', {
 
     // Booking
     bookingEnabled: integer('booking_enabled', { mode: 'boolean' }).default(false),
-    bookingSlotDuration: integer('booking_slot_duration').default(60), // minutes
+    bookingSlotDuration: integer('booking_slot_duration').default(60),
+    availabilityMode: text('availability_mode').default('weekly'), // 'weekly' | 'specific'
 
 	// Status Logic
 	status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
@@ -271,6 +272,17 @@ export const availability = sqliteTable('availability', {
     startTime: text('start_time').notNull(),  // '09:00'
     endTime: text('end_time').notNull(),      // '17:00'
     isAvailable: integer('is_available', { mode: 'boolean' }).default(true),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// --- Specific Date Availability ---
+export const specificAvailability = sqliteTable('specific_availability', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    listingId: integer('listing_id').references(() => listings.id, { onDelete: 'cascade' }).notNull(),
+    date: text('date').notNull(), // '2026-04-15'
+    startTime: text('start_time').notNull(), // '09:00'
+    endTime: text('end_time').notNull(), // '17:00'
+    notes: text('notes'), // optional note like 'Spring Market'
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 

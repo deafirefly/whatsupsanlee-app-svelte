@@ -480,6 +480,32 @@
         </label>
     </div>
 
+    <!-- Availability Mode -->
+    <div>
+        <label class="block text-sm font-bold text-slate-700 mb-2">Availability Mode</label>
+        <div class="grid grid-cols-2 gap-3">
+            {#each [
+                { value: 'weekly', label: '📅 Weekly Schedule', desc: 'Repeat every week' },
+                { value: 'specific', label: '🗓️ Specific Dates', desc: 'Choose exact dates' },
+            ] as mode}
+                <label class="cursor-pointer">
+                    <input type="radio" name="availabilityMode" value={mode.value}
+                        checked={listing.availabilityMode === mode.value || (!listing.availabilityMode && mode.value === 'weekly')}
+                        class="sr-only peer" />
+                    <div class="p-3 rounded-xl border-2 transition-all text-center cursor-pointer
+                        peer-checked:border-indigo-600 peer-checked:bg-indigo-50 border-slate-200 hover:border-slate-300">
+                        <p class="font-black text-xs text-slate-900">{mode.label}</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">{mode.desc}</p>
+                    </div>
+                </label>
+            {/each}
+        </div>
+        <p class="text-[11px] text-slate-400 mt-2">
+            Manage your specific dates in 
+            <a href="/dashboard/availability" class="text-indigo-600 font-black hover:underline">Availability Settings →</a>
+        </p>
+    </div>
+
     <!-- Slot Duration -->
     <div>
         <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Slot Duration</label>

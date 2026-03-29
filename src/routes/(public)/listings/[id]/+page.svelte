@@ -43,10 +43,24 @@ let selectedSlot = $state('');
 let availableSlots = $derived(() => {
     if (!selectedDate || !listing.bookingSlotDuration) return [];
 
-    const dayOfWeek = new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const dayAvailability = data.vendorAvailability.find(a => a.dayOfWeek === dayOfWeek);
+    let startTime: string;
+    let endTime: string;
 
-    if (!dayAvailability) return [];
+    if (listing.availabilityMode === 'specific') {
+        const specificDate = data.specificDates.find(d => d.date === selectedDate);
+        if (!specificDate) return [];
+        startTime = specificDate.startTime;
+        endTime = specificDate.endTime;
+    } else {
+        const parts = selectedDate.split('-').map(Number);
+        const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        const dayOfWeek = localDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+        const dayAvailability = data.vendorAvailability.find(a => a.dayOfWeek === dayOfWeek);
+        if (!dayAvailability) return [];
+        startTime = dayAvailability.startTime;
+        endTime = dayAvailability.endTime;
+    }
+
 
     const slots = [];
     const duration = Number(listing.bookingSlotDuration);
@@ -86,6 +100,11 @@ let availableSlots = $derived(() => {
 // Check if selected date has availability
 let dateHasAvailability = $derived(() => {
     if (!selectedDate) return true;
+
+    if (listing.availabilityMode === 'specific') {
+        return data.specificDates.some(d => d.date === selectedDate);
+    }
+
     const parts = selectedDate.split('-').map(Number);
     const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
     const dayOfWeek = localDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
@@ -297,15 +316,28 @@ let today = new Date().toISOString().split('T')[0];
         {/if}
 
         <!-- Available Days -->
+         <!-- Available Days -->
 <div class="mb-4 p-4 bg-slate-50 rounded-2xl space-y-3">
-    <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Available Days</p>
+    <p class="text-xs font-black text-slate-500 uppercase tracking-widest">
+        {listing.availabilityMode === 'specific' ? 'Available Dates' : 'Available Days'}
+    </p>
     <div class="flex flex-wrap gap-2">
-        {#each data.vendorAvailability as slot}
-            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 capitalize">
-                {slot.dayOfWeek} · {slot.startTime} – {slot.endTime}
-            </span>
-        {/each}
+        {#if listing.availabilityMode === 'specific'}
+            {#each data.specificDates as sd}
+                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100">
+                    {new Date(sd.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · {sd.startTime} – {sd.endTime}
+                    {#if sd.notes}<span class="text-slate-400"> ({sd.notes})</span>{/if}
+                </span>
+            {/each}
+        {:else}
+            {#each data.vendorAvailability as slot}
+                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 capitalize">
+                    {slot.dayOfWeek} · {slot.startTime} – {slot.endTime}
+                </span>
+            {/each}
+        {/if}
     </div>
+
     {#if listing.bookingSlotDuration}
         <p class="text-xs text-slate-500 flex items-center gap-1">
             ⏱ Appointment duration:
@@ -366,12 +398,17 @@ let today = new Date().toISOString().split('T')[0];
     class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm appearance-auto"
     style="color-scheme: light;"
 />
+{#if selectedDate && !dateHasAvailability()}
+    <p class="text-xs text-red-500 font-bold mt-1">
+        ⚠ {listing.contactPerson} is not available on this date. 
+        {#if listing.availabilityMode === 'specific'}
+            Please select one of the available dates shown above.
+        {:else}
+            Please pick another date.
+        {/if}
+    </p>
+{/if}
 
-    {#if selectedDate && !dateHasAvailability()}
-        <p class="text-xs text-red-500 font-bold mt-1">
-            ⚠ {listing.contactPerson} is not available on this day. Please pick another date.
-        </p>
-    {/if}
 </div>
 
 <!-- Time Slots -->
