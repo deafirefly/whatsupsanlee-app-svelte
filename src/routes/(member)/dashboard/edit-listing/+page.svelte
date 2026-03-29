@@ -292,7 +292,7 @@ console.log('currentSlug state:', currentSlug);
         <span class="text-xs text-slate-400 font-bold flex-shrink-0">whatsupsanlee.com/</span>
         <input
             name="slug"
-            value={currentSlug}
+            bind:value={currentSlug}
             placeholder="your-business-name"
             class="flex-1 bg-transparent outline-none text-sm font-bold text-indigo-600"
         />
