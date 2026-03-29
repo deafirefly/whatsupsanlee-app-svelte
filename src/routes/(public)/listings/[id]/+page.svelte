@@ -85,8 +85,10 @@ let availableSlots = $derived(() => {
 
 // Check if selected date has availability
 let dateHasAvailability = $derived(() => {
-    if (!selectedDate) return true; // don't show error before date selected
-    const dayOfWeek = new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    if (!selectedDate) return true;
+    const parts = selectedDate.split('-').map(Number);
+    const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    const dayOfWeek = localDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     return data.vendorAvailability.some(a => a.dayOfWeek === dayOfWeek);
 });
 
