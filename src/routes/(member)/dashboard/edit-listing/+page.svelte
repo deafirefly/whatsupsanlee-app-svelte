@@ -1,114 +1,98 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { enhance } from '$app/forms';
-    import { page } from '$app/stores';
-
 
     let { data, form } = $props();
-const { listing, isVip, photos } = data;
+    const { listing, isVip, photos, savedSuccess } = data;
 
-// Use slug from URL param if available (fresher than DB after redirect)
-let currentSlug = $state($page.url.searchParams.get('slug') ?? listing.slug ?? '');
+    let currentSlug = $state(listing.slug ?? '');
+    let imageUrl = $state(listing.imageUrl || '');
+    let isUploading = $state(false);
+    let isUploadingGallery = $state(false);
+    let isSaving = $state(false);
+    let showSuccess = $state(savedSuccess ?? false);
+    if (showSuccess) setTimeout(() => showSuccess = false, 3000);
 
-let imageUrl = $state(listing.imageUrl || '');
-let isUploading = $state(false);
-let isUploadingGallery = $state(false);
-let isSaving = $state(false);
+    let uploader: any = null;
+    let newPhotoUrl = $state('');
+    let QRCode: any = null;
 
-let showSuccess = $state($page.url.searchParams.get('saved') === '1');
-if (showSuccess) setTimeout(() => showSuccess = false, 3000);
-
-
-let uploader: any = null;
-let newPhotoUrl = $state('');
-let QRCode: any = null;
-
-
-async function handleGalleryChange(e: Event) {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file || !uploader) return;
-    try {
-        isUploadingGallery = true;
-        const res = await uploader.uploadFiles('listingImage', { files: [file] });
-        if (res?.[0]) newPhotoUrl = res[0].url;
-        isUploadingGallery = false;
-    } catch (err: any) {
-        isUploadingGallery = false;
-        console.error('Gallery upload failed:', err);
-    }
-}
-
-    onMount(async () => {
-    try {
-        const { genUploader } = await import("uploadthing/client");
-        uploader = genUploader({ url: "/api/uploadthing" });
-    } catch (err) {
-        console.error("Initialization error:", err);
-    }
-
-    // Load QR code library
-    if (currentSlug) {
+    async function handleGalleryChange(e: Event) {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file || !uploader) return;
         try {
-            const qr = await import('qrcode');
-            QRCode = qr.default;
-            generateQR();
-        } catch (err) {
-            console.error('QR code library error:', err);
+            isUploadingGallery = true;
+            const res = await uploader.uploadFiles('listingImage', { files: [file] });
+            if (res?.[0]) newPhotoUrl = res[0].url;
+            isUploadingGallery = false;
+        } catch (err: any) {
+            isUploadingGallery = false;
+            console.error('Gallery upload failed:', err);
         }
     }
-});
 
-async function generateQR() {
-    if (!QRCode || !currentSlug) return;
-    const url = `${window.location.origin}/${currentSlug}`;
-    const container = document.getElementById('qr-container');
-    if (!container) return;
-    container.innerHTML = '';
-    const canvas = document.createElement('canvas');
-    await QRCode.toCanvas(canvas, url, { width: 200, margin: 2 });
-    container.appendChild(canvas);
-}
+    onMount(async () => {
+        try {
+            const { genUploader } = await import("uploadthing/client");
+            uploader = genUploader({ url: "/api/uploadthing" });
+        } catch (err) {
+            console.error("Initialization error:", err);
+        }
 
-async function downloadQR(format: 'png' | 'svg') {
-    if (!QRCode || !currentSlug) return;
-    const url = `${window.location.origin}/${currentSlug}`;
+        if (currentSlug) {
+            try {
+                const qr = await import('qrcode');
+                QRCode = qr.default;
+                generateQR();
+            } catch (err) {
+                console.error('QR code library error:', err);
+            }
+        }
+    });
 
-    if (format === 'png') {
-        const dataUrl = await QRCode.toDataURL(url, { width: 400, margin: 2 });
-        const link = document.createElement('a');
-        link.download = `${currentSlug}-qrcode.png`;
-        link.href = dataUrl;
-        link.click();
-    } else {
-        const svg = await QRCode.toString(url, { type: 'svg', width: 400, margin: 2 });
-        const blob = new Blob([svg], { type: 'image/svg+xml' });
-        const link = document.createElement('a');
-        link.download = `${currentSlug}-qrcode.svg`;
-        link.href = URL.createObjectURL(blob);
-        link.click();
+    async function generateQR() {
+        if (!QRCode || !currentSlug) return;
+        const url = `${window.location.origin}/${currentSlug}`;
+        const container = document.getElementById('qr-container');
+        if (!container) return;
+        container.innerHTML = '';
+        const canvas = document.createElement('canvas');
+        await QRCode.toCanvas(canvas, url, { width: 200, margin: 2 });
+        container.appendChild(canvas);
     }
-}
+
+    async function downloadQR(format: 'png' | 'svg') {
+        if (!QRCode || !currentSlug) return;
+        const url = `${window.location.origin}/${currentSlug}`;
+
+        if (format === 'png') {
+            const dataUrl = await QRCode.toDataURL(url, { width: 400, margin: 2 });
+            const link = document.createElement('a');
+            link.download = `${currentSlug}-qrcode.png`;
+            link.href = dataUrl;
+            link.click();
+        } else {
+            const svg = await QRCode.toString(url, { type: 'svg', width: 400, margin: 2 });
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const link = document.createElement('a');
+            link.download = `${currentSlug}-qrcode.svg`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+    }
 
     async function handleFileChange(e: Event) {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (!file || !uploader) return;
-
         try {
             isUploading = true;
             const res = await uploader.uploadFiles("listingImage", { files: [file] });
-            if (res?.[0]) {
-                imageUrl = res[0].url;
-            }
+            if (res?.[0]) imageUrl = res[0].url;
             isUploading = false;
         } catch (err: any) {
             isUploading = false;
             console.error("Upload failed:", err);
         }
-    }
-
-    function showSavedToast() {
-        showSuccess = true;
-        setTimeout(() => showSuccess = false, 3000);
     }
 </script>
 

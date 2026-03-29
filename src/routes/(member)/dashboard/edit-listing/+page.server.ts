@@ -15,7 +15,8 @@ function generateSlug(businessName: string): string {
         .substring(0, 50);
 }
 
-export const load = async ({ locals }) => {
+
+export const load = async ({ locals, url }) => {
     if (!locals.user) throw redirect(302, '/login');
 
     const listing = await db.query.listings.findFirst({
@@ -39,8 +40,22 @@ export const load = async ({ locals }) => {
         .where(eq(listingPhotos.listingId, listing.id))
         .orderBy(listingPhotos.sortOrder);
 
-    return { listing, isVip: isVipActive, photos };
+    // Get slug from URL param if available (fresher than DB)
+    const slugFromUrl = url.searchParams.get('slug');
+    const savedSuccess = url.searchParams.get('saved') === '1';
+
+    return { 
+        listing: {
+            ...listing,
+            slug: slugFromUrl ?? listing.slug
+        },
+        isVip: isVipActive, 
+        photos,
+        savedSuccess
+    };
 };
+
+
 
 export const actions = {
     updateListing: async ({ request }) => {
