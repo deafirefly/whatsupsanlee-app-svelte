@@ -2,7 +2,12 @@
     import { enhance } from '$app/forms';
 
     let { data, form } = $props();
-    const { listing, availability, specificDates } = data;
+    const { listing, availability } = data;
+let specificDates = $state(data.specificDates);
+
+$effect(() => {
+    specificDates = data.specificDates;
+});
 
     const days = [
         { key: 'monday',    label: 'Monday' },
