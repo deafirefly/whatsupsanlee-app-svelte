@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { listings, listingPhotos, menuItems, listingSchedule } from '$lib/server/db/schema';
+import { listings, listingPhotos, menuItems, listingSchedule, specificAvailability } from '$lib/server/db/schema';
 import { bookings, availability } from '$lib/server/db/schema';
 import { eq, and, gte } from 'drizzle-orm';
 import { error, fail } from '@sveltejs/kit';
@@ -59,7 +59,19 @@ export const load = async ({ params }) => {
             eq(bookings.status, 'confirmed')
         ));
 
-    return { listing, photos, menu, schedule, vendorAvailability, confirmedBookings };
+    // Load specific dates if mode is specific
+    const specificDates = listing.availabilityMode === 'specific'
+        ? await db.select()
+            .from(specificAvailability)
+            .where(and(
+                eq(specificAvailability.listingId, listingId),
+                gte(specificAvailability.date, today)
+            ))
+            .orderBy(specificAvailability.date)
+        : [];
+
+    return { listing, photos, menu, schedule, vendorAvailability, confirmedBookings, specificDates };
+
 };
 
 export const actions = {
