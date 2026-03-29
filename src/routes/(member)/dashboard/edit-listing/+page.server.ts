@@ -92,7 +92,7 @@ export const actions = {
         }
 
         await new Promise(resolve => setTimeout(resolve, 500));
-        redirect(303, '/dashboard/edit-listing?saved=1');
+        redirect(303, `/dashboard/edit-listing?saved=1&slug=${slug}`);
     },
 
     deleteImage: async ({ request, locals }) => {

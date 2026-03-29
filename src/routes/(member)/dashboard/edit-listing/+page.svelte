@@ -7,6 +7,9 @@
     let { data, form } = $props();
 const { listing, isVip, photos } = data;
 
+// Use slug from URL param if available (fresher than DB after redirect)
+let currentSlug = $state($page.url.searchParams.get('slug') ?? listing.slug ?? '');
+
 let imageUrl = $state(listing.imageUrl || '');
 let isUploading = $state(false);
 let isUploadingGallery = $state(false);
@@ -44,7 +47,7 @@ async function handleGalleryChange(e: Event) {
     }
 
     // Load QR code library
-    if (listing.slug) {
+    if (currentSlug) {
         try {
             const qr = await import('qrcode');
             QRCode = qr.default;
@@ -56,8 +59,8 @@ async function handleGalleryChange(e: Event) {
 });
 
 async function generateQR() {
-    if (!QRCode || !listing.slug) return;
-    const url = `${window.location.origin}/${listing.slug}`;
+    if (!QRCode || !currentSlug) return;
+    const url = `${window.location.origin}/${currentSlug}`;
     const container = document.getElementById('qr-container');
     if (!container) return;
     container.innerHTML = '';
@@ -67,20 +70,20 @@ async function generateQR() {
 }
 
 async function downloadQR(format: 'png' | 'svg') {
-    if (!QRCode || !listing.slug) return;
-    const url = `${window.location.origin}/${listing.slug}`;
+    if (!QRCode || !currentSlug) return;
+    const url = `${window.location.origin}/${currentSlug}`;
 
     if (format === 'png') {
         const dataUrl = await QRCode.toDataURL(url, { width: 400, margin: 2 });
         const link = document.createElement('a');
-        link.download = `${listing.slug}-qrcode.png`;
+        link.download = `${currentSlug}-qrcode.png`;
         link.href = dataUrl;
         link.click();
     } else {
         const svg = await QRCode.toString(url, { type: 'svg', width: 400, margin: 2 });
         const blob = new Blob([svg], { type: 'image/svg+xml' });
         const link = document.createElement('a');
-        link.download = `${listing.slug}-qrcode.svg`;
+        link.download = `${currentSlug}-qrcode.svg`;
         link.href = URL.createObjectURL(blob);
         link.click();
     }
@@ -301,20 +304,20 @@ async function downloadQR(format: 'png' | 'svg') {
         <span class="text-xs text-slate-400 font-bold flex-shrink-0">whatsupsanlee.com/</span>
         <input
             name="slug"
-            value={listing.slug ?? ''}
+            value={currentSlug}
             placeholder="your-business-name"
             class="flex-1 bg-transparent outline-none text-sm font-bold text-indigo-600"
         />
     </div>
     <p class="text-[11px] text-slate-400">Only lowercase letters, numbers and hyphens allowed.</p>
 
-    {#if listing.slug}
+    {#if currentSlug}
         <!-- QR Code Section -->
         <div class="mt-4 p-6 bg-indigo-50 rounded-2xl border border-indigo-100 text-center space-y-4">
             <p class="text-xs font-black text-indigo-600 uppercase tracking-widest">Your QR Code</p>
             <div id="qr-container" class="flex justify-center"></div>
             <p class="text-xs text-slate-500">
-                Scan to visit: <span class="font-black text-indigo-600">whatsupsanlee.com/{listing.slug}</span>
+                Scan to visit: <span class="font-black text-indigo-600">whatsupsanlee.com/{currentSlug}</span>
             </p>
             <div class="flex gap-3 justify-center">
                 <button
