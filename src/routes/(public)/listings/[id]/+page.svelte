@@ -34,6 +34,64 @@
     );
 
     let activePhoto = $state(0);
+
+// Booking state
+let selectedDate = $state('');
+let selectedSlot = $state('');
+
+// Generate available time slots for selected date
+let availableSlots = $derived(() => {
+    if (!selectedDate || !listing.bookingSlotDuration) return [];
+
+    const dayOfWeek = new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const dayAvailability = data.vendorAvailability.find(a => a.dayOfWeek === dayOfWeek);
+
+    if (!dayAvailability) return [];
+
+    const slots = [];
+    const duration = Number(listing.bookingSlotDuration);
+
+    // Parse start and end times
+    const [startH, startM] = dayAvailability.startTime.split(':').map(Number);
+    const [endH, endM] = dayAvailability.endTime.split(':').map(Number);
+    const startTotal = startH * 60 + startM;
+    const endTotal = endH * 60 + endM;
+
+    // Generate slots
+    for (let time = startTotal; time + duration <= endTotal; time += duration) {
+        const h = Math.floor(time / 60);
+        const m = time % 60;
+        const endTime = time + duration;
+        const endHour = Math.floor(endTime / 60);
+        const endMin = endTime % 60;
+
+        const startStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        const endStr = `${String(endHour).padStart(2, '0')}:${String(endMin).padStart(2, '0')}`;
+
+        // Check if slot is already booked
+        const isTaken = data.confirmedBookings.some(b => 
+            b.date === selectedDate && b.startTime === startStr
+        );
+
+        // Format for display
+        const startDisplay = formatTime(startStr);
+        const endDisplay = formatTime(endStr);
+
+        slots.push({ startStr, endStr, startDisplay, endDisplay, isTaken });
+    }
+
+    return slots;
+});
+
+// Check if selected date has availability
+let dateHasAvailability = $derived(() => {
+    if (!selectedDate) return true; // don't show error before date selected
+    const dayOfWeek = new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    return data.vendorAvailability.some(a => a.dayOfWeek === dayOfWeek);
+});
+
+// Min date = today
+let today = new Date().toISOString().split('T')[0];
 </script>
 
 <div class="min-h-screen bg-slate-50/50 pb-20">
@@ -293,59 +351,82 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">Date *</label>
-                    <input name="date" type="date" required
-                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
-                </div>
 
-
-                <div>
-    <label class="block text-sm font-bold text-slate-700 mb-1">Start Time *</label>
-    <input
-    name="startTime"
-    type="time"
-    required
-    onchange={(e) => {
-        const slotDuration = Number(listing.bookingSlotDuration ?? 0);
-        if (!slotDuration) return;
-        const val = (e.target as HTMLInputElement).value;
-        if (!val) return;
-        const [h, m] = val.split(':').map(Number);
-        const totalMinutes = h * 60 + m + slotDuration;
-        const endH = Math.floor(totalMinutes / 60) % 24;
-        const endM = totalMinutes % 60;
-        const endInput = document.querySelector('input[name="endTime"]') as HTMLInputElement;
-        if (endInput) {
-            endInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
-        }
-    }}
-    class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm"
-/>
-
-</div>
+            <!-- Date Picker -->
 <div>
-    <label class="block text-sm font-bold text-slate-700 mb-1">
-        End Time
-        {#if listing.bookingSlotDuration}
-            <span class="text-slate-400 font-normal">(auto-calculated)</span>
-        {:else}
-            <span class="text-slate-400 font-normal">(optional)</span>
-        {/if}
-    </label>
+    <label class="block text-sm font-bold text-slate-700 mb-1">Select Date *</label>
     <input
-        name="endTime"
-        type="time"
-        readonly={!!listing.bookingSlotDuration}
-        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm
-        {listing.bookingSlotDuration ? 'bg-slate-50 text-slate-500' : ''}"
+        name="date"
+        type="dte"
+        required
+        min={today}
+        bind:value={selectedDate}
+        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm"
     />
+    {#if selectedDate && !dateHasAvailability()}
+        <p class="text-xs text-red-500 font-bold mt-1">
+            ⚠ {listing.contactPerson} is not available on this day. Please pick another date.
+        </p>
+    {/if}
 </div>
 
-
-
+<!-- Time Slots -->
+{#if selectedDate && dateHasAvailability() && listing.bookingSlotDuration}
+    <div>
+        <label class="block text-sm font-bold text-slate-700 mb-2">Select Time Slot *</label>
+        {#if availableSlots().length === 0}
+            <div class="p-4 bg-slate-50 rounded-2xl text-center">
+                <p class="text-sm text-slate-500">No slots available for this date.</p>
             </div>
+        {:else}
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {#each availableSlots() as slot}
+                    <label class="cursor-pointer {slot.isTaken ? 'opacity-40 cursor-not-allowed' : ''}">
+                        <input
+                            type="radio"
+                            name="startTime"
+                            value={slot.startStr}
+                            disabled={slot.isTaken}
+                            bind:group={selectedSlot}
+                            class="sr-only peer"
+                        />
+                        <div class="p-3 rounded-xl border-2 text-center transition-all
+                            {slot.isTaken
+                                ? 'border-slate-100 bg-slate-50 text-slate-400'
+                                : 'border-slate-200 hover:border-indigo-300 peer-checked:border-indigo-600 peer-checked:bg-indigo-50'}">
+                            <p class="text-xs font-black {slot.isTaken ? 'text-slate-400' : 'text-slate-900'}">
+                                {slot.startDisplay}
+                            </p>
+                            <p class="text-[10px] {slot.isTaken ? 'text-slate-300' : 'text-slate-400'}">
+                                {slot.isTaken ? '🚫 Booked' : `→ ${slot.endDisplay}`}
+                            </p>
+                        </div>
+                    </label>
+                {/each}
+            </div>
+            <!-- Hidden end time field -->
+            <input type="hidden" name="endTime" value={availableSlots().find(s => s.startStr === selectedSlot)?.endStr ?? ''} />
+        {/if}
+    </div>
+{:else if selectedDate && dateHasAvailability() && !listing.bookingSlotDuration}
+    <!-- Fallback to manual time if no slot duration set -->
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1">Start Time *</label>
+            <input name="startTime" type="time" required
+                class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+        </div>
+        <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1">End Time <span class="text-slate-400 font-normal">(optional)</span></label>
+            <input name="endTime" type="time"
+                class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+        </div>
+    </div>
+{/if}
+
+
+
+
 
             <div>
                 <label class="block text-sm font-bold text-slate-700 mb-1">Notes <span class="text-slate-400 font-normal">(optional)</span></label>

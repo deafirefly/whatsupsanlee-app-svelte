@@ -51,7 +51,15 @@ export const load = async ({ params }) => {
             eq(availability.isAvailable, true)
         ));
 
-    return { listing, photos, menu, schedule, vendorAvailability };
+    // Load confirmed bookings to block taken slots
+    const confirmedBookings = await db.select()
+        .from(bookings)
+        .where(and(
+            eq(bookings.listingId, listingId),
+            eq(bookings.status, 'confirmed')
+        ));
+
+    return { listing, photos, menu, schedule, vendorAvailability, confirmedBookings };
 };
 
 export const actions = {
