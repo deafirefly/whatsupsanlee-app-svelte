@@ -7,9 +7,6 @@
 
     let currentSlug = $state(listing.slug ?? '');
 
-    console.log('listing.slug from server:', listing.slug);
-console.log('currentSlug state:', currentSlug);
-
     let imageUrl = $state(listing.imageUrl || '');
     let isUploading = $state(false);
     let isUploadingGallery = $state(false);
