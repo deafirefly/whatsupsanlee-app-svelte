@@ -294,8 +294,8 @@ let today = new Date().toISOString().split('T')[0];
 
                 <!-- Booking Request Form -->
                  {#if listing.bookingEnabled && (
-    (listing.availabilityMode === 'specific' && data.specificDates && data.specificDates.length > 0) ||
-    (listing.availabilityMode !== 'specific' && data.vendorAvailability && data.vendorAvailability.length > 0)
+    (listing.availabilityMode === 'specific' && specificDates && specificDates.length > 0) ||
+    (listing.availabilityMode !== 'specific' && vendorAvailability && vendorAvailability.length > 0)
 )}
 <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
     <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-2">Book an Appointment</h3>
