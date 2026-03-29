@@ -358,13 +358,15 @@ let today = new Date().toISOString().split('T')[0];
 <div>
     <label class="block text-sm font-bold text-slate-700 mb-1">Select Date *</label>
     <input
-        name="date"
-        type="dte"
-        required
-        min={today}
-        bind:value={selectedDate}
-        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm"
-    />
+    name="date"
+    type="date"
+    required
+    min={today}
+    bind:value={selectedDate}
+    class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm appearance-auto"
+    style="color-scheme: light;"
+/>
+
     {#if selectedDate && !dateHasAvailability()}
         <p class="text-xs text-red-500 font-bold mt-1">
             ⚠ {listing.contactPerson} is not available on this day. Please pick another date.
