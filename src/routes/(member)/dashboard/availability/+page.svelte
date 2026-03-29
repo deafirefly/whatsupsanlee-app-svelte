@@ -193,14 +193,19 @@
             <!-- Add New Date -->
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
                 <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest">Add Available Date</h3>
+
                 <form method="POST" action="?/addSpecificDate" use:enhance={() => {
-                    return async ({ update }) => {
-                        await update({ reset: false });
-                        newDate = '';
-                        newNotes = '';
-                        showToast();
-                    };
-                }} class="space-y-3">
+    return async ({ update }) => {
+        await update();
+        newDate = '';
+        newStartTime = '09:00';
+        newEndTime = '17:00';
+        newNotes = '';
+        showToast();
+    };
+}} class="space-y-3">
+
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Date *</label>
