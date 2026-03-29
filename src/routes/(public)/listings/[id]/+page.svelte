@@ -237,16 +237,32 @@
         {/if}
 
         <!-- Available Days -->
-        <div class="mb-4 p-4 bg-slate-50 rounded-2xl">
-            <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Available Days</p>
-            <div class="flex flex-wrap gap-2">
-                {#each data.vendorAvailability as slot}
-                    <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 capitalize">
-                        {slot.dayOfWeek} · {slot.startTime} – {slot.endTime}
-                    </span>
-                {/each}
-            </div>
-        </div>
+<div class="mb-4 p-4 bg-slate-50 rounded-2xl space-y-3">
+    <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Available Days</p>
+    <div class="flex flex-wrap gap-2">
+        {#each data.vendorAvailability as slot}
+            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 capitalize">
+                {slot.dayOfWeek} · {slot.startTime} – {slot.endTime}
+            </span>
+        {/each}
+    </div>
+    {#if listing.bookingSlotDuration}
+        <p class="text-xs text-slate-500 flex items-center gap-1">
+            ⏱ Appointment duration:
+            <span class="font-black text-indigo-600">
+                {#if listing.bookingSlotDuration === 15}15 minutes
+                {:else if listing.bookingSlotDuration === 30}30 minutes
+                {:else if listing.bookingSlotDuration === 45}45 minutes
+                {:else if listing.bookingSlotDuration === 60}1 hour
+                {:else if listing.bookingSlotDuration === 90}1.5 hours
+                {:else if listing.bookingSlotDuration === 120}2 hours
+                {:else}{listing.bookingSlotDuration} minutes
+                {/if}
+            </span>
+        </p>
+    {/if}
+</div>
+
 
         <form method="POST" action="?/requestBooking" use:enhance class="space-y-4">
             <input type="hidden" name="listingId" value={listing.id} />
@@ -288,21 +304,26 @@
                 <div>
     <label class="block text-sm font-bold text-slate-700 mb-1">Start Time *</label>
     <input
-        name="startTime"
-        type="time"
-        required
-        onchange={(e) => {
-            const slotDuration = listing.bookingSlotDuration;
-            if (!slotDuration) return;
-            const [h, m] = (e.target as HTMLInputElement).value.split(':').map(Number);
-            const totalMinutes = h * 60 + m + slotDuration;
-            const endH = Math.floor(totalMinutes / 60) % 24;
-            const endM = totalMinutes % 60;
-            const endInput = document.querySelector('input[name="endTime"]') as HTMLInputElement;
-            if (endInput) endInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
-        }}
-        class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm"
-    />
+    name="startTime"
+    type="time"
+    required
+    onchange={(e) => {
+        const slotDuration = Number(listing.bookingSlotDuration ?? 0);
+        if (!slotDuration) return;
+        const val = (e.target as HTMLInputElement).value;
+        if (!val) return;
+        const [h, m] = val.split(':').map(Number);
+        const totalMinutes = h * 60 + m + slotDuration;
+        const endH = Math.floor(totalMinutes / 60) % 24;
+        const endM = totalMinutes % 60;
+        const endInput = document.querySelector('input[name="endTime"]') as HTMLInputElement;
+        if (endInput) {
+            endInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+        }
+    }}
+    class="w-full p-3 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm"
+/>
+
 </div>
 <div>
     <label class="block text-sm font-bold text-slate-700 mb-1">
