@@ -2,7 +2,7 @@ import { db } from '$lib/server/db';
 import { listings, listingPhotos, menuItems, listingSchedule } from '$lib/server/db/schema';
 import { bookings, availability } from '$lib/server/db/schema';
 import { eq, and, gte } from 'drizzle-orm';
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 
 export const load = async ({ params }) => {
     const listingId = Number(params.id);
@@ -43,48 +43,55 @@ export const load = async ({ params }) => {
         ))
         .orderBy(listingSchedule.date);
 
-        // Load availability for booking form
-        const vendorAvailability = await db.select()
-            .from(availability)
-            .where(and(
-                eq(availability.listingId, listingId),
-                eq(availability.isAvailable, true)
+    // Load availability for booking form
+    const vendorAvailability = await db.select()
+        .from(availability)
+        .where(and(
+            eq(availability.listingId, listingId),
+            eq(availability.isAvailable, true)
         ));
 
     return { listing, photos, menu, schedule, vendorAvailability };
 };
 
-requestBooking: async ({ request }) => {
-    const formData = await request.formData();
+export const actions = {
+    requestBooking: async ({ request }) => {
+        const formData = await request.formData();
 
-    const clientName = (formData.get('clientName') as string)?.trim();
-    const clientEmail = (formData.get('clientEmail') as string)?.trim();
-    const clientPhone = (formData.get('clientPhone') as string) || null;
-    const date = formData.get('date') as string;
-    const startTime = formData.get('startTime') as string;
-    const endTime = (formData.get('endTime') as string) || null;
-    const serviceType = (formData.get('serviceType') as string) || null;
-    const notes = (formData.get('notes') as string) || null;
-    const listingId = Number(formData.get('listingId'));
+        const clientName = (formData.get('clientName') as string)?.trim();
+        const clientEmail = (formData.get('clientEmail') as string)?.trim();
+        const clientPhone = (formData.get('clientPhone') as string) || null;
+        const date = formData.get('date') as string;
+        const startTime = formData.get('startTime') as string;
+        const endTime = (formData.get('endTime') as string) || null;
+        const serviceType = (formData.get('serviceType') as string) || null;
+        const notes = (formData.get('notes') as string) || null;
+        const listingId = Number(formData.get('listingId'));
 
-    if (!clientName || !clientEmail || !date || !startTime) {
-        return fail(400, { bookingMessage: 'Please fill in all required fields.' });
+        if (!clientName || !clientEmail || !date || !startTime) {
+            return fail(400, { bookingMessage: 'Please fill in all required fields.' });
+        }
+
+        try {
+            await db.insert(bookings).values({
+                listingId,
+                clientName,
+                clientEmail,
+                clientPhone,
+                date,
+                startTime,
+                endTime,
+                serviceType,
+                notes,
+                status: 'pending',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+        } catch (err) {
+            console.error(err);
+            return fail(500, { bookingMessage: 'Could not submit booking. Please try again.' });
+        }
+
+        return { bookingSuccess: true };
     }
-
-    await db.insert(bookings).values({
-        listingId,
-        clientName,
-        clientEmail,
-        clientPhone,
-        date,
-        startTime,
-        endTime,
-        serviceType,
-        notes,
-        status: 'pending',
-        createdAt: new Date(),
-        updatedAt: new Date()
-    });
-
-    return { bookingSuccess: true };
-}
+};

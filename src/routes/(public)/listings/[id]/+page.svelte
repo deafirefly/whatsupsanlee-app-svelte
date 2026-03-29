@@ -1,5 +1,6 @@
 <script lang="ts">
-    let { data } = $props();
+    import { enhance } from '$app/forms';
+    let { data, form } = $props();
     const { listing, photos, menu, schedule } = data;
 
     const categoryLabel = listing.category?.replace('_', ' ') || 'Community';
