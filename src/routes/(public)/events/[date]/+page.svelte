@@ -1,9 +1,9 @@
+<!-- src/routes/(public)/events/[date]/+page.svelte -->
 <script lang="ts">
     import type { PageData } from './$types';
 
     let { data } = $props();
 
-    // Use $derived so these update reactively when data changes
     let date = $derived(data.date);
     let displayDate = $derived(data.displayDate);
     let isToday = $derived(data.isToday);
@@ -15,30 +15,27 @@
 
     let yardSalesOpen = $state(false);
 
-
     let dateLabel = $derived(() => {
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
-    const twoDaysAgo = new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0];
-    const twoDaysFromNow = new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0];
-    const threeDaysAgo = new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0];
-    const threeDaysFromNow = new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        const twoDaysAgo = new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0];
+        const twoDaysFromNow = new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0];
+        const threeDaysAgo = new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0];
+        const threeDaysFromNow = new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0];
 
-    switch (date) {
-        case today: return { text: 'Today', color: 'bg-white/20' };
-        case yesterday: return { text: 'Yesterday', color: 'bg-white/20' };
-        case tomorrow: return { text: 'Tomorrow', color: 'bg-white/20' };
-        case twoDaysAgo: return { text: '2 Days Ago', color: 'bg-white/20' };
-        case twoDaysFromNow: return { text: 'In 2 Days', color: 'bg-white/20' };
-        case threeDaysAgo: return { text: '3 Days Ago', color: 'bg-white/20' };
-        case threeDaysFromNow: return { text: 'In 3 Days', color: 'bg-white/20' };
-        default: return null;
-    }
-});
+        switch (date) {
+            case today: return { text: 'Today', color: 'bg-white/20' };
+            case yesterday: return { text: 'Yesterday', color: 'bg-white/20' };
+            case tomorrow: return { text: 'Tomorrow', color: 'bg-white/20' };
+            case twoDaysAgo: return { text: '2 Days Ago', color: 'bg-white/20' };
+            case twoDaysFromNow: return { text: 'In 2 Days', color: 'bg-white/20' };
+            case threeDaysAgo: return { text: '3 Days Ago', color: 'bg-white/20' };
+            case threeDaysFromNow: return { text: 'In 3 Days', color: 'bg-white/20' };
+            default: return null;
+        }
+    });
 
-
-    // Category config
     const categoryConfig: Record<string, { emoji: string; label: string; color: string }> = {
         food_truck:     { emoji: '🚚', label: 'Food Truck',     color: 'bg-orange-50 text-orange-600 border-orange-100' },
         open_house:     { emoji: '🏠', label: 'Open House',     color: 'bg-blue-50 text-blue-600 border-blue-100' },
@@ -65,7 +62,6 @@
         return `${hour12}:${m} ${ampm}`;
     }
 
-    // Active filter
     let activeFilter = $state('all');
 
     const filters = [
@@ -79,7 +75,6 @@
         { value: 'other', label: 'Other', emoji: '📦' },
     ];
 
-    // Combine food truck locations with events for filtering
     let allItems = $derived([
         ...dayEvents,
         ...foodTruckLocations.map(ft => ({
@@ -104,7 +99,6 @@
             : allItems.filter(item => item.category === activeFilter)
     );
 
-    // Total count
     let totalCount = $derived(allItems.length);
 </script>
 
@@ -142,44 +136,39 @@
                     <span class="px-3 py-1 {dateLabel()?.color} rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block">
                         {dateLabel()?.text}
                     </span>
-                {/if}   
+                {/if}
                 <h1 class="text-3xl font-black">{displayDate}</h1>
                 <p class="text-indigo-200 mt-1">
                     {totalCount} {totalCount === 1 ? 'event' : 'events'} in Lee County
                 </p>
 
-
-                <!-- Date Navigation -->
-<div class="flex items-center gap-3 mt-6 flex-wrap">
-    <a href={`/events/${prevDate}`}
-        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
-        ← Previous
-    </a>
-    <a href={`/events/${new Date().toISOString().split('T')[0]}`}
-        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
-        Today
-    </a>
-    <a href={`/events/${nextDate}`}
-        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
-        Next →
-    </a>
-
-    <!-- Date Picker -->
-    <input
-        type="date"
-        value={date}
-        onchange={(e) => {
-            const target = e.target as HTMLInputElement;
-            if (target.value) {
-                window.location.href = `/events/${target.value}`;
-            }
-        }}
-        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all text-white cursor-pointer outline-none border-none [color-scheme:dark]"
-    />
-</div>
-
-</div>
-</div>
+                <div class="flex items-center gap-3 mt-6 flex-wrap">
+                    <a href={`/events/${prevDate}`}
+                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+                        ← Previous
+                    </a>
+                    <a href={`/events/${new Date().toISOString().split('T')[0]}`}
+                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+                        Today
+                    </a>
+                    <a href={`/events/${nextDate}`}
+                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all">
+                        Next →
+                    </a>
+                    <input
+                        type="date"
+                        value={date}
+                        onchange={(e) => {
+                            const target = e.target as HTMLInputElement;
+                            if (target.value) {
+                                window.location.href = `/events/${target.value}`;
+                            }
+                        }}
+                        class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-black transition-all text-white cursor-pointer outline-none border-none [color-scheme:dark]"
+                    />
+                </div>
+            </div>
+        </div>
 
         <!-- Category Filters -->
         <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -219,12 +208,10 @@
                     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden">
                         <div class="flex gap-4 p-6">
 
-                            <!-- Category Icon -->
                             <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-slate-50 border border-slate-100">
                                 {cat.emoji}
                             </div>
 
-                            <!-- Content -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-start justify-between gap-4 flex-wrap">
                                     <div>
@@ -240,8 +227,6 @@
                                         </div>
                                         <h3 class="font-black text-slate-900 text-lg">{item.title}</h3>
                                     </div>
-
-                                    <!-- Time -->
                                     {#if item.startTime}
                                         <div class="flex-shrink-0 text-right">
                                             <p class="font-black text-indigo-600 text-sm">
@@ -252,12 +237,10 @@
                                     {/if}
                                 </div>
 
-                                <!-- Description -->
                                 {#if item.description}
                                     <p class="text-sm text-slate-500 mt-2 line-clamp-2">{item.description}</p>
                                 {/if}
 
-                                <!-- Location -->
                                 <div class="flex items-center gap-4 mt-3 flex-wrap">
                                     {#if item.locationName || item.address}
                                         <div class="flex items-center gap-1.5 text-xs text-slate-500">
@@ -266,20 +249,15 @@
                                         </div>
                                     {/if}
                                     {#if item.latitude && item.longitude}
-
-                                        <a
-                                        href={`https://maps.google.com/?q=${item.latitude},${item.longitude}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="flex items-center gap-1 text-xs font-black text-indigo-600 hover:underline"
-                                 >
-                                        Get Directions →
+                                        <a href={`https://maps.google.com/?q=${item.latitude},${item.longitude}`}
+                                            target="_blank" rel="noopener noreferrer"
+                                            class="flex items-center gap-1 text-xs font-black text-indigo-600 hover:underline">
+                                            Get Directions →
                                         </a>
                                     {/if}
                                 </div>
                             </div>
 
-                            <!-- Image -->
                             {#if item.imageUrl}
                                 <div class="flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 hidden sm:block">
                                     <img src={item.imageUrl} alt={item.title} class="w-full h-full object-cover" />
@@ -292,13 +270,12 @@
             </div>
         {/if}
 
-
         <!-- Yard Sales on this day -->
         {#if data.yardSales?.length > 0}
-            <a href="/yard-sales/{sale.id}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 block hover:shadow-md transition-all">
+            <div class="mt-8 pt-8 border-t border-slate-200">
                 <button
                     onclick={() => yardSalesOpen = !yardSalesOpen}
-                    class="w-full flex items-center justify-between group"
+                    class="w-full flex items-center justify-between group mb-4"
                 >
                     <h2 class="text-xs font-black text-indigo-600 uppercase tracking-widest">
                         🏷️ Yard Sales Today ({data.yardSales.length})
@@ -309,7 +286,7 @@
                 </button>
 
                 {#if yardSalesOpen}
-                    <div class="mt-4 space-y-3">
+                    <div class="space-y-3">
                         {#each data.yardSales as sale}
                             <a href="/yard-sales/{sale.id}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 block hover:shadow-md transition-all">
                                 <div class="flex gap-4">
@@ -334,10 +311,6 @@
                                         <div class="flex items-center gap-2 mt-2 text-xs text-slate-500">
                                             <span>📍</span>
                                             <span>{sale.address}</span>
-                                            {#if sale.locationPin}
-                                                <a href={sale.locationPin} target="_blank" rel="noopener noreferrer"
-                                                    class="text-indigo-500 font-bold hover:underline">Map →</a>
-                                            {/if}
                                         </div>
                                         {#if sale.items?.length > 0}
                                             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -347,7 +320,7 @@
                                             </div>
                                         {/if}
                                         {#if sale.phone}
-                                            <p class="mt-2 text-xs text-slate-400">📞 <a href="tel:{sale.phone}" class="hover:text-indigo-600">{sale.phone}</a></p>
+                                            <p class="mt-2 text-xs text-slate-400">📞 {sale.phone}</p>
                                         {/if}
                                     </div>
                                 </div>
@@ -356,15 +329,15 @@
                     </div>
                 {:else}
                     <!-- Preview — show first 3 only -->
-                    <div class="mt-4 space-y-3">
+                    <div class="space-y-3">
                         {#each data.yardSales.slice(0, 3) as sale}
-                            <div class="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-4">
+                            <a href="/yard-sales/{sale.id}" class="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-md transition-all block">
                                 <span class="text-2xl">🏷️</span>
                                 <div class="flex-1 min-w-0">
                                     <p class="font-black text-slate-900 text-sm">{sale.title}</p>
                                     <p class="text-xs text-slate-500 mt-0.5">📍 {sale.address} · {formatTime(sale.startTime)}–{formatTime(sale.endTime)}</p>
                                 </div>
-                            </div>
+                            </a>
                         {/each}
                         {#if data.yardSales.length > 3}
                             <button
@@ -375,7 +348,7 @@
                         {/if}
                     </div>
                 {/if}
-            </a>
+            </div>
         {/if}
 
     </div>
