@@ -40,7 +40,7 @@
     <div class="max-w-3xl mx-auto px-6 py-8 space-y-6">
 
         <!-- Header Card -->
-        <div class="bg-gradient-to-br from-indigo-500 to-rose-500 rounded-3xl p-8 text-white relative overflow-hidden">
+        <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-8 text-white relative overflow-hidden">
             <div class="absolute -right-6 -top-6 text-white/10 text-[120px] font-black select-none leading-none">
                 🏷️
             </div>
