@@ -59,7 +59,7 @@
     <!-- Community Section -->
     <div class="pt-4">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-3">Community</p>
-        <a href=`/yard-sales`
+        <a href="/yard-sales"
             class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
             {isActive('/yard-sales') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
             🏷️ Yard Sales
