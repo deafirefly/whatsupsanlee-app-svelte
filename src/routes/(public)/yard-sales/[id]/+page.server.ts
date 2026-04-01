@@ -1,9 +1,9 @@
 import { db } from '$lib/server/db';
 import { yardSales, users, profiles } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { error } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 
-export const load = async ({ params }) => {
+export const load = async ({ params, locals }) => {
     const id = Number(params.id);
     if (isNaN(id)) throw error(404, 'Yard sale not found');
 
@@ -41,8 +41,8 @@ export const load = async ({ params }) => {
             ...sale,
             items: (() => { try { return JSON.parse(sale.items); } catch { return []; } })()
         },
-        currentUserId: locals.user?.id ?? null,        
-        isAdmin: locals.user?.isAdmin ?? false          
+        currentUserId: locals.user?.id ?? null,
+        isAdmin: locals.user?.isAdmin ?? false
     };
 };
 
@@ -53,14 +53,12 @@ export const actions = {
         const id = Number(params.id);
         if (isNaN(id)) return fail(400, { message: 'Invalid ID' });
 
-        // Check it exists and get owner
         const sale = await db.query.yardSales.findFirst({
             where: eq(yardSales.id, id)
         });
 
         if (!sale) return fail(404, { message: 'Yard sale not found' });
 
-        // Only owner or admin can delete
         const isAdmin = locals.user.isAdmin;
         if (sale.userId !== locals.user.id && !isAdmin) {
             return fail(403, { message: 'Not authorized to delete this yard sale' });
