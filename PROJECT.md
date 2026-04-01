@@ -183,7 +183,7 @@ git push
 
 # Deploy via CapRover dashboard → your app → Deployment tab → Deploy Now
 # Or via CLI:
-caprover deploy --default
+caprover deploy
 ```
 
 **Schema changes** — run SQL directly in Turso dashboard (app.turso.tech):
@@ -210,16 +210,24 @@ caprover deploy --default
 - Admin panel (users, listings, posts, events, logs, areas, communities, settings)
 - Maintenance mode
 - Uploadthing file uploads
-- Yard Sales (create, public listing, admin approve/reject/feature)
+- Yard Sales ✅ fully complete
   - Shown on: home page, /yard-sales, events page by date, community feed, member dashboard
   - Admin dashboard shows pending yard sale count + alert
   - Nav links in both MemberSidebar and admin Sidebar
 
 **Roadmap:**
-- Yard sales UI in events `[date]` +page.svelte (server data ready, UI not added yet)
-- Yard sales UI in community feed +page.svelte (server data ready, UI not added yet)
-- Yard sales UI in member dashboard +page.svelte (server data ready, UI not added yet)
-- Push notifications
-- Mobile app (iOS & Android via Capacitor) — config exists, not complete
-- More listing categories
-- Community feed widget on dashboard (currently "Coming Soon")
+
+### Next Features (priority order)
+1. **Farmer Listings** — similar to yard sales, farmers post what they're selling, when/where (farmers markets, roadside stands, CSA boxes). Needs: `farmer_listings` table, create/public/admin/detail pages.
+
+2. **Artist & Photographer Galleries** — enhanced listing profiles for artists and photographers with a photo gallery of their work. Needs: `gallery_photos` table linked to listings, gallery UI on listing detail page, Uploadthing multi-upload.
+
+3. **Family Activities Hub** — curated section for families with young children. Categories: movies, park events, hiking trails, playgrounds, kid-friendly events. Could be a filtered view of existing events plus a dedicated trails/parks directory. Needs: trails/parks table or category additions to events.
+
+4. **Local Digital Creators Directory** — profiles for local social media creators with links to their platforms (YouTube, TikTok, Instagram, Twitch, podcast, etc.). Needs: `creators` table, public directory page, admin approval.
+
+5. **Push Notifications** — web push for new yard sales, events, posts in your area. Needs: service worker, `push_subscriptions` table, VAPID keys, `web-push` npm package, opt-in UI in account settings.
+
+6. **Mobile App** — iOS & Android via Capacitor (config exists, not wired up yet).
+
+7. **Community feed widget on dashboard** — currently shows "Coming Soon".

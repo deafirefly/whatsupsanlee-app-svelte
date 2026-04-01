@@ -1,6 +1,6 @@
 <script lang="ts">
     let { data } = $props();
-    const { sale } = data;
+    const { sale, currentUserId, isAdmin } = data;
 
     function formatDate(dateStr: string) {
         const [y, m, d] = dateStr.split('-').map(Number);
@@ -24,18 +24,28 @@
 
 <div class="min-h-screen bg-slate-50/50 pb-20">
 
-    <!-- Back Nav -->
     <div class="bg-white border-b sticky top-0 z-10">
-        <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="/yard-sales" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-                ← Back to Yard Sales
-            </a>
+    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/yard-sales" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+            ← Back to Yard Sales
+        </a>
+        <div class="flex items-center gap-2">
+            {#if currentUserId === sale.userId || isAdmin}
+                <form method="POST" action="?/delete">
+                    <button
+                        onclick={(e) => { if (!confirm('Delete this yard sale?')) e.preventDefault(); }}
+                        class="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl text-xs font-black hover:bg-red-100 transition-all">
+                        🗑 Delete
+                    </button>
+                </form>
+            {/if}
             <a href="/yard-sales/create"
                 class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 transition-all">
                 + Post Your Sale
             </a>
         </div>
     </div>
+</div>
 
     <div class="max-w-3xl mx-auto px-6 py-8 space-y-6">
 
