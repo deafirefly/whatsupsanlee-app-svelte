@@ -95,9 +95,9 @@
     </select>
 </div>
 
-        <!-- Upcoming Yard Sales in Feed -->
+        <!-- Upcoming Yard Sales in  -->
         {#if data.yardSales?.length > 0}
-            <a href="/yard-sales/{sale.id}" class="flex items-start gap-4 p-4 hover:bg-slate-50 transition-all block">
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="text-xl">🏷️</span>
@@ -107,7 +107,7 @@
                 </div>
                 <div class="divide-y divide-slate-100">
                     {#each data.yardSales as sale}
-                        <a href="/yard-sales" class="flex items-start gap-4 p-4 hover:bg-slate-50 transition-all block">
+                        <a href="/yard-sales/{sale.id}" class="flex items-start gap-4 p-4 hover:bg-slate-50 transition-all block">
                             <div class="flex-shrink-0 bg-pink-50 border border-pink-100 rounded-xl p-2 text-center min-w-[48px]">
                                 <p class="text-[10px] font-black text-pink-400 uppercase">
                                     {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })}
@@ -138,8 +138,9 @@
                         </a>
                     </div>
                 {/if}
-            </a>
-        {/if}
+            </div>
+
+
 
 
         <!-- Posts -->
