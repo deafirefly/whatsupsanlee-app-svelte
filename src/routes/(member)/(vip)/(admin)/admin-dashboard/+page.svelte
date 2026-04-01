@@ -58,6 +58,21 @@
                 <p class="text-xs text-muted-foreground">v{data.systemStatus.version} · DB {data.systemStatus.database}</p>
             </CardContent>
         </Card>
+
+        <Card shadow="sm">
+    <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+        <CardTitle class="text-sm font-medium">Yard Sales</CardTitle>
+        <span class="text-lg">🏷️</span>
+    </CardHeader>
+    <CardContent>
+        <div class="text-2xl font-bold">{data.contentStats.totalYardSales}</div>
+        {#if data.contentStats.pendingYardSales > 0}
+            <p class="text-xs text-amber-500 font-bold">⏳ {data.contentStats.pendingYardSales} pending approval</p>
+        {:else}
+            <p class="text-xs text-muted-foreground">All approved</p>
+        {/if}
+    </CardContent>
+</Card>
     </div>
 
     <!-- Content Stats -->
@@ -135,6 +150,11 @@
                         <a href="/events-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
                             {data.contentStats.pendingEvents} event{data.contentStats.pendingEvents > 1 ? 's' : ''} pending →
                         </a>
+                    {/if}
+                    {#if data.contentStats.pendingYardSales > 0}
+                    <a href="/yard-sales-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
+                        {data.contentStats.pendingYardSales} yard sale{data.contentStats.pendingYardSales > 1 ? 's' : ''} pending →
+                    </a>
                     {/if}
                     {#if data.contentStats.unreadMessages > 0}
                         <a href="/messages-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
