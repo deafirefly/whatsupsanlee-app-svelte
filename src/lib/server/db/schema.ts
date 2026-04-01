@@ -310,3 +310,34 @@ export const bookings = sqliteTable('bookings', {
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
 });
+
+export const yardSales = sqliteTable('yard_sales', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+
+    // Core Info
+    title: text('title').notNull(),             // e.g. "Spring Cleanout Yard Sale"
+    description: text('description'),           // optional extra details
+    contactName: text('contact_name').notNull(),
+    phone: text('phone'),
+    email: text('email'),
+
+    // Location
+    address: text('address').notNull(),         // Street address where sale is held
+    locationPin: text('location_pin'),          // Optional Google Maps link
+
+    // Date & Time
+    saleDate: text('sale_date').notNull(),       // ISO date: '2026-04-12'
+    startTime: text('start_time').notNull(),     // '07:00'
+    endTime: text('end_time').notNull(),         // '13:00'
+
+    // Items for sale (stored as JSON array of strings)
+    items: text('items').notNull().default('[]'), // ["Furniture", "Clothes", "Tools", "Toys"]
+
+    // Status
+    status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
+    isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
+
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});
