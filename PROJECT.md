@@ -19,7 +19,7 @@ Version: **0.3.5** | Status: Active development
 |---|---|
 | Framework | SvelteKit 2 + Svelte 5 + TypeScript |
 | Styling | Tailwind CSS v4 |
-| Database | SQLite via libSQL (`@libsql/client`) |
+| Database | Turso (libSQL / SQLite) via `@libsql/client` |
 | ORM | Drizzle ORM + drizzle-kit |
 | UI Components | bits-ui + shadcn-svelte style components |
 | Icons | lucide-svelte |
@@ -46,13 +46,14 @@ Version: **0.3.5** | Status: Active development
 ```
 src/routes/
 ├── (public)/          # No auth required
-│   ├── +page          # Home — listing grid with search/filter
+│   ├── +page          # Home — listing grid + upcoming yard sales
 │   ├── login/
 │   ├── register/
-│   ├── feed/          # Community post feed
-│   ├── events/        # Events calendar + [date] detail
+│   ├── feed/          # Community post feed (includes yard sales)
+│   ├── events/        # Events calendar + [date] detail (includes yard sales)
 │   ├── listings/[id]  # Listing detail page
 │   ├── profile/[id]   # Public member profile
+│   ├── yard-sales/    # Public yard sales listing page
 │   ├── [slug]/        # Vanity URL for listings
 │   ├── about, contact, privacy, terms, support, subscribe, beta
 │   └── maintenance/
@@ -67,6 +68,7 @@ src/routes/
 │   ├── feed/create/
 │   ├── events/create/
 │   ├── listings/create/
+│   ├── yard-sales/create/   # Submit a yard sale (pending approval)
 │   └── settings/
 │   │
 │   └── (vip)/         # Requires vip/admin/superadmin role
@@ -83,6 +85,7 @@ src/routes/
 │           ├── listings-admin/
 │           ├── messages-admin/
 │           ├── posts-admin/
+│           ├── yard-sales-admin/   # Approve/reject/feature yard sales
 │           └── users/
 │
 ├── api/posts/[id]/comments/   # API endpoint
@@ -92,7 +95,7 @@ src/routes/
 
 ---
 
-## Database Schema (Drizzle + SQLite)
+## Database Schema (Drizzle + Turso/SQLite)
 
 | Table | Purpose |
 |---|---|
@@ -115,9 +118,10 @@ src/routes/
 | `contact_messages` | Contact form submissions |
 | `logs` | System activity log (login, changes, etc.) |
 | `system_meta` | Key-value store (e.g. `maintenance_mode = 'true'`) |
+| `yard_sales` | Member yard sale listings — title, date, time range, address, items (JSON array), status |
 
 **Listing categories:** `food_truck` | `farmer` | `photographer` | `artist`
-**Listing status:** `pending` | `approved` | `rejected`
+**Listing/Event/Yard Sale status:** `pending` | `approved` | `rejected`
 **Profile visibility:** `public` | `members` | `private`
 **Post status:** `published` | `removed`
 
@@ -128,8 +132,8 @@ src/routes/
 ```
 src/lib/components/
 ├── TopBar.svelte         # Top navigation bar
-├── Sidebar.svelte        # Main sidebar nav (member area)
-├── MemberSidebar.svelte  # Member-specific sidebar
+├── Sidebar.svelte        # Admin sidebar (dark theme, role-based sections)
+├── MemberSidebar.svelte  # Member sidebar (light theme, includes yard sales links)
 └── PageHeader.svelte     # Reusable page header
 
 src/lib/components/ui/   # shadcn-style UI primitives
@@ -143,22 +147,57 @@ src/lib/components/ui/   # shadcn-style UI primitives
 - **SvelteKit form actions** (`+page.server.ts`) for mutations (login, create, edit, delete)
 - **Svelte 5 runes** — `$props()`, `$state()`, `$derived()` used throughout
 - **`use:enhance`** from `$app/forms` for progressive enhancement on forms
-- **`page` from `$app/state`** (Svelte 5 style, not `$app/stores`)
+- **`page` from `$app/stores`** — Sidebar components use `$app/stores` not `$app/state`
 - Server-side auth checks in `+layout.server.ts` files per route group
 - Maintenance mode via `system_meta` table, checked in `hooks.server.ts`
+- Items/tags stored as JSON strings in SQLite, parsed on load
 
 ---
 
 ## Environment Variables
 
 ```env
-UPLOADTHING_TOKEN=your_token_here
-# Database: uses local.db (SQLite) by default via libSQL
+# Local (.env)
+TURSO_URL=libsql://whatsupsanlee-deafirefly.aws-us-east-1.turso.io
+TURSO_AUTH_TOKEN=your_token_here
+UPLOADTHING_TOKEN=your_uploadthing_token
+
+# Production — set in CapRover App Configs > Environmental Variables
+# Same keys as above — CapRover env vars override everything
 ```
+
+**Important notes:**
+- `drizzle-kit` reads `.env` only — not `.env.production`
+- Set `TURSO_URL` + `TURSO_AUTH_TOKEN` in `.env` to push schema changes to Turso
+- Production token must also be set in **CapRover env vars** — not just the file
 
 ---
 
-## Current Status / Roadmap
+## Deployment Workflow
+
+```bash
+# Commit and push to GitHub
+git add .
+git commit -m "your message"
+git push
+
+# Deploy via CapRover dashboard → your app → Deployment tab → Deploy Now
+# Or via CLI:
+caprover deploy
+```
+
+**Schema changes** — run SQL directly in Turso dashboard (app.turso.tech):
+- Go to database → Edit Data → SQL scratches → paste SQL → Run
+- `drizzle-kit push` also works if `.env` has valid Turso credentials
+
+**If production goes down (500 error):**
+- Check CapRover logs for the error message
+- Most common cause: expired `TURSO_AUTH_TOKEN` in CapRover env vars
+- Fix: Turso dashboard → Generate Token → update in CapRover App Configs → Save & Restart
+
+---
+
+## Current Status
 
 **Working:**
 - Auth (register, login, logout, VIP expiry)
@@ -171,9 +210,16 @@ UPLOADTHING_TOKEN=your_token_here
 - Admin panel (users, listings, posts, events, logs, areas, communities, settings)
 - Maintenance mode
 - Uploadthing file uploads
+- Yard Sales (create, public listing, admin approve/reject/feature)
+  - Shown on: home page, /yard-sales, events page by date, community feed, member dashboard
+  - Admin dashboard shows pending yard sale count + alert
+  - Nav links in both MemberSidebar and admin Sidebar
 
-**In Progress / Roadmap:**
+**Roadmap:**
+- Yard sales UI in events `[date]` +page.svelte (server data ready, UI not added yet)
+- Yard sales UI in community feed +page.svelte (server data ready, UI not added yet)
+- Yard sales UI in member dashboard +page.svelte (server data ready, UI not added yet)
 - Push notifications
 - Mobile app (iOS & Android via Capacitor) — config exists, not complete
 - More listing categories
-- Community feed visible on dashboard (currently "Coming Soon")
+- Community feed widget on dashboard (currently "Coming Soon")
