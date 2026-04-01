@@ -1,4 +1,3 @@
-<!-- src/routes/(public)/yard-sales/+page.svelte -->
 <script lang="ts">
     let { data } = $props();
 
@@ -47,7 +46,7 @@
         {:else}
             <div class="space-y-4">
                 {#each data.upcoming as sale}
-                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6">
+                    <a href="/yard-sales/{sale.id}" class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 block">
                         <div class="flex flex-col md:flex-row md:items-start gap-4">
 
                             <!-- Date badge -->
@@ -113,7 +112,7 @@
                                 {/if}
                             </div>
                         </div>
-                    </div>
+                    </a>
                 {/each}
             </div>
         {/if}
@@ -128,12 +127,13 @@
             <div class="space-y-3 opacity-60">
                 {#each data.past as sale}
                     <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
+                    <a href="/yard-sales/{sale.id}" class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 hover:bg-slate-50 transition-all">
                         <div class="text-2xl">🏷️</div>
                         <div class="flex-1">
                             <p class="font-black text-slate-600">{sale.title}</p>
                             <p class="text-xs text-slate-400">{formatDate(sale.saleDate)} · {sale.address}</p>
                         </div>
-                    </div>
+                    </a>
                 {/each}
             </div>
         </section>

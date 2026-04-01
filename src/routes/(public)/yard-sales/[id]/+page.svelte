@@ -1,0 +1,189 @@
+<script lang="ts">
+    let { data } = $props();
+    const { sale } = data;
+
+    function formatDate(dateStr: string) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+            weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+        });
+    }
+
+    function formatTime(t: string) {
+        const [h, m] = t.split(':').map(Number);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const hour = h % 12 || 12;
+        return `${hour}:${m.toString().padStart(2, '0')} ${ampm}`;
+    }
+
+    // Is the sale today or in the future?
+    const today = new Date().toISOString().split('T')[0];
+    const isPast = sale.saleDate < today;
+    const isToday = sale.saleDate === today;
+</script>
+
+<div class="min-h-screen bg-slate-50/50 pb-20">
+
+    <!-- Back Nav -->
+    <div class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="/yard-sales" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                ← Back to Yard Sales
+            </a>
+            <a href="/yard-sales/create"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 transition-all">
+                + Post Your Sale
+            </a>
+        </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto px-6 py-8 space-y-6">
+
+        <!-- Header Card -->
+        <div class="bg-gradient-to-br from-pink-500 to-rose-500 rounded-3xl p-8 text-white relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 text-white/10 text-[120px] font-black select-none leading-none">
+                🏷️
+            </div>
+            <div class="relative z-10">
+                {#if isPast}
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block">
+                        Past Sale
+                    </span>
+                {:else if isToday}
+                    <span class="px-3 py-1 bg-white/30 rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block animate-pulse">
+                        🔴 Happening Today!
+                    </span>
+                {:else}
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block">
+                        Upcoming Sale
+                    </span>
+                {/if}
+
+                {#if sale.isFeatured}
+                    <span class="px-3 py-1 bg-amber-400 text-slate-900 rounded-full text-xs font-black uppercase tracking-widest mb-3 inline-block ml-2">
+                        ✨ Featured
+                    </span>
+                {/if}
+
+                <h1 class="text-3xl font-black mt-2">{sale.title}</h1>
+                <p class="text-pink-200 mt-1">by {sale.contactName}</p>
+            </div>
+        </div>
+
+        <!-- Date, Time & Location -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest">When & Where</h2>
+
+            <div class="flex items-start gap-4">
+                <!-- Date badge -->
+                <div class="flex-shrink-0 bg-pink-50 border border-pink-100 rounded-2xl p-4 text-center min-w-[72px]">
+                    <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest">
+                        {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })}
+                    </p>
+                    <p class="text-3xl font-black text-pink-600 leading-tight">
+                        {new Date(sale.saleDate + 'T00:00:00').getDate()}
+                    </p>
+                    <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest">
+                        {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
+                    </p>
+                </div>
+
+                <div class="flex-1 space-y-3">
+                    <div>
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Date</p>
+                        <p class="font-black text-slate-900">{formatDate(sale.saleDate)}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Time</p>
+                        <p class="font-black text-slate-900 text-lg text-indigo-600">
+                            {formatTime(sale.startTime)} – {formatTime(sale.endTime)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="pt-4 border-t border-slate-100">
+                <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Address</p>
+                <p class="font-bold text-slate-900">📍 {sale.address}</p>
+                {#if sale.locationPin}
+                    <a href={sale.locationPin} target="_blank" rel="noopener noreferrer"
+                        class="mt-3 inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-sm hover:bg-indigo-700 transition-all">
+                        🗺️ Get Directions
+                    </a>
+                {:else}
+                    <a href="https://maps.google.com/?q={encodeURIComponent(sale.address)}"
+                        target="_blank" rel="noopener noreferrer"
+                        class="mt-3 inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-sm hover:bg-indigo-700 transition-all">
+                        🗺️ Search on Google Maps
+                    </a>
+                {/if}
+            </div>
+        </div>
+
+        <!-- Items for Sale -->
+        {#if sale.items?.length > 0}
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+                <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">What's for Sale</h2>
+                <div class="flex flex-wrap gap-2">
+                    {#each sale.items as item}
+                        <span class="px-4 py-2 bg-pink-50 border border-pink-100 text-pink-700 rounded-full text-sm font-black">
+                            {item}
+                        </span>
+                    {/each}
+                </div>
+            </div>
+        {/if}
+
+        <!-- Description -->
+        {#if sale.description}
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+                <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Details</h2>
+                <p class="text-slate-700 leading-relaxed whitespace-pre-wrap">{sale.description}</p>
+            </div>
+        {/if}
+
+        <!-- Contact -->
+        {#if sale.phone || sale.email}
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-3">
+                <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Contact</h2>
+                {#if sale.phone}
+                    <a href="tel:{sale.phone}"
+                        class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl hover:bg-indigo-50 transition-all group">
+                        <span class="text-xl">📞</span>
+                        <span class="font-bold text-slate-700 group-hover:text-indigo-600">{sale.phone}</span>
+                    </a>
+                {/if}
+                {#if sale.email}
+                    <a href="mailto:{sale.email}"
+                        class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl hover:bg-indigo-50 transition-all group">
+                        <span class="text-xl">✉️</span>
+                        <span class="font-bold text-slate-700 group-hover:text-indigo-600">{sale.email}</span>
+                    </a>
+                {/if}
+            </div>
+        {/if}
+
+        <!-- Share -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+            <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Share This Sale</h2>
+            <button
+                onclick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied!');
+                }}
+                class="flex items-center gap-3 px-5 py-3 bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 rounded-2xl font-black text-sm transition-all"
+            >
+                🔗 Copy Link
+            </button>
+        </div>
+
+        <!-- Back link -->
+        <div class="text-center pt-4">
+            <a href="/yard-sales" class="text-sm font-bold text-indigo-600 hover:underline">
+                ← See all upcoming yard sales
+            </a>
+        </div>
+
+    </div>
+</div>

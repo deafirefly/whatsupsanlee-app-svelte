@@ -97,7 +97,7 @@
 
         <!-- Upcoming Yard Sales in Feed -->
         {#if data.yardSales?.length > 0}
-            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <a href="/yard-sales/{sale.id}" class="flex items-start gap-4 p-4 hover:bg-slate-50 transition-all block">
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="text-xl">🏷️</span>
@@ -138,7 +138,7 @@
                         </a>
                     </div>
                 {/if}
-            </div>
+            </a>
         {/if}
 
 

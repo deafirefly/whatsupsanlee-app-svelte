@@ -295,7 +295,7 @@
 
         <!-- Yard Sales on this day -->
         {#if data.yardSales?.length > 0}
-            <div class="mt-8 pt-8 border-t border-slate-200">
+            <a href="/yard-sales/{sale.id}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 block hover:shadow-md transition-all">
                 <button
                     onclick={() => yardSalesOpen = !yardSalesOpen}
                     class="w-full flex items-center justify-between group"
@@ -375,7 +375,7 @@
                         {/if}
                     </div>
                 {/if}
-            </div>
+            </a>
         {/if}
 
     </div>

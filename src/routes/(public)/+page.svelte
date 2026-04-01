@@ -187,7 +187,7 @@
                 <h2 class="text-2xl font-black text-slate-900 mb-6">🏷️ Upcoming Yard Sales</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {#each data.upcomingYardSales as sale}
-                        <a href="/yard-sales" class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all block">
+                        <a href="/yard-sales/{sale.id}" class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all block">
                             <p class="font-black text-slate-900">{sale.title}</p>
                             <p class="text-sm text-slate-500 mt-1">📅 {sale.saleDate} · {sale.address}</p>
                             <div class="mt-2 flex flex-wrap gap-1">
