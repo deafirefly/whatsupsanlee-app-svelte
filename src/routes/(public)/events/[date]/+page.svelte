@@ -13,6 +13,9 @@
     let nextDate = $derived(data.nextDate);
     let isLoggedIn = $derived(data.isLoggedIn);
 
+    let yardSalesOpen = $state(false);
+
+
     let dateLabel = $derived(() => {
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
@@ -289,57 +292,89 @@
             </div>
         {/if}
 
+
         <!-- Yard Sales on this day -->
         {#if data.yardSales?.length > 0}
             <div class="mt-8 pt-8 border-t border-slate-200">
-                <h2 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-4">
-                    🏷️ Yard Sales Today ({data.yardSales.length})
-                </h2>
-                <div class="space-y-3">
-                    {#each data.yardSales as sale}
-                        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-                            <div class="flex gap-4">
-                                <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-pink-50 border border-pink-100">
-                                    🏷️
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between gap-4 flex-wrap">
-                                        <div>
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border bg-pink-50 text-pink-600 border-pink-100">
-                                                Yard Sale
-                                            </span>
-                                            <h3 class="font-black text-slate-900 text-lg mt-1">{sale.title}</h3>
-                                            <p class="text-sm text-slate-500">by {sale.contactName}</p>
-                                        </div>
-                                        <div class="flex-shrink-0 text-right">
-                                            <p class="font-black text-indigo-600 text-sm">
-                                                {formatTime(sale.startTime)} – {formatTime(sale.endTime)}
-                                            </p>
-                                        </div>
+                <button
+                    onclick={() => yardSalesOpen = !yardSalesOpen}
+                    class="w-full flex items-center justify-between group"
+                >
+                    <h2 class="text-xs font-black text-indigo-600 uppercase tracking-widest">
+                        🏷️ Yard Sales Today ({data.yardSales.length})
+                    </h2>
+                    <span class="text-xs font-black text-indigo-400 group-hover:text-indigo-600 transition-colors">
+                        {yardSalesOpen ? '▲ Hide' : '▼ Show all'}
+                    </span>
+                </button>
+
+                {#if yardSalesOpen}
+                    <div class="mt-4 space-y-3">
+                        {#each data.yardSales as sale}
+                            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-pink-50 border border-pink-100">
+                                        🏷️
                                     </div>
-                                    <div class="flex items-center gap-2 mt-2 text-xs text-slate-500">
-                                        <span>📍</span>
-                                        <span>{sale.address}</span>
-                                        {#if sale.locationPin}
-                                            <a href={sale.locationPin} target="_blank" rel="noopener noreferrer"
-                                                class="text-indigo-500 font-bold hover:underline">Map →</a>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between gap-4 flex-wrap">
+                                            <div>
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border bg-pink-50 text-pink-600 border-pink-100">
+                                                    Yard Sale
+                                                </span>
+                                                <h3 class="font-black text-slate-900 text-lg mt-1">{sale.title}</h3>
+                                                <p class="text-sm text-slate-500">by {sale.contactName}</p>
+                                            </div>
+                                            <div class="flex-shrink-0 text-right">
+                                                <p class="font-black text-indigo-600 text-sm">
+                                                    {formatTime(sale.startTime)} – {formatTime(sale.endTime)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 mt-2 text-xs text-slate-500">
+                                            <span>📍</span>
+                                            <span>{sale.address}</span>
+                                            {#if sale.locationPin}
+                                                <a href={sale.locationPin} target="_blank" rel="noopener noreferrer"
+                                                    class="text-indigo-500 font-bold hover:underline">Map →</a>
+                                            {/if}
+                                        </div>
+                                        {#if sale.items?.length > 0}
+                                            <div class="mt-2 flex flex-wrap gap-1.5">
+                                                {#each sale.items as item}
+                                                    <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">{item}</span>
+                                                {/each}
+                                            </div>
+                                        {/if}
+                                        {#if sale.phone}
+                                            <p class="mt-2 text-xs text-slate-400">📞 <a href="tel:{sale.phone}" class="hover:text-indigo-600">{sale.phone}</a></p>
                                         {/if}
                                     </div>
-                                    {#if sale.items?.length > 0}
-                                        <div class="mt-2 flex flex-wrap gap-1.5">
-                                            {#each sale.items as item}
-                                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">{item}</span>
-                                            {/each}
-                                        </div>
-                                    {/if}
-                                    {#if sale.phone}
-                                        <p class="mt-2 text-xs text-slate-400">📞 <a href="tel:{sale.phone}" class="hover:text-indigo-600">{sale.phone}</a></p>
-                                    {/if}
                                 </div>
                             </div>
-                        </div>
-                    {/each}
-                </div>
+                        {/each}
+                    </div>
+                {:else}
+                    <!-- Preview — show first 3 only -->
+                    <div class="mt-4 space-y-3">
+                        {#each data.yardSales.slice(0, 3) as sale}
+                            <div class="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-4">
+                                <span class="text-2xl">🏷️</span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-black text-slate-900 text-sm">{sale.title}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">📍 {sale.address} · {formatTime(sale.startTime)}–{formatTime(sale.endTime)}</p>
+                                </div>
+                            </div>
+                        {/each}
+                        {#if data.yardSales.length > 3}
+                            <button
+                                onclick={() => yardSalesOpen = true}
+                                class="w-full py-3 border-2 border-dashed border-indigo-200 text-indigo-600 font-black text-xs rounded-2xl hover:border-indigo-400 hover:bg-indigo-50 transition-all">
+                                + Show {data.yardSales.length - 3} more yard sale{data.yardSales.length - 3 > 1 ? 's' : ''}
+                            </button>
+                        {/if}
+                    </div>
+                {/if}
             </div>
         {/if}
 
