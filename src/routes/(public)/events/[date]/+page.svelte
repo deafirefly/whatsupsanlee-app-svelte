@@ -311,7 +311,7 @@
                 {#if yardSalesOpen}
                     <div class="mt-4 space-y-3">
                         {#each data.yardSales as sale}
-                            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+                            <a href="/yard-sales/{sale.id}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 block hover:shadow-md transition-all">
                                 <div class="flex gap-4">
                                     <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-pink-50 border border-pink-100">
                                         🏷️
@@ -351,7 +351,7 @@
                                         {/if}
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         {/each}
                     </div>
                 {:else}
