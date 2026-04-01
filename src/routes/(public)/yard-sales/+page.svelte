@@ -126,7 +126,6 @@
             </h2>
             <div class="space-y-3 opacity-60">
                 {#each data.past as sale}
-                    <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
                     <a href="/yard-sales/{sale.id}" class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 hover:bg-slate-50 transition-all">
                         <div class="text-2xl">🏷️</div>
                         <div class="flex-1">
