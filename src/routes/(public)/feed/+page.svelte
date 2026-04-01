@@ -95,6 +95,52 @@
     </select>
 </div>
 
+        <!-- Upcoming Yard Sales in Feed -->
+        {#if data.yardSales?.length > 0}
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🏷️</span>
+                        <h3 class="font-black text-slate-900">Upcoming Yard Sales</h3>
+                    </div>
+                    <a href="/yard-sales" class="text-xs font-black text-indigo-600 hover:underline">View all →</a>
+                </div>
+                <div class="divide-y divide-slate-100">
+                    {#each data.yardSales as sale}
+                        <a href="/yard-sales" class="flex items-start gap-4 p-4 hover:bg-slate-50 transition-all block">
+                            <div class="flex-shrink-0 bg-pink-50 border border-pink-100 rounded-xl p-2 text-center min-w-[48px]">
+                                <p class="text-[10px] font-black text-pink-400 uppercase">
+                                    {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })}
+                                </p>
+                                <p class="text-lg font-black text-pink-600 leading-tight">
+                                    {new Date(sale.saleDate + 'T00:00:00').getDate()}
+                                </p>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-black text-slate-900 text-sm">{sale.title}</p>
+                                <p class="text-xs text-slate-500 mt-0.5">📍 {sale.address}</p>
+                                {#if sale.items?.length > 0}
+                                    <div class="mt-1.5 flex flex-wrap gap-1">
+                                        {#each sale.items.slice(0, 3) as item}
+                                            <span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[10px] font-bold">{item}</span>
+                                        {/each}
+                                    </div>
+                                {/if}
+                            </div>
+                        </a>
+                    {/each}
+                </div>
+                {#if isLoggedIn}
+                    <div class="p-4 bg-slate-50 border-t border-slate-100">
+                        <a href="/yard-sales/create"
+                            class="block text-center text-xs font-black text-indigo-600 hover:text-indigo-800 transition-colors">
+                            + Post Your Yard Sale
+                        </a>
+                    </div>
+                {/if}
+            </div>
+        {/if}
+
 
         <!-- Posts -->
         {#if localPosts.length === 0}

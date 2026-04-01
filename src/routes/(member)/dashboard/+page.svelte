@@ -314,18 +314,41 @@
         {/if}
     </div>
 
-    <!-- Community Feed & VIP -->
+    <!-- Community Feed & Yard Sales & VIP -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Community Feed Placeholder -->
+
+        <!-- Yard Sales -->
         <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-            <div class="flex items-center gap-3 mb-3">
-                <span class="text-2xl">📣</span>
-                <h3 class="font-black text-slate-900">Community Feed</h3>
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🏷️</span>
+                    <h3 class="font-black text-slate-900">Your Yard Sales</h3>
+                </div>
+                <a href="/yard-sales" class="text-xs font-black text-indigo-600 hover:underline">View all →</a>
             </div>
-            <p class="text-sm text-slate-500">See what other members are posting.</p>
-            <div class="mt-4 p-4 bg-slate-50 rounded-2xl text-center">
-                <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Coming Soon</p>
-            </div>
+
+            {#if data.myYardSales?.length > 0}
+                <div class="space-y-2">
+                    {#each data.myYardSales.slice(0, 2) as sale}
+                        <div class="p-3 bg-slate-50 rounded-2xl">
+                            <p class="font-black text-slate-900 text-sm">{sale.title}</p>
+                            <p class="text-xs text-slate-500 mt-0.5">📅 {sale.saleDate}</p>
+                            <span class="text-[10px] font-black uppercase tracking-widest mt-1 inline-block
+                                {sale.status === 'approved' ? 'text-emerald-500' :
+                                 sale.status === 'pending' ? 'text-amber-500' : 'text-red-400'}">
+                                ● {sale.status}
+                            </span>
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <p class="text-sm text-slate-400">You haven't posted any yard sales yet.</p>
+            {/if}
+
+            <a href="/yard-sales/create"
+                class="mt-4 block text-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-xs hover:bg-indigo-700 transition-all">
+                + Post a Yard Sale
+            </a>
         </div>
 
         <!-- VIP Lounge -->
@@ -357,5 +380,6 @@
             </div>
         {/if}
     </div>
+
 
 </div>
