@@ -125,7 +125,7 @@
                 <div class="flex flex-wrap gap-3">
                     {#if profile.instagram}
                         <a href={`https://instagram.com/${profile.instagram}`} target="_blank" rel="noopener noreferrer"
-                            class="flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-600 rounded-xl text-sm font-black border border-pink-100 hover:bg-pink-600 hover:text-white transition-all">
+                            class="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-sm font-black border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all">
                             📸 @{profile.instagram}
                         </a>
                     {/if}

@@ -555,7 +555,7 @@ let today = new Date().toISOString().split('T')[0];
                     <div class="grid grid-cols-2 gap-4">
                         {#if listing.instagram}
                             <a href={`https://instagram.com/${listing.instagram}`} target="_blank" rel="noopener noreferrer"
-                                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-pink-50 hover:text-pink-600 transition-all group">
+                                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <span class="text-2xl group-hover:scale-110 transition-transform">📸</span>
                                 <span class="text-[10px] font-black uppercase">Instagram</span>
                             </a>

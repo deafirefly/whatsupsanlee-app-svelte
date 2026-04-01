@@ -40,7 +40,7 @@
     <div class="max-w-3xl mx-auto px-6 py-8 space-y-6">
 
         <!-- Header Card -->
-        <div class="bg-gradient-to-br from-pink-500 to-rose-500 rounded-3xl p-8 text-white relative overflow-hidden">
+        <div class="bg-gradient-to-br from-indigo-500 to-rose-500 rounded-3xl p-8 text-white relative overflow-hidden">
             <div class="absolute -right-6 -top-6 text-white/10 text-[120px] font-black select-none leading-none">
                 🏷️
             </div>
@@ -66,7 +66,7 @@
                 {/if}
 
                 <h1 class="text-3xl font-black mt-2">{sale.title}</h1>
-                <p class="text-pink-200 mt-1">by {sale.contactName}</p>
+                <p class="text-indigo-200 mt-1">by {sale.contactName}</p>
             </div>
         </div>
 
@@ -76,14 +76,14 @@
 
             <div class="flex items-start gap-4">
                 <!-- Date badge -->
-                <div class="flex-shrink-0 bg-pink-50 border border-pink-100 rounded-2xl p-4 text-center min-w-[72px]">
-                    <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest">
+                <div class="flex-shrink-0 bg-indigo-50 border border-indigo-100 rounded-2xl p-4 text-center min-w-[72px]">
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">
                         {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })}
                     </p>
-                    <p class="text-3xl font-black text-pink-600 leading-tight">
+                    <p class="text-3xl font-black text-indigo-600 leading-tight">
                         {new Date(sale.saleDate + 'T00:00:00').getDate()}
                     </p>
-                    <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest">
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">
                         {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
                     </p>
                 </div>
@@ -127,7 +127,7 @@
                 <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">What's for Sale</h2>
                 <div class="flex flex-wrap gap-2">
                     {#each sale.items as item}
-                        <span class="px-4 py-2 bg-pink-50 border border-pink-100 text-pink-700 rounded-full text-sm font-black">
+                        <span class="px-4 py-2 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-full text-sm font-black">
                             {item}
                         </span>
                     {/each}

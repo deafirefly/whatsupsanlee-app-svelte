@@ -101,7 +101,7 @@
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                             {:else}
-                                <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-pink-500 transition-all duration-500 flex items-center justify-center">
+                                <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-indigo-500 transition-all duration-500 flex items-center justify-center">
                                     <span class="text-6xl opacity-40">
                                         {item.category === 'food_truck' ? '🚚' : item.category === 'farmer' ? '👨‍🌾' : item.category === 'photographer' ? '📸' : '🎨'}
                                     </span>

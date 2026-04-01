@@ -108,11 +108,11 @@
                 <div class="divide-y divide-slate-100">
                     {#each data.yardSales as sale}
                         <a href="/yard-sales/{sale.id}" class="flex items-start gap-4 p-4 hover:bg-slate-50 transition-all block">
-                            <div class="flex-shrink-0 bg-pink-50 border border-pink-100 rounded-xl p-2 text-center min-w-[48px]">
-                                <p class="text-[10px] font-black text-pink-400 uppercase">
+                            <div class="flex-shrink-0 bg-indigo-50 border border-indigo-100 rounded-xl p-2 text-center min-w-[48px]">
+                                <p class="text-[10px] font-black text-indigo-400 uppercase">
                                     {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })}
                                 </p>
-                                <p class="text-lg font-black text-pink-600 leading-tight">
+                                <p class="text-lg font-black text-indigo-600 leading-tight">
                                     {new Date(sale.saleDate + 'T00:00:00').getDate()}
                                 </p>
                             </div>

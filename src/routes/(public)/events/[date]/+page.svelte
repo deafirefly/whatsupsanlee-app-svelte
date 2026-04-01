@@ -39,7 +39,7 @@
     const categoryConfig: Record<string, { emoji: string; label: string; color: string }> = {
         food_truck:     { emoji: '🚚', label: 'Food Truck',     color: 'bg-orange-50 text-orange-600 border-orange-100' },
         open_house:     { emoji: '🏠', label: 'Open House',     color: 'bg-blue-50 text-blue-600 border-blue-100' },
-        yard_sale:      { emoji: '🛍️', label: 'Yard Sale',      color: 'bg-pink-50 text-pink-600 border-pink-100' },
+        yard_sale:      { emoji: '🛍️', label: 'Yard Sale',      color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
         farmers_market: { emoji: '🌽', label: "Farmer's Market", color: 'bg-green-50 text-green-600 border-green-100' },
         movie:          { emoji: '🎬', label: 'Movie',          color: 'bg-purple-50 text-purple-600 border-purple-100' },
         community:      { emoji: '🎉', label: 'Community',      color: 'bg-yellow-50 text-yellow-600 border-yellow-100' },
@@ -290,13 +290,13 @@
                         {#each data.yardSales as sale}
                             <a href="/yard-sales/{sale.id}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 block hover:shadow-md transition-all">
                                 <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-pink-50 border border-pink-100">
+                                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-indigo-50 border border-indigo-100">
                                         🏷️
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-start justify-between gap-4 flex-wrap">
                                             <div>
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border bg-pink-50 text-pink-600 border-pink-100">
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border bg-indigo-50 text-indigo-600 border-indigo-100">
                                                     Yard Sale
                                                 </span>
                                                 <h3 class="font-black text-slate-900 text-lg mt-1">{sale.title}</h3>
