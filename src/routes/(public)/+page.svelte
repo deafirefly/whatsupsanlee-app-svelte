@@ -17,6 +17,8 @@
 </script>
 
 <div class="min-h-screen flex flex-col bg-background">
+
+    <!-- Hero Section -->
 	<main class="flex-1 flex flex-col items-center justify-center p-6 text-center">
 		<div class="max-w-3xl space-y-6">
 			<h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter text-indigo-600">
@@ -40,7 +42,8 @@
 		</div>
 	</main>
 
-	<div class="max-w-7xl mx-auto p-6">
+    <!-- Community Listings -->
+	<div class="max-w-7xl mx-auto w-full p-6">
         <header class="mb-12 text-center">
             <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Discover Our Community</h1>
             <p class="text-lg text-muted-foreground">Local food trucks, farmers, and creators in one place.</p>
@@ -90,7 +93,6 @@
                 {#each filteredListings as item}
                     <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
 
-                        <!-- 16x9 Media Section -->
                         <div class="relative w-full aspect-video overflow-hidden">
                             {#if item.imageUrl}
                                 <img
@@ -106,36 +108,30 @@
                                 </div>
                             {/if}
 
-                            <!-- Title overlay -->
-<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-    <!-- Badges -->
-    {#if item.isFeatured || item.isVip}
-        <div class="flex items-center gap-2 mb-1">
-            {#if item.isFeatured}
-                <span class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-black rounded-full uppercase tracking-widest">
-                    ✨ Featured
-                </span>
-            {/if}
-            {#if item.isVip}
-                <span class="px-2 py-0.5 bg-amber-400 text-slate-900 text-[10px] font-black rounded-full uppercase tracking-widest">
-                    ⭐ VIP
-                </span>
-            {/if}
-        </div>
-    {/if}
-    <h2 class="text-white font-black text-lg leading-tight line-clamp-1">
-        {item.businessName}
-    </h2>
-    <span class="text-white/70 text-xs font-bold uppercase tracking-widest">
-        {item.category?.replace('_', ' ')}
-    </span>
-</div>
-
-
-
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                                {#if item.isFeatured || item.isVip}
+                                    <div class="flex items-center gap-2 mb-1">
+                                        {#if item.isFeatured}
+                                            <span class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-black rounded-full uppercase tracking-widest">
+                                                ✨ Featured
+                                            </span>
+                                        {/if}
+                                        {#if item.isVip}
+                                            <span class="px-2 py-0.5 bg-amber-400 text-slate-900 text-[10px] font-black rounded-full uppercase tracking-widest">
+                                                ⭐ VIP
+                                            </span>
+                                        {/if}
+                                    </div>
+                                {/if}
+                                <h2 class="text-white font-black text-lg leading-tight line-clamp-1">
+                                    {item.businessName}
+                                </h2>
+                                <span class="text-white/70 text-xs font-bold uppercase tracking-widest">
+                                    {item.category?.replace('_', ' ')}
+                                </span>
+                            </div>
                         </div>
 
-                        <!-- Card Content -->
                         <div class="p-4 flex flex-col flex-1">
                             {#if item.bio && item.bio.trim() !== ''}
                                 <p class="text-sm text-slate-600 line-clamp-2 leading-relaxed flex-1">
@@ -161,7 +157,6 @@
                             </div>
                         </div>
 
-                        <!-- Card Actions -->
                         <div class="px-4 py-3 border-t border-slate-100 flex items-center justify-between">
                             <a href={`/listings/${item.id}`}
                                 class="text-xs font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">
@@ -186,25 +181,27 @@
             </div>
         {/if}
 
+        <!-- Upcoming Yard Sales — cleanly below the listings grid -->
         {#if data.upcomingYardSales?.length > 0}
-    <div class="max-w-7xl mx-auto px-6 pb-12">
-        <h2 class="text-2xl font-black text-slate-900 mb-4">🏷️ Upcoming Yard Sales</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {#each data.upcomingYardSales as sale}
-                <a href="/yard-sales" class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all">
-                    <p class="font-black text-slate-900">{sale.title}</p>
-                    <p class="text-sm text-slate-500 mt-1">📅 {sale.saleDate} · {sale.address}</p>
-                    <div class="mt-2 flex flex-wrap gap-1">
-                        {#each sale.items.slice(0,3) as item}
-                            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">{item}</span>
-                        {/each}
-                    </div>
-                </a>
-            {/each}
-        </div>
-        <a href="/yard-sales" class="mt-3 inline-block text-sm font-bold text-indigo-600 hover:underline">View all yard sales →</a>
-    </div>
-{/if}
+            <div class="mt-12 pt-10 border-t border-slate-100">
+                <h2 class="text-2xl font-black text-slate-900 mb-6">🏷️ Upcoming Yard Sales</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {#each data.upcomingYardSales as sale}
+                        <a href="/yard-sales" class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all block">
+                            <p class="font-black text-slate-900">{sale.title}</p>
+                            <p class="text-sm text-slate-500 mt-1">📅 {sale.saleDate} · {sale.address}</p>
+                            <div class="mt-2 flex flex-wrap gap-1">
+                                {#each sale.items.slice(0, 3) as item}
+                                    <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">{item}</span>
+                                {/each}
+                            </div>
+                        </a>
+                    {/each}
+                </div>
+                <a href="/yard-sales" class="mt-4 inline-block text-sm font-bold text-indigo-600 hover:underline">View all yard sales →</a>
+            </div>
+        {/if}
 
-    </div>
-</div>
+    </div><!-- end max-w-7xl -->
+
+</div><!-- end min-h-screen -->
