@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { events, areas, communities, listings, listingSchedule } from '$lib/server/db/schema';
+import { events, areas, communities, listings, listingSchedule, yardSales } from '$lib/server/db/schema';
 import { eq, and, lte, gte } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
@@ -21,6 +21,16 @@ export const load = async ({ params, locals }) => {
             gte(events.endDate, date)
         ))
         .orderBy(events.startTime);
+
+     const dayYardSales = await db.select()
+    .from(yardSales)
+    .where(and(eq(yardSales.status, 'approved'), eq(yardSales.saleDate, date)))
+    .orderBy(yardSales.startTime);
+
+const parsedYardSales = dayYardSales.map(s => ({
+    ...s,
+    items: (() => { try { return JSON.parse(s.items); } catch { return []; } })()
+}));
 
     // Load food truck locations for this date
     const foodTruckLocations = await db.select({
@@ -76,6 +86,7 @@ export const load = async ({ params, locals }) => {
         allCommunities,
         prevDate: prevDate.toISOString().split('T')[0],
         nextDate: nextDate.toISOString().split('T')[0],
-        isLoggedIn: !!locals.user
+        isLoggedIn: !!locals.user,
+        yardSales: parsedYardSales
     };
 };

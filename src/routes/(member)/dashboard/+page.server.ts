@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
-import { listings, users, profiles, posts, events } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { listings, users, profiles, posts, events, yardSales } from '$lib/server/db/schema';
+import { eq, desc } from 'drizzle-orm';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ locals }) => {
@@ -43,6 +43,11 @@ export const load = async ({ locals }) => {
     const onboardingComplete = completedCount === onboardingSteps.length;
     const onboardingDismissed = profile?.onboardingDismissed ?? false;
 
+    const myYardSales = await db.select()
+    .from(yardSales)
+    .where(eq(yardSales.userId, locals.user.id))
+    .orderBy(desc(yardSales.createdAt));
+
     return {
     userListing,
     user: {
@@ -54,7 +59,8 @@ export const load = async ({ locals }) => {
     onboardingComplete,
     onboardingDismissed,
     onboardingProgress: completedCount,
-    totalSteps: onboardingSteps.length
+    totalSteps: onboardingSteps.length,
+    myYardSales
 };
 };
 

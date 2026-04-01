@@ -21,41 +21,56 @@
     </div>
 
     <nav class="flex-1 px-4 py-4 space-y-1">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-3">Main Menu</p>
+    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-3">Main Menu</p>
 
-        <a href="/dashboard"
-            class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
-            {isActive('/dashboard') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
-            <LayoutDashboard size={18} />
-            Dashboard
-        </a>
-
-        {#if user?.roles?.includes('vip') || user?.roles?.includes('admin') || user?.roles?.includes('superadmin')}
-    <a href="/vip-lounge"
+    <a href="/dashboard"
         class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
-        {isActive('/vip-lounge') ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
-        ⭐ VIP Lounge
+        {isActive('/dashboard') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+        <LayoutDashboard size={18} />
+        Dashboard
     </a>
-    <a href="/vip-directory"
-        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
-        {isActive('/vip-directory') ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
-        👥 VIP Directory
-    </a>
-{/if}
 
-        <a href="/profile"
+    {#if user?.roles?.includes('vip') || user?.roles?.includes('admin') || user?.roles?.includes('superadmin')}
+        <a href="/vip-lounge"
             class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
-            {isActive('/profile') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
-            <User size={18} />
-            My Profile
+            {isActive('/vip-lounge') ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+            ⭐ VIP Lounge
         </a>
-        <a href="/account-settings"
+        <a href="/vip-directory"
             class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
-            {isActive('/account-settings') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
-            <Settings size={18} />
-            Settings
+            {isActive('/vip-directory') ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+            👥 VIP Directory
         </a>
-    </nav>
+    {/if}
+
+    <a href="/profile"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+        {isActive('/profile') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+        <User size={18} />
+        My Profile
+    </a>
+    <a href="/account-settings"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+        {isActive('/account-settings') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+        <Settings size={18} />
+        Settings
+    </a>
+
+    <!-- Community Section -->
+    <div class="pt-4">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-3">Community</p>
+        <a href="/yard-sales"
+            class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+            {isActive('/yard-sales') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+            🏷️ Yard Sales
+        </a>
+        <a href="/yard-sales/create"
+            class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+            {isActive('/yard-sales/create') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+            + Post Yard Sale
+        </a>
+    </div>
+</nav>
 
     <!-- User Info & Sign Out -->
     <div class="p-4 bg-slate-50 mt-auto border-t border-slate-100">

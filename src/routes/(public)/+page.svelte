@@ -185,5 +185,26 @@
                 {/each}
             </div>
         {/if}
+
+        {#if data.upcomingYardSales?.length > 0}
+    <div class="max-w-7xl mx-auto px-6 pb-12">
+        <h2 class="text-2xl font-black text-slate-900 mb-4">🏷️ Upcoming Yard Sales</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {#each data.upcomingYardSales as sale}
+                <a href="/yard-sales" class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all">
+                    <p class="font-black text-slate-900">{sale.title}</p>
+                    <p class="text-sm text-slate-500 mt-1">📅 {sale.saleDate} · {sale.address}</p>
+                    <div class="mt-2 flex flex-wrap gap-1">
+                        {#each sale.items.slice(0,3) as item}
+                            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">{item}</span>
+                        {/each}
+                    </div>
+                </a>
+            {/each}
+        </div>
+        <a href="/yard-sales" class="mt-3 inline-block text-sm font-bold text-indigo-600 hover:underline">View all yard sales →</a>
+    </div>
+{/if}
+
     </div>
 </div>
