@@ -2,7 +2,7 @@
 
 import { db } from '$lib/server/db';
 import { farmerListings, users, profiles } from '$lib/server/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { error, fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ params, locals }) => {
@@ -35,6 +35,7 @@ export const load = async ({ params, locals }) => {
         instagram: farmerListings.instagram,
         facebook: farmerListings.facebook,
         isFeatured: farmerListings.isFeatured,
+        status: farmerListings.status,
         createdAt: farmerListings.createdAt,
         authorName: profiles.displayName,
         authorAvatar: profiles.avatarUrl,
@@ -42,13 +43,21 @@ export const load = async ({ params, locals }) => {
     .from(farmerListings)
     .innerJoin(users, eq(farmerListings.userId, users.id))
     .leftJoin(profiles, eq(farmerListings.userId, profiles.userId))
-    .where(and(eq(farmerListings.id, id), eq(farmerListings.status, 'approved')))
+    .where(eq(farmerListings.id, id))
     .limit(1);
 
     if (!result.length) throw error(404, 'Farm not found');
 
-    const parse = (val: string) => { try { return JSON.parse(val); } catch { return []; } };
     const f = result[0];
+
+    // If not approved, only owner or admin can see it
+    const isOwner = locals.user?.id === f.userId;
+    const isAdmin = locals.user?.isAdmin ?? false;
+    if (f.status !== 'approved' && !isOwner && !isAdmin) {
+        throw error(404, 'Farm not found');
+    }
+
+    const parse = (val: string) => { try { return JSON.parse(val); } catch { return []; } };
 
     return {
         farmer: {
@@ -58,7 +67,7 @@ export const load = async ({ params, locals }) => {
             marketsAttended: parse(f.marketsAttended),
         },
         currentUserId: locals.user?.id ?? null,
-        isAdmin: locals.user?.isAdmin ?? false,
+        isAdmin,
     };
 };
 
