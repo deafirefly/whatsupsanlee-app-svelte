@@ -1,9 +1,5 @@
 <script>
 	import { svelte } from "@sveltejs/vite-plugin-svelte";
-
-</script>
-<!-- src/routes/(public)/events/[date]/+page.svelte -->
-<script lang="ts">
     import type { PageData } from './$types';
 
     let { data } = $props();
