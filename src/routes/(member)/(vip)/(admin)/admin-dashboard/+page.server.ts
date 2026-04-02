@@ -69,7 +69,7 @@ export const load = async ({ locals }) => {
                 totalEvents: 0, pendingEvents: 0,
                 totalPosts: 0, totalBookings: 0,
                 pendingBookings: 0, unreadMessages: 0,
-                totalYardSales: 0, pendingYardSales: 0
+                totalYardSales: 0, pendingYardSales: 0,
                 totalFarmers: 0, pendingFarmers: 0,
             },
             systemStatus: { database: 'error', uptime: 'unknown', version: '0.3.5' },
