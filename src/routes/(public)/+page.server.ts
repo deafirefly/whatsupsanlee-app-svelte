@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { listings, users, yardSales } from '$lib/server/db/schema';
+import { listings, users, yardSales, farmerListings } from '$lib/server/db/schema';
 import { eq, desc, and, gte } from 'drizzle-orm';
 
 export const load = async () => {
@@ -42,11 +42,20 @@ export const load = async () => {
         items: (() => { try { return JSON.parse(s.items); } catch { return []; } })()
     }));
 
+    const featuredFarmers = await db.select()
+    .from(farmerListings)
+    .where(and(eq(farmerListings.status, 'approved'), eq(farmerListings.isFeatured, true)))
+    .limit(3);
+
     return {
         approvedListings: sorted.map(listing => ({
             ...listing,
             isVip: isVipUser(listing.userId)
         })),
-        upcomingYardSales: parsedYardSales
+        upcomingYardSales: parsedYardSales,
+        featuredFarmers: featuredFarmers.map(f => ({
+    ...f,
+    produceCategories: (() => { try { return JSON.parse(f.produceCategories); } catch { return []; } })()
+}))
     };
 };

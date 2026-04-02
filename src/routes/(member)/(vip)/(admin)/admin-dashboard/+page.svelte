@@ -73,6 +73,22 @@
         {/if}
     </CardContent>
 </Card>
+
+<Card shadow="sm">
+    <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+        <CardTitle class="text-sm font-medium">Farmers Market</CardTitle>
+        <span class="text-lg">🌾</span>
+    </CardHeader>
+    <CardContent>
+        <div class="text-2xl font-bold">{data.contentStats.totalFarmers}</div>
+        {#if data.contentStats.pendingFarmers > 0}
+            <p class="text-xs text-amber-500 font-bold">⏳ {data.contentStats.pendingFarmers} pending approval</p>
+        {:else}
+            <p class="text-xs text-muted-foreground">All approved</p>
+        {/if}
+    </CardContent>
+</Card>
+
     </div>
 
     <!-- Content Stats -->
@@ -135,7 +151,7 @@
     </div>
 
     <!-- Pending Approvals Alert -->
-    {#if data.contentStats.pendingListings > 0 || data.contentStats.pendingEvents > 0 || data.contentStats.unreadMessages > 0}
+     {#if data.contentStats.pendingListings > 0 || data.contentStats.pendingEvents > 0 || data.contentStats.pendingYardSales > 0 || data.contentStats.pendingFarmers > 0 || data.contentStats.unreadMessages > 0}
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
             <span class="text-xl">⚠️</span>
             <div>
@@ -156,6 +172,11 @@
                         {data.contentStats.pendingYardSales} yard sale{data.contentStats.pendingYardSales > 1 ? 's' : ''} pending →
                     </a>
                     {/if}
+                    {#if data.contentStats.pendingFarmers > 0}
+    <a href="/farmers-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
+        {data.contentStats.pendingFarmers} farmer listing{data.contentStats.pendingFarmers > 1 ? 's' : ''} pending →
+    </a>
+{/if}
                     {#if data.contentStats.unreadMessages > 0}
                         <a href="/messages-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
                             {data.contentStats.unreadMessages} unread message{data.contentStats.unreadMessages > 1 ? 's' : ''} →

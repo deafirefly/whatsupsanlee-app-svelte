@@ -341,3 +341,61 @@ export const yardSales = sqliteTable('yard_sales', {
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
 });
+
+export const farmerListings = sqliteTable('farmer_listings', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+
+    // Core Identity
+    farmName: text('farm_name').notNull(),
+    contactName: text('contact_name').notNull(),
+    bio: text('bio'),
+    imageUrl: text('image_url'),
+
+    // What They Sell
+    produceCategories: text('produce_categories').notNull().default('[]'),
+    // JSON array: ["Vegetables", "Fruits", "Eggs", "Honey", "Herbs", "Flowers",
+    //              "Meat", "Dairy", "Baked Goods", "Preserves", "Plants/Seedlings"]
+
+    seasonalAvailability: text('seasonal_availability').notNull().default('[]'),
+    // JSON array: ["Spring", "Summer", "Fall", "Winter"] or ["Year-round"]
+
+    currentAvailabilityNote: text('current_availability_note'),
+    // e.g. "Tomatoes and corn available now!"
+
+    // Where to Find Them
+    farmAddress: text('farm_address'),           // Farm stand / u-pick address
+    locationPin: text('location_pin'),           // Google Maps link
+
+    // Farmers Markets they attend
+    marketsAttended: text('markets_attended').notNull().default('[]'),
+    // JSON array: ["Sanford Farmers Market", "Broadway Market", etc.]
+
+    marketSchedule: text('market_schedule'),
+    // Free text: e.g. "Sanford Farmers Market every Saturday 8am-12pm"
+
+    // Business Hours (farm stand)
+    businessHours: text('business_hours'),
+    // Free text or JSON
+
+    // Special Features
+    isUpick: integer('is_upick', { mode: 'boolean' }).default(false),
+    acceptsSnapEbt: integer('accepts_snap_ebt', { mode: 'boolean' }).default(false),
+    offersDelivery: integer('offers_delivery', { mode: 'boolean' }).default(false),
+    isOrganic: integer('is_organic', { mode: 'boolean' }).default(false),
+    acceptsPreorders: integer('accepts_preorders', { mode: 'boolean' }).default(false),
+
+    // Contact & Social
+    phone: text('phone'),
+    email: text('email'),
+    website: text('website'),
+    instagram: text('instagram'),
+    facebook: text('facebook'),
+
+    // Status
+    status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
+    isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
+
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});

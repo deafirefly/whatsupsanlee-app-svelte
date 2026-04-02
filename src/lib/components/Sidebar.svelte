@@ -42,6 +42,7 @@
     { name: 'Posts', href: '/posts-admin', icon: MessageSquare },
     { name: 'Events', href: '/events-admin', icon: Calendar },
     { name: 'Yard Sales', href: '/yard-sales-admin', icon: ListFilter },
+    { name: 'Farmers Market', href: '/farmers-admin', icon: ListFilter },
     { name: 'Areas', href: '/areas', icon: MapPin },
     { name: 'Communities', href: '/communities', icon: Home },
     { name: 'Settings', href: '/account-settings', icon: Settings },

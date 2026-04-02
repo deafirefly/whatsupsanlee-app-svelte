@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { users, listings, events, posts, bookings, contactMessages, yardSales } from '$lib/server/db/schema';
+import { users, listings, events, posts, bookings, contactMessages, yardSales, farmerListings } from '$lib/server/db/schema';
 import { error, redirect } from '@sveltejs/kit';
 import { desc, eq, count } from 'drizzle-orm';
 
@@ -22,6 +22,8 @@ export const load = async ({ locals }) => {
         const allBookings = await db.select().from(bookings);
         const allMessages = await db.select().from(contactMessages);
         const allYardSales = await db.select().from(yardSales);
+        const allFarmers = await db.select().from(farmerListings);
+
 
         // Check DB connection
         let dbStatus = 'healthy';
@@ -48,6 +50,8 @@ export const load = async ({ locals }) => {
                 unreadMessages: allMessages.filter(m => m.status === 'unread').length,
                 totalYardSales: allYardSales.length,                                        // ← ADD
                 pendingYardSales: allYardSales.filter(y => y.status === 'pending').length,  // ← ADD
+                totalFarmers: allFarmers.length,
+                pendingFarmers: allFarmers.filter(f => f.status === 'pending').length,
             },
             systemStatus: {
                 database: dbStatus,
@@ -66,6 +70,7 @@ export const load = async ({ locals }) => {
                 totalPosts: 0, totalBookings: 0,
                 pendingBookings: 0, unreadMessages: 0,
                 totalYardSales: 0, pendingYardSales: 0
+                totalFarmers: 0, pendingFarmers: 0,
             },
             systemStatus: { database: 'error', uptime: 'unknown', version: '0.3.5' },
             recentUsers: []
