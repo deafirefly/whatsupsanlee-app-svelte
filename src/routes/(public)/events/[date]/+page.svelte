@@ -75,23 +75,41 @@
         { value: 'other', label: 'Other', emoji: '📦' },
     ];
 
+
     let allItems = $derived([
-        ...dayEvents,
-        ...foodTruckLocations.map(ft => ({
-            id: ft.id,
-            title: ft.businessName,
-            category: 'food_truck',
-            locationName: ft.locationName,
-            address: ft.address,
-            latitude: ft.latitude,
-            longitude: ft.longitude,
-            startTime: ft.startTime,
-            endTime: ft.endTime,
-            description: ft.notes,
-            imageUrl: ft.imageUrl,
-            isFoodTruckSchedule: true
-        }))
-    ]);
+    ...dayEvents,
+    ...foodTruckLocations.map(ft => ({
+        id: ft.id,
+        title: ft.businessName,
+        category: 'food_truck',
+        locationName: ft.locationName,
+        address: ft.address,
+        latitude: ft.latitude,
+        longitude: ft.longitude,
+        startTime: ft.startTime,
+        endTime: ft.endTime,
+        description: ft.notes,
+        imageUrl: ft.imageUrl,
+        isFoodTruckSchedule: true
+    })),
+    ...(data.yardSales ?? []).map(sale => ({
+        id: sale.id,
+        title: sale.title,
+        category: 'yard_sale',
+        address: sale.address,
+        locationName: null,
+        latitude: null,
+        longitude: null,
+        startTime: sale.startTime,
+        endTime: sale.endTime,
+        description: sale.description,
+        imageUrl: null,
+        isFeatured: sale.isFeatured,
+        isYardSale: true,
+        items: sale.items,
+        phone: sale.phone,
+    }))
+]);
 
     let filteredItems = $derived(
         activeFilter === 'all'
@@ -139,7 +157,7 @@
                 {/if}
                 <h1 class="text-3xl font-black">{displayDate}</h1>
                 <p class="text-indigo-200 mt-1">
-                    {totalCount} {totalCount === 1 ? 'event' : 'events'} in Lee County
+                    {totalCount} {totalCount === 1 ? 'item' : 'items'} in Lee County
                 </p>
 
                 <div class="flex items-center gap-3 mt-6 flex-wrap">
@@ -240,6 +258,17 @@
                                 {#if item.description}
                                     <p class="text-sm text-slate-500 mt-2 line-clamp-2">{item.description}</p>
                                 {/if}
+
+                                {#if item.isYardSale && item.items?.length > 0}
+    <div class="mt-2 flex flex-wrap gap-1.5">
+        {#each item.items.slice(0, 4) as saleItem}
+            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">{saleItem}</span>
+        {/each}
+        {#if item.items.length > 4}
+            <span class="px-2 py-0.5 bg-slate-100 text-slate-400 rounded-full text-xs font-bold">+{item.items.length - 4} more</span>
+        {/if}
+    </div>
+{/if}
 
                                 <div class="flex items-center gap-4 mt-3 flex-wrap">
                                     {#if item.locationName || item.address}
