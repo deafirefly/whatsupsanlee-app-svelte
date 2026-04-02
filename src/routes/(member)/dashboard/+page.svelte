@@ -314,72 +314,103 @@
         {/if}
     </div>
 
-    <!-- Community Feed & Yard Sales & VIP -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Community Feed & Yard Sales & Farmers & VIP -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        <!-- Yard Sales -->
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-            <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl">🏷️</span>
-                    <h3 class="font-black text-slate-900">Your Yard Sales</h3>
-                </div>
-                <a href="/yard-sales" class="text-xs font-black text-indigo-600 hover:underline">View all →</a>
+    <!-- Yard Sales -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🏷️</span>
+                <h3 class="font-black text-slate-900">Your Yard Sales</h3>
             </div>
-
-            {#if data.myYardSales?.length > 0}
-                <div class="space-y-2">
-                    {#each data.myYardSales.slice(0, 2) as sale}
-                        <div class="p-3 bg-slate-50 rounded-2xl">
-                            <p class="font-black text-slate-900 text-sm">{sale.title}</p>
-                            <p class="text-xs text-slate-500 mt-0.5">📅 {sale.saleDate}</p>
-                            <span class="text-[10px] font-black uppercase tracking-widest mt-1 inline-block
-                                {sale.status === 'approved' ? 'text-emerald-500' :
-                                 sale.status === 'pending' ? 'text-amber-500' : 'text-red-400'}">
-                                ● {sale.status}
-                            </span>
-                        </div>
-                    {/each}
-                </div>
-            {:else}
-                <p class="text-sm text-slate-400">You haven't posted any yard sales yet.</p>
-            {/if}
-
-            <a href="/yard-sales/create"
-                class="mt-4 block text-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-xs hover:bg-indigo-700 transition-all">
-                + Post a Yard Sale
-            </a>
+            <a href="/yard-sales" class="text-xs font-black text-indigo-600 hover:underline">View all →</a>
         </div>
-
-        <!-- VIP Lounge -->
-        {#if isVip}
-            <div class="bg-gradient-to-br from-amber-500 to-yellow-400 rounded-3xl p-6 text-white shadow-lg">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-2xl">⭐</span>
-                    <h3 class="font-black">VIP Lounge</h3>
-                </div>
-                <p class="text-sm text-amber-100">Your exclusive benefits are ready.</p>
-                <a href="/vip-lounge"
-                    class="mt-4 inline-block bg-white text-amber-600 px-5 py-2.5 rounded-xl font-black text-sm hover:bg-amber-50 transition-all shadow-md">
-                    Enter Now →
-                </a>
+        {#if data.myYardSales?.length > 0}
+            <div class="space-y-2">
+                {#each data.myYardSales.slice(0, 2) as sale}
+                    <div class="p-3 bg-slate-50 rounded-2xl">
+                        <p class="font-black text-slate-900 text-sm">{sale.title}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">📅 {sale.saleDate}</p>
+                        <span class="text-[10px] font-black uppercase tracking-widest mt-1 inline-block
+                            {sale.status === 'approved' ? 'text-emerald-500' :
+                             sale.status === 'pending' ? 'text-amber-500' : 'text-red-400'}">
+                            ● {sale.status}
+                        </span>
+                    </div>
+                {/each}
             </div>
         {:else}
-            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <span class="text-2xl">🔒</span>
-                        <h3 class="font-black text-slate-400">VIP Lounge</h3>
-                    </div>
-                    <p class="text-sm text-slate-400 italic">Upgrade your plan to unlock exclusive content.</p>
-                </div>
-                <a href="/subscribe"
-                    class="mt-4 text-center bg-indigo-600 text-white px-5 py-3 rounded-xl font-black text-sm hover:bg-indigo-700 transition-all">
-                    Upgrade to VIP →
-                </a>
-            </div>
+            <p class="text-sm text-slate-400">No yard sales yet.</p>
         {/if}
+        <a href="/yard-sales/create"
+            class="mt-4 block text-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-xs hover:bg-indigo-700 transition-all">
+            + Post a Yard Sale
+        </a>
     </div>
+
+    <!-- Farmer Listings -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🌾</span>
+                <h3 class="font-black text-slate-900">Your Farm</h3>
+            </div>
+            <a href="/farmers" class="text-xs font-black text-green-600 hover:underline">View all →</a>
+        </div>
+        {#if data.myFarmerListings?.length > 0}
+            <div class="space-y-2">
+                {#each data.myFarmerListings.slice(0, 2) as farm}
+                    <a href="/farmers/{farm.id}" class="block p-3 bg-slate-50 rounded-2xl hover:bg-green-50 transition-all">
+                        <p class="font-black text-slate-900 text-sm">{farm.farmName}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">{farm.contactName}</p>
+                        <span class="text-[10px] font-black uppercase tracking-widest mt-1 inline-block
+                            {farm.status === 'approved' ? 'text-emerald-500' :
+                             farm.status === 'pending' ? 'text-amber-500' : 'text-red-400'}">
+                            ● {farm.status}
+                        </span>
+                    </a>
+                {/each}
+            </div>
+        {:else}
+            <p class="text-sm text-slate-400">No farm listings yet.</p>
+        {/if}
+        <a href="/farmers/create"
+            class="mt-4 block text-center px-4 py-2.5 bg-green-600 text-white rounded-xl font-black text-xs hover:bg-green-700 transition-all">
+            + List Your Farm
+        </a>
+    </div>
+
+    <!-- VIP Lounge -->
+    {#if isVip}
+        <div class="bg-gradient-to-br from-amber-500 to-yellow-400 rounded-3xl p-6 text-white shadow-lg">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="text-2xl">⭐</span>
+                <h3 class="font-black">VIP Lounge</h3>
+            </div>
+            <p class="text-sm text-amber-100">Your exclusive benefits are ready.</p>
+            <a href="/vip-lounge"
+                class="mt-4 inline-block bg-white text-amber-600 px-5 py-2.5 rounded-xl font-black text-sm hover:bg-amber-50 transition-all shadow-md">
+                Enter Now →
+            </a>
+        </div>
+    {:else}
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl">🔒</span>
+                    <h3 class="font-black text-slate-400">VIP Lounge</h3>
+                </div>
+                <p class="text-sm text-slate-400 italic">Upgrade your plan to unlock exclusive content.</p>
+            </div>
+            <a href="/subscribe"
+                class="mt-4 text-center bg-indigo-600 text-white px-5 py-3 rounded-xl font-black text-sm hover:bg-indigo-700 transition-all">
+                Upgrade to VIP →
+            </a>
+        </div>
+    {/if}
+
+</div>
 
 
 </div>
