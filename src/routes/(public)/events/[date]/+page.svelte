@@ -1,6 +1,6 @@
 <script>
 	import { svelte } from "@sveltejs/vite-plugin-svelte";
-    import type { PageData } from './$types';
+    import { type, PageData } from './$types';
 
     let { data } = $props();
 
