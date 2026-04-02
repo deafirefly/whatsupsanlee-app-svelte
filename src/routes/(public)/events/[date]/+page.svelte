@@ -1,6 +1,5 @@
-<script>
-	import { svelte } from "@sveltejs/vite-plugin-svelte";
-    import { type, PageData } from './$types';
+<script lang="ts">
+    import type { PageData } from './$types';
 
     let { data } = $props();
 
@@ -297,7 +296,6 @@
                             {/if}
 
                         </div>
-                    </div>
                     </svelte:element>
                 {/each}
             </div>
