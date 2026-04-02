@@ -1,3 +1,7 @@
+<script>
+	import { svelte } from "@sveltejs/vite-plugin-svelte";
+
+</script>
 <!-- src/routes/(public)/events/[date]/+page.svelte -->
 <script lang="ts">
     import type { PageData } from './$types';
@@ -223,8 +227,11 @@
             <div class="space-y-4">
                 {#each filteredItems as item}
                     {@const cat = getCategory(item.category)}
-                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden">
-                        <div class="flex gap-4 p-6">
+                    <svelte:element
+    this={item.isYardSale ? 'a' : 'div'}
+    href={item.isYardSale ? `/yard-sales/${item.id}` : undefined}
+    class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden block">
+    <div class="flex gap-4 p-6">
 
                             <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-slate-50 border border-slate-100">
                                 {cat.emoji}
@@ -295,6 +302,7 @@
 
                         </div>
                     </div>
+                    </svelte:element>
                 {/each}
             </div>
         {/if}
