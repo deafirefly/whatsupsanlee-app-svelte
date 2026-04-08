@@ -66,6 +66,7 @@
     {#if menuOpen}
         <div class="absolute top-full left-0 w-full bg-white border-b flex flex-col p-4 md:hidden shadow-xl z-50">
             <a href="/feed" onclick={() => menuOpen = false} class="py-3 border-b border-slate-50 font-bold text-slate-700">📣 Feed</a>
+            <a href="/family" onclick={() => menuOpen = false} class="py-3 border-b border-slate-50 font-bold text-slate-700">👨‍👩‍👧 Family</a>
             <a href={`/events/${today}`} onclick={() => menuOpen = false} class="py-3 border-b border-slate-50 font-bold text-slate-700">📅 Events</a>
             <a href="/about" onclick={() => menuOpen = false} class="py-3 border-b border-slate-50 font-bold text-slate-700">About</a>
             <a href="/contact" onclick={() => menuOpen = false} class="py-3 border-b border-slate-50 font-bold text-slate-700">Contact</a>
