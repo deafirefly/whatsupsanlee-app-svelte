@@ -4,13 +4,23 @@
     let activeCategory = $state('all');
     let searchQuery = $state('');
 
-    let filteredListings = $derived(
-        data.approvedListings.filter(item => {
-            const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+    // Merge listings and farmers into one searchable array
+    let allItems = $derived([
+        ...data.approvedListings,
+        ...data.approvedFarmers
+    ]);
+
+    let filteredItems = $derived(
+        allItems.filter(item => {
+            const matchesCategory = activeCategory === 'all' 
+                || item.category === activeCategory
+                || (activeCategory === 'farmer_listing' && item.type === 'farmer');
             const searchLower = searchQuery.toLowerCase();
-            const matchesSearch = 
-                (item.businessName?.toLowerCase().includes(searchLower)) || 
-                (item.bio?.toLowerCase().includes(searchLower));
+            const matchesSearch =
+                (item.businessName?.toLowerCase().includes(searchLower)) ||
+                (item.bio?.toLowerCase().includes(searchLower)) ||
+                // Also search farmer produce categories
+                (item.produceCategories?.some((c: string) => c.toLowerCase().includes(searchLower)));
             return matchesCategory && matchesSearch;
         })
     );
@@ -72,38 +82,59 @@
                 {/if}
             </div>
             <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-3 ml-2">
-                Found {filteredListings.length} results
+                Found {filteredItems.length} results
             </p>
         </div>
 
-        {#if filteredListings.length === 0}
+        <!-- Category Filter -->
+        <div class="flex gap-2 justify-center flex-wrap mb-8">
+            {#each [
+                { value: 'all', label: 'All', emoji: '🌟' },
+                { value: 'food_truck', label: 'Food Trucks', emoji: '🚚' },
+                { value: 'farmer_listing', label: 'Farmers', emoji: '🌾' },
+                { value: 'photographer', label: 'Photographers', emoji: '📸' },
+                { value: 'artist', label: 'Artists', emoji: '🎨' },
+            ] as cat}
+                <button onclick={() => activeCategory = cat.value}
+                    class="px-4 py-2 rounded-full text-xs font-black transition-all border
+                    {activeCategory === cat.value
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'}">
+                    {cat.emoji} {cat.label}
+                </button>
+            {/each}
+        </div>
+
+{#if filteredItems.length === 0}
             <div class="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
                 <span class="text-4xl mb-4 block">🔍</span>
                 <h3 class="text-xl font-bold text-slate-900">No matches found</h3>
-                <p class="text-slate-500">We couldn't find any listings for "{searchQuery}".</p>
+                <p class="text-slate-500">We couldn't find anything for "{searchQuery}".</p>
                 <button 
                     onclick={() => { searchQuery = ''; activeCategory = 'all'; }} 
-                    class="mt-4 text-indigo-600 font-bold hover:underline"
-                >
+                    class="mt-4 text-indigo-600 font-bold hover:underline">
                     Clear all filters
                 </button>
             </div>
         {:else}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {#each filteredListings as item}
+                {#each filteredItems as item}
                     <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
 
+                        <!-- Media -->
                         <div class="relative w-full aspect-video overflow-hidden">
                             {#if item.imageUrl}
-                                <img
-                                    src={item.imageUrl}
-                                    alt={item.businessName}
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
+                                <img src={item.imageUrl} alt={item.businessName}
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             {:else}
-                                <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-indigo-500 transition-all duration-500 flex items-center justify-center">
+                                <div class="w-full h-full flex items-center justify-center transition-all duration-500
+                                    {item.type === 'farmer'
+                                        ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+                                        : 'bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-indigo-500'}">
                                     <span class="text-6xl opacity-40">
-                                        {item.category === 'food_truck' ? '🚚' : item.category === 'farmer' ? '👨‍🌾' : item.category === 'photographer' ? '📸' : '🎨'}
+                                        {item.type === 'farmer' ? '🌾'
+                                            : item.category === 'food_truck' ? '🚚'
+                                            : item.category === 'photographer' ? '📸' : '🎨'}
                                     </span>
                                 </div>
                             {/if}
@@ -112,74 +143,77 @@
                                 {#if item.isFeatured || item.isVip}
                                     <div class="flex items-center gap-2 mb-1">
                                         {#if item.isFeatured}
-                                            <span class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-black rounded-full uppercase tracking-widest">
-                                                ✨ Featured
-                                            </span>
+                                            <span class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-black rounded-full uppercase tracking-widest">✨ Featured</span>
                                         {/if}
                                         {#if item.isVip}
-                                            <span class="px-2 py-0.5 bg-amber-400 text-slate-900 text-[10px] font-black rounded-full uppercase tracking-widest">
-                                                ⭐ VIP
-                                            </span>
+                                            <span class="px-2 py-0.5 bg-amber-400 text-slate-900 text-[10px] font-black rounded-full uppercase tracking-widest">⭐ VIP</span>
+                                        {/if}
+                                        {#if item.isOrganic}
+                                            <span class="px-2 py-0.5 bg-green-400 text-white text-[10px] font-black rounded-full uppercase tracking-widest">🌿 Organic</span>
                                         {/if}
                                     </div>
                                 {/if}
-                                <h2 class="text-white font-black text-lg leading-tight line-clamp-1">
-                                    {item.businessName}
-                                </h2>
+                                <h2 class="text-white font-black text-lg leading-tight line-clamp-1">{item.businessName}</h2>
                                 <span class="text-white/70 text-xs font-bold uppercase tracking-widest">
-                                    {item.category?.replace('_', ' ')}
+                                    {item.type === 'farmer' ? 'Farmers Market' : item.category?.replace('_', ' ')}
                                 </span>
                             </div>
                         </div>
 
+                        <!-- Content -->
                         <div class="p-4 flex flex-col flex-1">
+                            {#if item.type === 'farmer' && item.currentAvailabilityNote}
+                                <p class="text-xs font-black text-green-600 mb-1">🌱 {item.currentAvailabilityNote}</p>
+                            {/if}
                             {#if item.bio && item.bio.trim() !== ''}
-                                <p class="text-sm text-slate-600 line-clamp-2 leading-relaxed flex-1">
-                                    {item.bio}
-                                </p>
+                                <p class="text-sm text-slate-600 line-clamp-2 leading-relaxed flex-1">{item.bio}</p>
                             {:else}
                                 <p class="text-sm text-slate-400 italic flex-1">No description yet.</p>
                             {/if}
 
-                            <div class="mt-3 space-y-1">
-                                {#if item.scheduleSummary}
-                                    <div class="flex items-center gap-2 text-xs text-slate-500">
-                                        <span>🕐</span>
-                                        <span class="truncate">{item.scheduleSummary.split('|')[0].trim()}</span>
-                                    </div>
-                                {/if}
-                                {#if item.address}
-                                    <div class="flex items-center gap-2 text-xs text-slate-500">
-                                        <span>📍</span>
-                                        <span class="truncate">{item.address.split(',')[0]}</span>
-                                    </div>
-                                {/if}
-                            </div>
+                            <!-- Farmer produce tags -->
+                            {#if item.type === 'farmer' && item.produceCategories?.length > 0}
+                                <div class="mt-2 flex flex-wrap gap-1">
+                                    {#each item.produceCategories.slice(0, 3) as cat}
+                                        <span class="px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-[10px] font-bold">{cat}</span>
+                                    {/each}
+                                </div>
+                            {/if}
+
+                            {#if item.address}
+                                <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                                    <span>📍</span>
+                                    <span class="truncate">{item.address.split(',')[0]}</span>
+                                </div>
+                            {/if}
                         </div>
 
+                        <!-- Footer -->
                         <div class="px-4 py-3 border-t border-slate-100 flex items-center justify-between">
-                            <a href={`/listings/${item.id}`}
+                            <a href={item.type === 'farmer' ? `/farmers/${item.id}` : `/listings/${item.id}`}
                                 class="text-xs font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">
                                 View Profile
                             </a>
                             <button
                                 onclick={() => {
-                                    navigator.clipboard.writeText(`${window.location.origin}/listings/${item.id}`);
+                                    const url = item.type === 'farmer'
+                                        ? `${window.location.origin}/farmers/${item.id}`
+                                        : `${window.location.origin}/listings/${item.id}`;
+                                    navigator.clipboard.writeText(url);
                                 }}
-                                class="text-slate-400 hover:text-indigo-600 transition-colors"
-                                title="Share listing"
-                            >
+                                class="text-slate-400 hover:text-indigo-600 transition-colors" title="Share">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                                 </svg>
                             </button>
                         </div>
-
                     </div>
                 {/each}
             </div>
         {/if}
+
+
 
         <!-- Upcoming Yard Sales — cleanly below the listings grid -->
         {#if data.upcomingYardSales?.length > 0}

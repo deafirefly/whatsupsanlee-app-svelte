@@ -20,7 +20,7 @@ export const load = async () => {
         return true;
     };
 
-    const sorted = approvedListings.sort((a, b) => {
+    const sortedListings = approvedListings.sort((a, b) => {
         if (a.isFeatured && !b.isFeatured) return -1;
         if (!a.isFeatured && b.isFeatured) return 1;
         const aIsVip = isVipUser(a.userId);
@@ -29,6 +29,31 @@ export const load = async () => {
         if (!aIsVip && bIsVip) return 1;
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
+
+    // Load all approved farmers
+    const approvedFarmers = await db.select()
+        .from(farmerListings)
+        .where(eq(farmerListings.status, 'approved'))
+        .orderBy(desc(farmerListings.isFeatured), desc(farmerListings.createdAt));
+
+    // Normalize farmers to match listing card shape
+    const normalizedFarmers = approvedFarmers.map(f => ({
+        id: f.id,
+        type: 'farmer' as const,
+        businessName: f.farmName,
+        bio: f.bio,
+        imageUrl: f.imageUrl,
+        address: f.farmAddress,
+        isFeatured: f.isFeatured,
+        isVip: false,
+        category: 'farmer_listing',
+        produceCategories: (() => { try { return JSON.parse(f.produceCategories); } catch { return []; } })(),
+        currentAvailabilityNote: f.currentAvailabilityNote,
+        isOrganic: f.isOrganic,
+        isUpick: f.isUpick,
+        acceptsSnapEbt: f.acceptsSnapEbt,
+        createdAt: f.createdAt,
+    }));
 
     const today = new Date().toISOString().split('T')[0];
     const upcomingYardSales = await db.select()
@@ -42,20 +67,13 @@ export const load = async () => {
         items: (() => { try { return JSON.parse(s.items); } catch { return []; } })()
     }));
 
-    const featuredFarmers = await db.select()
-    .from(farmerListings)
-    .where(and(eq(farmerListings.status, 'approved'), eq(farmerListings.isFeatured, true)))
-    .limit(3);
-
     return {
-        approvedListings: sorted.map(listing => ({
+        approvedListings: sortedListings.map(listing => ({
             ...listing,
+            type: 'listing' as const,
             isVip: isVipUser(listing.userId)
         })),
+        approvedFarmers: normalizedFarmers,
         upcomingYardSales: parsedYardSales,
-        featuredFarmers: featuredFarmers.map(f => ({
-    ...f,
-    produceCategories: (() => { try { return JSON.parse(f.produceCategories); } catch { return []; } })()
-}))
     };
 };
