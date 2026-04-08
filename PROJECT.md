@@ -46,40 +46,43 @@ Version: **0.3.5** | Status: Active development
 ```
 src/routes/
 ├── (public)/          # No auth required
-│   ├── +page          # Home — listing grid + upcoming yard sales
+│   ├── +page          # Home — listing grid + farmers + upcoming yard sales + category filter
 │   ├── login/
 │   ├── register/
-│   ├── feed/          # Community post feed (includes yard sales)
+│   ├── feed/          # Community post feed
 │   ├── events/        # Events calendar + [date] detail (yard sales merged in)
-│   ├── listings/[id]  # Listing detail page
+│   ├── listings/[id]  # Listing detail (enhanced gallery for artists/photographers)
 │   ├── profile/[id]   # Public member profile
-│   ├── yard-sales/    # Public yard sales listing page
-│   ├── yard-sales/[id] # Yard sale detail page
-│   ├── farmers/       # Public farmers market listing page
-│   ├── farmers/[id]   # Farmer detail page
+│   ├── yard-sales/    # Public yard sales listing
+│   ├── yard-sales/[id] # Yard sale detail
+│   ├── farmers/       # Farmers market public listing
+│   ├── farmers/[id]   # Farmer detail
+│   ├── family/        # Family Activities Hub (events/parks/trails tabs)
+│   ├── family/parks/[id]     # Park or trail detail
+│   ├── family/parks/submit   # Member submit a park/trail
 │   ├── [slug]/        # Vanity URL for listings
 │   ├── about, contact, privacy, terms, support, subscribe, beta
 │   └── maintenance/
 │
 ├── (member)/          # Requires login
-│   ├── dashboard/     # Main dashboard (4 sections: Status, Profile, Community, Presence)
-│   │   ├── edit-listing/
+│   ├── dashboard/     # 4 sections: Status, Profile, Community, Your Community Presence
+│   │   ├── edit-listing/     # Edit listing + tags for artists/photographers
 │   │   ├── bookings/
 │   │   └── availability/
 │   ├── profile/       # Own profile view + edit
 │   ├── account-settings/
 │   ├── feed/create/
-│   ├── events/create/
+│   ├── events/create/         # Includes family-friendly checkbox
 │   ├── listings/create/
-│   ├── yard-sales/create/   # Submit a yard sale (pending approval)
-│   ├── farmers/create/      # Submit a farmer listing (pending approval)
+│   ├── yard-sales/create/
+│   ├── farmers/create/
 │   └── settings/
 │   │
 │   └── (vip)/         # Requires vip/admin/superadmin role
 │       ├── vip-lounge/
 │       ├── vip-directory/
 │       └── (admin)/   # Requires admin/superadmin role
-│           ├── admin-dashboard/
+│           ├── admin-dashboard/      # Community Listings table card
 │           ├── admin/logs/
 │           ├── admin/review/
 │           ├── admin/settings/
@@ -91,10 +94,11 @@ src/routes/
 │           ├── posts-admin/
 │           ├── yard-sales-admin/
 │           ├── farmers-admin/
+│           ├── family-admin/         # Approve/reject parks & trails
 │           └── users/
 │
-├── api/posts/[id]/comments/   # API endpoint
-├── api/uploadthing/           # Uploadthing handler
+├── api/posts/[id]/comments/
+├── api/uploadthing/
 └── logout/
 ```
 
@@ -106,30 +110,28 @@ src/routes/
 |---|---|
 | `users` | Accounts — email, password (bcrypt), roles (JSON array), vipExpiresAt |
 | `profiles` | Member profile — displayName, avatar, bio, area/community, social links, privacy, onboarding flags |
-| `listings` | Business listings — name, category, contact, location, bio, image, social, schedule, booking config, status, slug |
-| `listing_photos` | Multiple photos per listing (Uploadthing URLs) |
-| `menu_items` | Menu items per listing (mainly food trucks) — name, price, category, image |
-| `listing_schedule` | Daily location schedule — date, location, lat/lng, start/end time |
+| `listings` | Business listings — name, category, contact, location, bio, image, social, schedule, booking config, slug, tags (JSON), status |
+| `listing_photos` | VIP gallery photos per listing (max 4) |
+| `menu_items` | Menu items per listing (food trucks) |
+| `listing_schedule` | Daily location schedule — date, location, lat/lng, times |
 | `areas` | Lee County areas (Sanford, Tramway, Broadway, etc.) |
-| `communities` | Neighborhoods within areas (e.g. Reserve at Carthage Colonies) |
-| `events` | Community events — title, dates, location, area/community, status, featured |
-| `posts` | Community feed posts — content, image, link, area/community, VIP-only flag |
-| `post_likes` | Likes on posts |
-| `post_comments` | Comments on posts |
-| `post_reports` | Reports on posts |
+| `communities` | Neighborhoods within areas |
+| `events` | Community events — title, dates, location, area/community, isFamilyFriendly, status |
+| `posts` | Community feed posts |
+| `post_likes` / `post_comments` / `post_reports` | Feed interactions |
 | `bookings` | Booking requests for vendor listings |
-| `availability` | Weekly availability per listing (day of week + time range) |
+| `availability` | Weekly availability per listing |
 | `specific_availability` | One-off date availability |
 | `contact_messages` | Contact form submissions |
-| `logs` | System activity log (login, changes, etc.) |
-| `system_meta` | Key-value store (e.g. `maintenance_mode = 'true'`) |
-| `yard_sales` | Member yard sale listings — title, date, time range, address, items (JSON array), status |
-| `farmer_listings` | Farm listings — farm name, produce categories, seasonal availability, markets attended, special features (U-Pick, SNAP/EBT, delivery, organic, pre-orders), contact/social, status |
+| `logs` | System activity log |
+| `system_meta` | Key-value store (e.g. maintenance_mode) |
+| `yard_sales` | Yard sale listings — title, date, time, address, items (JSON), status |
+| `farmer_listings` | Farm listings — produce categories, seasonal availability, markets, features, status |
+| `parks_trails` | Parks/trails directory — type, age range, features (JSON), trail difficulty/length, status |
 
 **Listing categories:** `food_truck` | `farmer` | `photographer` | `artist`
-**Listing/Event/Yard Sale/Farmer status:** `pending` | `approved` | `rejected`
+**Status pattern (all content tables):** `pending` | `approved` | `rejected`
 **Profile visibility:** `public` | `members` | `private`
-**Post status:** `published` | `removed`
 
 ---
 
@@ -137,42 +139,44 @@ src/routes/
 
 ```
 src/lib/components/
-├── TopBar.svelte         # Top navigation bar
-├── Sidebar.svelte        # Admin sidebar (dark theme, role-based sections)
-├── MemberSidebar.svelte  # Member sidebar (light, includes yard sales + farmers links)
+├── TopBar.svelte         # Public top navigation
+├── Sidebar.svelte        # Admin sidebar (dark, role-based)
+├── MemberSidebar.svelte  # Member sidebar — yard sales, farmers, family hub links
 └── PageHeader.svelte     # Reusable page header
-
-src/lib/components/ui/   # shadcn-style UI primitives
-  badge, button, card, dialog, input, label, table
 ```
 
 ---
 
 ## Key Patterns
 
-- **SvelteKit form actions** (`+page.server.ts`) for mutations (login, create, edit, delete)
-- **Svelte 5 runes** — `$props()`, `$state()`, `$derived()` used throughout
-- **`use:enhance`** from `$app/forms` for progressive enhancement on forms
-- **`page` from `$app/stores`** — Sidebar components use `$app/stores` not `$app/state`
-- Server-side auth checks in `+layout.server.ts` files per route group
-- Maintenance mode via `system_meta` table, checked in `hooks.server.ts`
-- Items/tags stored as JSON strings in SQLite, parsed on load
-- **Pending listings** — owners and admins can preview pending/rejected listings; public sees 404
-- **`svelte:element`** used for conditionally rendering `<a>` vs `<div>` cards (e.g. yard sales in events list)
+- **SvelteKit form actions** for all mutations (login, create, edit, delete)
+- **Svelte 5 runes** — `$props()`, `$state()`, `$derived()` throughout
+- **`use:enhance`** for progressive form enhancement
+- **`page` from `$app/stores`** in Sidebar components (not `$app/state`)
+- **`svelte:element`** for conditional `<a>` vs `<div>` rendering
+- **Pending preview** — owners + admins can see pending listings; public gets 404
+- **JSON fields** parsed with try/catch on load: `items`, `produceCategories`, `features`, `tags`
+- Server-side auth checks in `+layout.server.ts` per route group
+- Maintenance mode via `system_meta` table in `hooks.server.ts`
 
 ---
 
 ## Dashboard Layout (member)
 
-The dashboard is divided into 4 clean sections:
-1. **Status** — Total listings, Plan (VIP/Member), Business listing status, Member since
+4 clean sections:
+1. **Status** — Total listings count, Plan (VIP/Member), Business listing status, Member since
 2. **Profile** — My Profile, Edit Profile, Settings
 3. **Community** — Post to Feed, Post Event, Post Yard Sale, List Your Farm + VIP Lounge link
-4. **Your Community Presence** — All listings in one place:
-   - Business listing (with Edit/View/Bookings buttons)
-   - Farm listings (with View button + status)
-   - Yard sales (with View button + status)
-   - Each shows dashed "create" prompt when empty
+4. **Your Community Presence** — All listings in one card (business, farms, yard sales) with status badges and action buttons
+
+---
+
+## Admin Dashboard
+
+Single **Community Listings** table card with rows for:
+- 🏪 Listings, 🌾 Farmers Market, 🏷️ Yard Sales, 📅 Events, 👨‍👩‍👧 Family Hub
+- Columns: Type, Total, Pending (amber badge or green "Clear"), Review link
+- Separate stat cards for Posts, Messages, Bookings
 
 ---
 
@@ -185,82 +189,100 @@ TURSO_AUTH_TOKEN=your_token_here
 UPLOADTHING_TOKEN=your_uploadthing_token
 
 # Production — set in CapRover App Configs > Environmental Variables
-# Same keys as above — CapRover env vars override everything
 ```
 
-**Important notes:**
+**Important:**
 - `drizzle-kit` reads `.env` only — not `.env.production`
-- Set `TURSO_URL` + `TURSO_AUTH_TOKEN` in `.env` to push schema changes to Turso
-- Production token must also be set in **CapRover env vars** — not just the file
+- Production token must be set in CapRover env vars — not just files
+- To run with explicit env: `TURSO_URL=... TURSO_AUTH_TOKEN=... npx drizzle-kit push`
+- On Windows PowerShell: `$env:TURSO_URL="..."` then `npx drizzle-kit push`
 
 ---
 
 ## Deployment Workflow
 
 ```bash
-# Commit and push to GitHub
 git add .
 git commit -m "your message"
 git push
-
-# Deploy via CapRover dashboard → your app → Deployment tab → Deploy Now
-# Or via CLI:
-caprover deploy -default
+# Then CapRover dashboard → Deploy Now
 ```
 
-**Schema changes** — run SQL directly in Turso dashboard (app.turso.tech):
-- Go to database → Edit Data → SQL scratches → paste SQL → Run
-- `drizzle-kit push` also works if `.env` has valid Turso credentials
+**Schema changes** — run SQL in Turso dashboard (app.turso.tech):
+- Database → Edit Data → SQL scratches → paste → Run
+- OR use `npx drizzle-kit push` with valid `.env`
 
-**If production goes down (500 error):**
-- Check CapRover logs for the error message
-- Most common cause: expired `TURSO_AUTH_TOKEN` in CapRover env vars
-- Fix: Turso dashboard → Generate Token → update in CapRover App Configs → Save & Restart
+**If production goes 500:**
+- Check CapRover logs
+- Most common: expired `TURSO_AUTH_TOKEN` in CapRover env vars
+- Fix: Turso → Generate Token → update CapRover App Configs → Save & Restart
 
 ---
 
-## Current Status
+## Features Completed ✅
 
-**Working:**
+### Core Platform
 - Auth (register, login, logout, VIP expiry)
-- Listings (create, edit, admin approve/reject, vanity slugs)
-- Listing photos, menu items, daily schedule
+- Listings (create, edit, approve/reject, vanity slugs, QR codes)
+- Listing photos (VIP gallery, max 4, Uploadthing)
+- Menu items + daily schedule for food trucks
 - Member profiles (edit, privacy, onboarding checklist)
 - Community feed (posts, likes, comments, reports)
 - Events (create, admin manage, date-based browsing)
-- Bookings + availability system
-- Admin panel (users, listings, posts, events, logs, areas, communities, settings)
+- Bookings + availability (weekly + specific dates)
+- Admin panel (full — users, listings, posts, events, logs, areas, communities, settings)
 - Maintenance mode
-- Uploadthing file uploads
-- **Yard Sales** ✅ fully complete
-  - Create form with item picker, date/time, address, Google Maps link
-  - Public list page (`/yard-sales`) with upcoming + past sections
-  - Individual detail page (`/yard-sales/[id]`) with full info + share + delete
-  - Merged into events page on sale day (also in collapsible "Yard Sales Today" section)
-  - Preview cards in community feed
-  - Member dashboard shows own yard sales + status
-  - Admin approve/reject/feature + pending count on admin dashboard
-  - Nav links in both MemberSidebar and admin Sidebar
-- **Farmer Listings** ✅ fully complete
-  - Create form with produce categories, seasonal availability, markets attended
-  - Special features: U-Pick, SNAP/EBT, delivery, organic, pre-orders
-  - Public list page (`/farmers`) with search + produce filter
-  - Individual detail page (`/farmers/[id]`) with full info + directions + delete
-  - Member dashboard shows own farm listings + status
-  - Admin approve/reject/feature/delete + pending count on admin dashboard
-  - Nav links in both MemberSidebar and admin Sidebar
-  - Owners + admins can preview pending listings (public sees 404)
+
+### Yard Sales ✅
+- Create form with item picker, date/time, address
+- Public list + detail page (`/yard-sales/[id]`)
+- Merged into events page on sale day + "Yard Sales Today" collapsible
+- Home page upcoming section
+- Member dashboard card + admin approve/reject/feature
+- Pending preview for owner + admin
+
+### Farmer Listings ✅
+- Create form: produce categories, seasonal availability, markets, features
+- Special flags: U-Pick, SNAP/EBT, delivery, organic, pre-orders
+- Public list (`/farmers`) with search + produce filter
+- Detail page with directions
+- Home page grid with green theme + produce tags
+- Member dashboard card + admin approve/reject/feature
+- Pending preview for owner + admin
+
+### Artist & Photographer Galleries ✅
+- `tags` column on listings (JSON)
+- Tags input in edit-listing with suggestion chips
+- Enhanced listing detail: masonry gallery, fullscreen lightbox, tags badges
+- "Book a Session" language for creatives
+- VIP photo limit respected (max 4 gallery photos)
+
+### Family Activities Hub ✅
+- `/family` public page with Events / Parks / Trails tabs
+- `isFamilyFriendly` flag on events + checkbox on event create form
+- `parks_trails` table — parks, playgrounds, trails, sports fields, swimming, picnic
+- Detail page with features, trail info, directions
+- Member submission form (`/family/parks/submit`)
+- Admin approve/reject/feature/delete (`/family-admin`)
+- Pending preview for owner + admin
+- Family Hub links in MemberSidebar + admin Sidebar + admin dashboard table
+
+### Home Page ✅
+- Farmers merged into main grid alongside listings
+- Category filter buttons: All 🌟, Food Trucks 🚚, Farmers 🌾, Photographers 📸, Artists 🎨
+- Unified search across names, bios, produce categories
+- Upcoming Yard Sales section below grid
 
 ---
 
 ## Roadmap
 
-1. 🎨 **Artist & Photographer Galleries** — enhanced listing profiles with photo gallery of their work. Needs: gallery UI on listing detail page, Uploadthing multi-upload. (`listing_photos` table already exists)
+1. 📱 **Local Digital Creators Directory** — TikTok, YouTube, Instagram, podcasts. Needs: `creators` table, public directory, admin approval.
 
-2. 👨‍👩‍👧 **Family Activities Hub** — curated section for families with kids. Movies, parks, hiking trails, playgrounds, kid-friendly events. Could be filtered view of events + dedicated trails/parks directory.
+2. 🔔 **Push Notifications** — web push for events, yard sales, posts. Needs: service worker, `push_subscriptions` table, VAPID keys, `web-push` npm package.
 
-3. 📱 **Local Digital Creators Directory** — profiles for local social media creators (YouTube, TikTok, Instagram, Twitch, podcast). Needs: `creators` table, public directory, admin approval.
+3. 📱 **Mobile App** — iOS & Android via Capacitor (config exists). Needs Mac for iOS. Apple Dev $99/yr, Google Play $25 one-time.
 
-4. 🔔 **Push Notifications** — web push for new yard sales, events, posts. Needs: service worker, `push_subscriptions` table, VAPID keys, `web-push` npm package.
+4. 🔐 **Social Login** — Google, Facebook via OAuth.
 
-5. 📱 **Mobile App** — iOS & Android via Capacitor (config exists, not wired up). Needs Mac for iOS build. Apple Developer account ($99/yr) for App Store. Google Play ($25 one-time).
+5. 📧 **Email Notifications** — booking confirmations, event reminders, approval notices.
