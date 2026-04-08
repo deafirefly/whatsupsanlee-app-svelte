@@ -93,6 +93,7 @@ export const actions = {
             facebook: formData.get('facebook') as string,
             twitter: formData.get('twitter') as string,
             tiktok: formData.get('tiktok') as string,
+            tags: (formData.get('tags') as string) || '[]',
             imageUrl: formData.get('imageUrl') as string,
             slug,
             bookingEnabled: formData.get('bookingEnabled') === 'on',

@@ -52,6 +52,9 @@ export const listings = sqliteTable('listings', {
 	twitter: text('twitter'),
 	tiktok: text('tiktok'),
 
+    // Creative Tags (for artists/photographers)
+    tags: text('tags').default('[]'),
+
 	// Schedule Information
 	operatingHours: text('operating_hours'), // JSON: {"mon": "10:00-18:00", "tue": "Closed"}
 	specificDates: text('specific_dates'),

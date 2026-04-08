@@ -18,6 +18,40 @@
     let newPhotoUrl = $state('');
     let QRCode: any = null;
 
+    // Tags for artists/photographers
+let tags = $state<string[]>((() => {
+    try { return JSON.parse(listing.tags ?? '[]'); } catch { return []; }
+})());
+let newTag = $state('');
+
+const artistSuggestions = ['Oil Paint', 'Watercolor', 'Acrylic', 'Digital Art', 'Sculpture',
+    'Mixed Media', 'Photography', 'Printmaking', 'Illustration', 'Collage',
+    'Commission Open', 'Prints Available', 'Custom Orders', 'Local Delivery'];
+
+const photographerSuggestions = ['Portrait', 'Wedding', 'Events', 'Landscape', 'Commercial',
+    'Family', 'Newborn', 'Senior Photos', 'Real Estate', 'Food Photography',
+    'Drone Photography', 'Black & White', 'Outdoor Sessions', 'Studio Available'];
+
+function addTag() {
+    const trimmed = newTag.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+        tags = [...tags, trimmed];
+    }
+    newTag = '';
+}
+
+function removeTag(tag: string) {
+    tags = tags.filter(t => t !== tag);
+}
+
+function toggleSuggestedTag(tag: string) {
+    if (tags.includes(tag)) {
+        tags = tags.filter(t => t !== tag);
+    } else {
+        tags = [...tags, tag];
+    }
+}
+
     async function handleGalleryChange(e: Event) {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (!file || !uploader) return;
@@ -143,6 +177,7 @@
         class="space-y-6"
     >
         <input type="hidden" name="id" value={listing.id} />
+        <input type="hidden" name="tags" value={JSON.stringify(tags)} />
 
         <!-- Cover Photo -->
         <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
@@ -365,6 +400,60 @@
                 </div>
             </div>
         </div>
+
+        {#if listing.category === 'artist' || listing.category === 'photographer'}
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
+        <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-2">
+            {listing.category === 'artist' ? '🎨 Art Style & Medium' : '📸 Photography Style'}
+        </h3>
+        <p class="text-xs text-slate-400">Add tags that describe your work — helps people find you!</p>
+ 
+        <!-- Suggestions -->
+        <div>
+            <p class="text-xs font-bold text-slate-500 mb-2">Quick add:</p>
+            <div class="flex flex-wrap gap-2">
+                {#each (listing.category === 'artist' ? artistSuggestions : photographerSuggestions) as suggestion}
+                    <button type="button"
+                        onclick={() => toggleSuggestedTag(suggestion)}
+                        class="px-3 py-1.5 text-xs font-bold rounded-full border-2 transition-all
+                        {tags.includes(suggestion)
+                            ? 'border-indigo-600 bg-indigo-600 text-white'
+                            : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-300 hover:text-indigo-600'}">
+                        {tags.includes(suggestion) ? '✓ ' : '+ '}{suggestion}
+                    </button>
+                {/each}
+            </div>
+        </div>
+ 
+        <!-- Custom tag input -->
+        <div class="flex gap-2">
+            <input type="text" bind:value={newTag}
+                onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); }}}
+                placeholder="Add a custom tag..."
+                class="flex-1 p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+            <button type="button" onclick={addTag}
+                class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all">
+                Add
+            </button>
+        </div>
+ 
+        <!-- Selected tags -->
+        {#if tags.length > 0}
+            <div>
+                <p class="text-xs font-bold text-slate-500 mb-2">Your tags ({tags.length}):</p>
+                <div class="flex flex-wrap gap-2">
+                    {#each tags as tag}
+                        <span class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-full text-xs font-bold">
+                            {tag}
+                            <button type="button" onclick={() => removeTag(tag)}
+                                class="text-indigo-400 hover:text-indigo-700 font-black leading-none">✕</button>
+                        </span>
+                    {/each}
+                </div>
+            </div>
+        {/if}
+    </div>
+{/if}
 
         <!-- VIP Photo Gallery -->
 {#if isVip}
