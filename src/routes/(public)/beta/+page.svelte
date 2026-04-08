@@ -1,3 +1,4 @@
+<!-- src/routes/(public)/beta/+page.svelte -->
 <script lang="ts">
     const roadmapItems = [
         {
@@ -12,27 +13,47 @@
                 'Community feed & posts',
                 'Admin dashboard & moderation',
                 'Lee County areas & communities',
+                'VIP membership & photo galleries',
+                'Booking system for service businesses',
+                'QR codes for businesses',
+                'Vanity URLs for listings',
             ]
         },
         {
             phase: 'Phase 2',
-            label: 'Growth',
-            status: 'current',
-            emoji: '🚧',
+            label: 'Community',
+            status: 'complete',
+            emoji: '✅',
             items: [
-                'VIP membership features',
-                'Sponsor & organization pages',
-                'QR codes for businesses',
-                'Social login (Google, Facebook)',
-                'Email notifications',
-                'Mobile app (iOS & Android)',
-                'Event ticketing & RSVPs',
-                'Booking system for service businesses',
+                'Yard Sales — post, browse & approve',
+                'Farmers Market directory',
+                'Artist & Photographer galleries with lightbox',
+                'Style & medium tags for creatives',
+                'Family Activities Hub',
+                'Parks & Trails directory',
+                'Family-friendly event tagging',
+                'Home page category filters',
+                'Unified search across all listings',
             ]
         },
         {
             phase: 'Phase 3',
-            label: 'Community',
+            label: 'Growth',
+            status: 'current',
+            emoji: '🚧',
+            items: [
+                'Local Digital Creators Directory (YouTube, TikTok, Podcasts)',
+                'Push notifications for events & yard sales',
+                'Mobile app (iOS & Android via Capacitor)',
+                'Social login (Google, Facebook)',
+                'Email notifications',
+                'Event ticketing & RSVPs',
+                'Sponsor & organization pages',
+            ]
+        },
+        {
+            phase: 'Phase 4',
+            label: 'Platform',
             status: 'planned',
             emoji: '🔮',
             items: [
@@ -43,20 +64,9 @@
                 'Community polls & voting',
                 'Neighborhood watch alerts',
                 'Local business reviews',
-            ]
-        },
-        {
-            phase: 'Phase 4',
-            label: 'Platform',
-            status: 'planned',
-            emoji: '🌟',
-            items: [
                 'Payment processing for bookings',
                 'Advanced analytics for businesses',
-                'API for third party integrations',
                 'Multi-county expansion',
-                'Community radio/podcast integration',
-                'Live event streaming',
             ]
         },
     ];
@@ -80,6 +90,22 @@
         </p>
     </div>
 
+    <!-- Stats Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {#each [
+            { emoji: '🏪', label: 'Business Types', value: '4' },
+            { emoji: '🌳', label: 'Community Features', value: '8+' },
+            { emoji: '👨‍👩‍👧', label: 'Family Activities', value: 'New!' },
+            { emoji: '🗺️', label: 'Lee County Focus', value: '100%' },
+        ] as stat}
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
+                <span class="text-2xl block mb-1">{stat.emoji}</span>
+                <p class="text-lg font-black text-slate-900">{stat.value}</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+            </div>
+        {/each}
+    </div>
+
     <!-- What is Beta -->
     <div class="bg-amber-50 border border-amber-200 rounded-3xl p-8">
         <h2 class="text-xl font-black text-amber-900 mb-4">⚠️ What does Beta mean?</h2>
@@ -93,6 +119,30 @@
                     <span class="text-3xl block mb-2">{item.emoji}</span>
                     <p class="font-black text-amber-900 text-sm mb-1">{item.title}</p>
                     <p class="text-xs text-amber-700 leading-relaxed">{item.desc}</p>
+                </div>
+            {/each}
+        </div>
+    </div>
+
+    <!-- What's New -->
+    <div class="bg-gradient-to-br from-emerald-50 to-sky-50 border border-emerald-200 rounded-3xl p-8">
+        <h2 class="text-xl font-black text-emerald-900 mb-2">🎉 Recently Added</h2>
+        <p class="text-sm text-emerald-700 mb-5">Here's what's new in the latest update!</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {#each [
+                { emoji: '👨‍👩‍👧', title: 'Family Activities Hub', desc: 'Browse family-friendly events, parks, playgrounds and trails in Lee County' },
+                { emoji: '🌾', title: 'Farmers Market Directory', desc: 'Find local farms, produce, U-Pick, SNAP/EBT accepted and more' },
+                { emoji: '🎨', title: 'Artist & Photographer Galleries', desc: 'Beautiful portfolio galleries with lightbox, style tags and booking' },
+                { emoji: '🏷️', title: 'Yard Sales', desc: 'Post and find yard sales in your neighborhood with date, time and items' },
+                { emoji: '🌳', title: 'Parks & Trails Directory', desc: 'Submit and discover local parks, playgrounds and hiking trails' },
+                { emoji: '🔍', title: 'Unified Search & Filters', desc: 'Search across food trucks, farmers, artists, photographers all at once' },
+            ] as item}
+                <div class="flex items-start gap-3 bg-white rounded-2xl p-4 border border-emerald-100">
+                    <span class="text-2xl flex-shrink-0">{item.emoji}</span>
+                    <div>
+                        <p class="font-black text-slate-900 text-sm">{item.title}</p>
+                        <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                    </div>
                 </div>
             {/each}
         </div>
@@ -112,7 +162,7 @@
                     <div class="p-5 flex items-center gap-4 border-b {phase.status === 'complete' ? 'bg-emerald-50 border-emerald-100' : phase.status === 'current' ? 'bg-indigo-50 border-indigo-100' : 'bg-slate-50 border-slate-100'}">
                         <span class="text-2xl">{phase.emoji}</span>
                         <div class="flex-1">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 <h3 class="font-black text-slate-900">{phase.phase} — {phase.label}</h3>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest
                                     {phase.status === 'complete' ? 'bg-emerald-100 text-emerald-700' :
