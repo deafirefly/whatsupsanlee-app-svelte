@@ -74,7 +74,7 @@
                                 {/if}
                             </div>
                             <p class="text-sm text-slate-500">
-                                Submitted by {place.authorName || place.authorEmail ?? 'Unknown'}
+                                Submitted by {place.authorName || place.authorEmail || 'Unknown'}
                             </p>
 
                             {#if place.description}
