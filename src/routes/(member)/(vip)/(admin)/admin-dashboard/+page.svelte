@@ -1,8 +1,41 @@
+<!-- src/routes/(member)/(vip)/(admin)/admin-dashboard/+page.svelte -->
 <script lang="ts">
     import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
     import { Users, Star, ShieldCheck, TrendingUp } from "lucide-svelte";
     
     let { data } = $props();
+
+    const listingTypes = [
+        {
+            emoji: '🏪',
+            label: 'Listings',
+            total: data.contentStats.totalListings,
+            pending: data.contentStats.pendingListings,
+            approved: data.contentStats.totalListings - data.contentStats.pendingListings - (data.contentStats.totalListings - data.contentStats.pendingListings - (data.contentStats.totalListings - data.contentStats.pendingListings)),
+            href: '/listings-admin',
+        },
+        {
+            emoji: '🌾',
+            label: 'Farmers Market',
+            total: data.contentStats.totalFarmers,
+            pending: data.contentStats.pendingFarmers,
+            href: '/farmers-admin',
+        },
+        {
+            emoji: '🏷️',
+            label: 'Yard Sales',
+            total: data.contentStats.totalYardSales,
+            pending: data.contentStats.pendingYardSales,
+            href: '/yard-sales-admin',
+        },
+        {
+            emoji: '📅',
+            label: 'Events',
+            total: data.contentStats.totalEvents,
+            pending: data.contentStats.pendingEvents,
+            href: '/events-admin',
+        },
+    ];
 </script>
 
 <div class="space-y-6">
@@ -58,71 +91,10 @@
                 <p class="text-xs text-muted-foreground">v{data.systemStatus.version} · DB {data.systemStatus.database}</p>
             </CardContent>
         </Card>
-
-        <Card shadow="sm">
-    <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">Yard Sales</CardTitle>
-        <span class="text-lg">🏷️</span>
-    </CardHeader>
-    <CardContent>
-        <div class="text-2xl font-bold">{data.contentStats.totalYardSales}</div>
-        {#if data.contentStats.pendingYardSales > 0}
-            <p class="text-xs text-amber-500 font-bold">⏳ {data.contentStats.pendingYardSales} pending approval</p>
-        {:else}
-            <p class="text-xs text-muted-foreground">All approved</p>
-        {/if}
-    </CardContent>
-</Card>
-
-<Card shadow="sm">
-    <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle class="text-sm font-medium">Farmers Market</CardTitle>
-        <span class="text-lg">🌾</span>
-    </CardHeader>
-    <CardContent>
-        <div class="text-2xl font-bold">{data.contentStats.totalFarmers}</div>
-        {#if data.contentStats.pendingFarmers > 0}
-            <p class="text-xs text-amber-500 font-bold">⏳ {data.contentStats.pendingFarmers} pending approval</p>
-        {:else}
-            <p class="text-xs text-muted-foreground">All approved</p>
-        {/if}
-    </CardContent>
-</Card>
-
     </div>
 
-    <!-- Content Stats -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card shadow="sm">
-            <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle class="text-sm font-medium">Listings</CardTitle>
-                <span class="text-lg">🏪</span>
-            </CardHeader>
-            <CardContent>
-                <div class="text-2xl font-bold">{data.contentStats.totalListings}</div>
-                {#if data.contentStats.pendingListings > 0}
-                    <p class="text-xs text-amber-500 font-bold">⏳ {data.contentStats.pendingListings} pending approval</p>
-                {:else}
-                    <p class="text-xs text-muted-foreground">All approved</p>
-                {/if}
-            </CardContent>
-        </Card>
-
-        <Card shadow="sm">
-            <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle class="text-sm font-medium">Events</CardTitle>
-                <span class="text-lg">📅</span>
-            </CardHeader>
-            <CardContent>
-                <div class="text-2xl font-bold">{data.contentStats.totalEvents}</div>
-                {#if data.contentStats.pendingEvents > 0}
-                    <p class="text-xs text-amber-500 font-bold">⏳ {data.contentStats.pendingEvents} pending approval</p>
-                {:else}
-                    <p class="text-xs text-muted-foreground">All approved</p>
-                {/if}
-            </CardContent>
-        </Card>
-
+    <!-- Quick Stats Row: Posts & Messages -->
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card shadow="sm">
             <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle class="text-sm font-medium">Posts</CardTitle>
@@ -148,10 +120,25 @@
                 {/if}
             </CardContent>
         </Card>
+
+        <Card shadow="sm">
+            <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle class="text-sm font-medium">Bookings</CardTitle>
+                <span class="text-lg">📋</span>
+            </CardHeader>
+            <CardContent>
+                <div class="text-2xl font-bold">{data.contentStats.totalBookings}</div>
+                {#if data.contentStats.pendingBookings > 0}
+                    <p class="text-xs text-amber-500 font-bold">⏳ {data.contentStats.pendingBookings} pending</p>
+                {:else}
+                    <p class="text-xs text-muted-foreground">All handled</p>
+                {/if}
+            </CardContent>
+        </Card>
     </div>
 
     <!-- Pending Approvals Alert -->
-     {#if data.contentStats.pendingListings > 0 || data.contentStats.pendingEvents > 0 || data.contentStats.pendingYardSales > 0 || data.contentStats.pendingFarmers > 0 || data.contentStats.unreadMessages > 0}
+    {#if data.contentStats.pendingListings > 0 || data.contentStats.pendingEvents > 0 || data.contentStats.pendingYardSales > 0 || data.contentStats.pendingFarmers > 0 || data.contentStats.unreadMessages > 0}
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
             <span class="text-xl">⚠️</span>
             <div>
@@ -168,15 +155,15 @@
                         </a>
                     {/if}
                     {#if data.contentStats.pendingYardSales > 0}
-                    <a href="/yard-sales-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
-                        {data.contentStats.pendingYardSales} yard sale{data.contentStats.pendingYardSales > 1 ? 's' : ''} pending →
-                    </a>
+                        <a href="/yard-sales-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
+                            {data.contentStats.pendingYardSales} yard sale{data.contentStats.pendingYardSales > 1 ? 's' : ''} pending →
+                        </a>
                     {/if}
                     {#if data.contentStats.pendingFarmers > 0}
-    <a href="/farmers-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
-        {data.contentStats.pendingFarmers} farmer listing{data.contentStats.pendingFarmers > 1 ? 's' : ''} pending →
-    </a>
-{/if}
+                        <a href="/farmers-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
+                            {data.contentStats.pendingFarmers} farmer listing{data.contentStats.pendingFarmers > 1 ? 's' : ''} pending →
+                        </a>
+                    {/if}
                     {#if data.contentStats.unreadMessages > 0}
                         <a href="/messages-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
                             {data.contentStats.unreadMessages} unread message{data.contentStats.unreadMessages > 1 ? 's' : ''} →
@@ -186,6 +173,63 @@
             </div>
         </div>
     {/if}
+
+    <!-- Community Listings Table -->
+    <Card class="w-full">
+        <CardHeader>
+            <CardTitle>Community Listings</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <div class="w-full">
+                <!-- Table Header -->
+                <div class="grid grid-cols-5 gap-4 px-4 py-2 text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                    <div class="col-span-2">Type</div>
+                    <div class="text-center">Total</div>
+                    <div class="text-center">Pending</div>
+                    <div class="text-right">Action</div>
+                </div>
+
+                <!-- Table Rows -->
+                {#each listingTypes as type}
+                    <div class="grid grid-cols-5 gap-4 px-4 py-4 items-center border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors rounded-xl">
+                        
+                        <!-- Type -->
+                        <div class="col-span-2 flex items-center gap-3">
+                            <span class="text-xl">{type.emoji}</span>
+                            <span class="font-bold text-slate-900 text-sm">{type.label}</span>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="text-center">
+                            <span class="text-lg font-black text-slate-900">{type.total}</span>
+                        </div>
+
+                        <!-- Pending / Needs Attention -->
+                        <div class="text-center">
+                            {#if type.pending > 0}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-black">
+                                    ⏳ {type.pending}
+                                </span>
+                            {:else}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-xs font-black">
+                                    ✓ Clear
+                                </span>
+                            {/if}
+                        </div>
+
+                        <!-- Action -->
+                        <div class="text-right">
+                            <a href={type.href}
+                                class="text-xs font-black text-indigo-600 hover:text-indigo-800 hover:underline transition-colors">
+                                Review →
+                            </a>
+                        </div>
+
+                    </div>
+                {/each}
+            </div>
+        </CardContent>
+    </Card>
 
     <!-- Recent Users -->
     <Card class="w-full">

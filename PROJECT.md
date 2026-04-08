@@ -205,7 +205,7 @@ git push
 
 # Deploy via CapRover dashboard → your app → Deployment tab → Deploy Now
 # Or via CLI:
-caprover deploy
+caprover deploy -default
 ```
 
 **Schema changes** — run SQL directly in Turso dashboard (app.turso.tech):
