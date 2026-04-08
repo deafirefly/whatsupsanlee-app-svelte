@@ -50,16 +50,19 @@ src/routes/
 │   ├── login/
 │   ├── register/
 │   ├── feed/          # Community post feed (includes yard sales)
-│   ├── events/        # Events calendar + [date] detail (includes yard sales)
+│   ├── events/        # Events calendar + [date] detail (yard sales merged in)
 │   ├── listings/[id]  # Listing detail page
 │   ├── profile/[id]   # Public member profile
 │   ├── yard-sales/    # Public yard sales listing page
+│   ├── yard-sales/[id] # Yard sale detail page
+│   ├── farmers/       # Public farmers market listing page
+│   ├── farmers/[id]   # Farmer detail page
 │   ├── [slug]/        # Vanity URL for listings
 │   ├── about, contact, privacy, terms, support, subscribe, beta
 │   └── maintenance/
 │
 ├── (member)/          # Requires login
-│   ├── dashboard/     # Main dashboard + sub-pages
+│   ├── dashboard/     # Main dashboard (4 sections: Status, Profile, Community, Presence)
 │   │   ├── edit-listing/
 │   │   ├── bookings/
 │   │   └── availability/
@@ -69,6 +72,7 @@ src/routes/
 │   ├── events/create/
 │   ├── listings/create/
 │   ├── yard-sales/create/   # Submit a yard sale (pending approval)
+│   ├── farmers/create/      # Submit a farmer listing (pending approval)
 │   └── settings/
 │   │
 │   └── (vip)/         # Requires vip/admin/superadmin role
@@ -85,7 +89,8 @@ src/routes/
 │           ├── listings-admin/
 │           ├── messages-admin/
 │           ├── posts-admin/
-│           ├── yard-sales-admin/   # Approve/reject/feature yard sales
+│           ├── yard-sales-admin/
+│           ├── farmers-admin/
 │           └── users/
 │
 ├── api/posts/[id]/comments/   # API endpoint
@@ -119,9 +124,10 @@ src/routes/
 | `logs` | System activity log (login, changes, etc.) |
 | `system_meta` | Key-value store (e.g. `maintenance_mode = 'true'`) |
 | `yard_sales` | Member yard sale listings — title, date, time range, address, items (JSON array), status |
+| `farmer_listings` | Farm listings — farm name, produce categories, seasonal availability, markets attended, special features (U-Pick, SNAP/EBT, delivery, organic, pre-orders), contact/social, status |
 
 **Listing categories:** `food_truck` | `farmer` | `photographer` | `artist`
-**Listing/Event/Yard Sale status:** `pending` | `approved` | `rejected`
+**Listing/Event/Yard Sale/Farmer status:** `pending` | `approved` | `rejected`
 **Profile visibility:** `public` | `members` | `private`
 **Post status:** `published` | `removed`
 
@@ -133,7 +139,7 @@ src/routes/
 src/lib/components/
 ├── TopBar.svelte         # Top navigation bar
 ├── Sidebar.svelte        # Admin sidebar (dark theme, role-based sections)
-├── MemberSidebar.svelte  # Member sidebar (light theme, includes yard sales links)
+├── MemberSidebar.svelte  # Member sidebar (light, includes yard sales + farmers links)
 └── PageHeader.svelte     # Reusable page header
 
 src/lib/components/ui/   # shadcn-style UI primitives
@@ -151,6 +157,22 @@ src/lib/components/ui/   # shadcn-style UI primitives
 - Server-side auth checks in `+layout.server.ts` files per route group
 - Maintenance mode via `system_meta` table, checked in `hooks.server.ts`
 - Items/tags stored as JSON strings in SQLite, parsed on load
+- **Pending listings** — owners and admins can preview pending/rejected listings; public sees 404
+- **`svelte:element`** used for conditionally rendering `<a>` vs `<div>` cards (e.g. yard sales in events list)
+
+---
+
+## Dashboard Layout (member)
+
+The dashboard is divided into 4 clean sections:
+1. **Status** — Total listings, Plan (VIP/Member), Business listing status, Member since
+2. **Profile** — My Profile, Edit Profile, Settings
+3. **Community** — Post to Feed, Post Event, Post Yard Sale, List Your Farm + VIP Lounge link
+4. **Your Community Presence** — All listings in one place:
+   - Business listing (with Edit/View/Bookings buttons)
+   - Farm listings (with View button + status)
+   - Yard sales (with View button + status)
+   - Each shows dashed "create" prompt when empty
 
 ---
 
@@ -210,24 +232,35 @@ caprover deploy
 - Admin panel (users, listings, posts, events, logs, areas, communities, settings)
 - Maintenance mode
 - Uploadthing file uploads
-- Yard Sales ✅ fully complete
-  - Shown on: home page, /yard-sales, events page by date, community feed, member dashboard
-  - Admin dashboard shows pending yard sale count + alert
+- **Yard Sales** ✅ fully complete
+  - Create form with item picker, date/time, address, Google Maps link
+  - Public list page (`/yard-sales`) with upcoming + past sections
+  - Individual detail page (`/yard-sales/[id]`) with full info + share + delete
+  - Merged into events page on sale day (also in collapsible "Yard Sales Today" section)
+  - Preview cards in community feed
+  - Member dashboard shows own yard sales + status
+  - Admin approve/reject/feature + pending count on admin dashboard
   - Nav links in both MemberSidebar and admin Sidebar
+- **Farmer Listings** ✅ fully complete
+  - Create form with produce categories, seasonal availability, markets attended
+  - Special features: U-Pick, SNAP/EBT, delivery, organic, pre-orders
+  - Public list page (`/farmers`) with search + produce filter
+  - Individual detail page (`/farmers/[id]`) with full info + directions + delete
+  - Member dashboard shows own farm listings + status
+  - Admin approve/reject/feature/delete + pending count on admin dashboard
+  - Nav links in both MemberSidebar and admin Sidebar
+  - Owners + admins can preview pending listings (public sees 404)
 
-**Roadmap:**
+---
 
-### Next Features (priority order)
-1. **Farmer Listings** — similar to yard sales, farmers post what they're selling, when/where (farmers markets, roadside stands, CSA boxes). Needs: `farmer_listings` table, create/public/admin/detail pages.
+## Roadmap
 
-2. **Artist & Photographer Galleries** — enhanced listing profiles for artists and photographers with a photo gallery of their work. Needs: `gallery_photos` table linked to listings, gallery UI on listing detail page, Uploadthing multi-upload.
+1. 🎨 **Artist & Photographer Galleries** — enhanced listing profiles with photo gallery of their work. Needs: gallery UI on listing detail page, Uploadthing multi-upload. (`listing_photos` table already exists)
 
-3. **Family Activities Hub** — curated section for families with young children. Categories: movies, park events, hiking trails, playgrounds, kid-friendly events. Could be a filtered view of existing events plus a dedicated trails/parks directory. Needs: trails/parks table or category additions to events.
+2. 👨‍👩‍👧 **Family Activities Hub** — curated section for families with kids. Movies, parks, hiking trails, playgrounds, kid-friendly events. Could be filtered view of events + dedicated trails/parks directory.
 
-4. **Local Digital Creators Directory** — profiles for local social media creators with links to their platforms (YouTube, TikTok, Instagram, Twitch, podcast, etc.). Needs: `creators` table, public directory page, admin approval.
+3. 📱 **Local Digital Creators Directory** — profiles for local social media creators (YouTube, TikTok, Instagram, Twitch, podcast). Needs: `creators` table, public directory, admin approval.
 
-5. **Push Notifications** — web push for new yard sales, events, posts in your area. Needs: service worker, `push_subscriptions` table, VAPID keys, `web-push` npm package, opt-in UI in account settings.
+4. 🔔 **Push Notifications** — web push for new yard sales, events, posts. Needs: service worker, `push_subscriptions` table, VAPID keys, `web-push` npm package.
 
-6. **Mobile App** — iOS & Android via Capacitor (config exists, not wired up yet).
-
-7. **Community feed widget on dashboard** — currently shows "Coming Soon".
+5. 📱 **Mobile App** — iOS & Android via Capacitor (config exists, not wired up). Needs Mac for iOS build. Apple Developer account ($99/yr) for App Store. Google Play ($25 one-time).
