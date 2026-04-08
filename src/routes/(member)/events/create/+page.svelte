@@ -292,6 +292,20 @@
         </div>
         {/if}
 
+        <!-- Family Friendly -->
+<div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-1">👨‍👩‍👧‍👦 Family Friendly</h3>
+            <p class="text-xs text-slate-400">Check this if the event is suitable for families with children.</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" name="isFamilyFriendly" class="sr-only peer" />
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-sky-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+        </label>
+    </div>
+</div>
+
         <!-- Submit -->
         <button
             type="submit"

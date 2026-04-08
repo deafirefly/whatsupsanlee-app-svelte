@@ -35,6 +35,13 @@
             pending: data.contentStats.pendingEvents,
             href: '/events-admin',
         },
+        {
+    emoji: '👨‍👩‍👧‍👦',
+    label: 'Family Hub',
+    total: data.contentStats.totalParksTrails,
+    pending: data.contentStats.pendingParksTrails,
+    href: '/family-admin',
+},
     ];
 </script>
 

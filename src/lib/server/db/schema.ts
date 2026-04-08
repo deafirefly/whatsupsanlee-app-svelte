@@ -198,6 +198,8 @@ export const events = sqliteTable('events', {
     areaId: integer('area_id').references(() => areas.id),
     communityId: integer('community_id').references(() => communities.id),
 
+    isFamilyFriendly: integer('is_family_friendly', { mode: 'boolean' }).default(false),
+
     // Status
     status: text('status').default('pending').notNull(),
     isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
@@ -394,6 +396,36 @@ export const farmerListings = sqliteTable('farmer_listings', {
     website: text('website'),
     instagram: text('instagram'),
     facebook: text('facebook'),
+
+    // Status
+    status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
+    isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
+
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});
+
+export const parksTrails = sqliteTable('parks_trails', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }),
+
+    // Core Info
+    name: text('name').notNull(),
+    description: text('description'),
+    type: text('type').notNull(), // 'park' | 'playground' | 'trail' | 'sports_field' | 'swimming' | 'picnic'
+    imageUrl: text('image_url'),
+
+    // Location
+    address: text('address'),
+    locationPin: text('location_pin'),   // Google Maps link
+    latitude: real('latitude'),
+    longitude: real('longitude'),
+
+    // Details
+    ageRange: text('age_range').default('all'), // 'toddler' | 'kids' | 'teens' | 'all'
+    features: text('features').default('[]'),   // JSON: ["Restrooms", "Parking", "Picnic Tables", "Water Fountain", "Dog Friendly"]
+    trailDifficulty: text('trail_difficulty'),   // 'easy' | 'moderate' | 'hard' — for trails only
+    trailLength: text('trail_length'),           // e.g. "2.3 miles"
 
     // Status
     status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'

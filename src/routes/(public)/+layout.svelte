@@ -30,6 +30,9 @@
         <a href={`/events/${today}`} class="px-4 py-2 text-slate-600 font-bold text-sm hover:text-indigo-600 transition-colors">
             📅 Events
         </a>
+        <a href="/family" class="px-4 py-2 text-slate-600 font-bold text-sm hover:text-indigo-600 transition-colors">
+            👨‍👩‍👧 Family
+        </a>
         <a href="/about" class="px-4 py-2 text-slate-600 font-bold text-sm hover:text-indigo-600 transition-colors">
             About
         </a>

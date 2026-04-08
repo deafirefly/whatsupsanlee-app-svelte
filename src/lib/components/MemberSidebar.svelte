@@ -79,6 +79,18 @@
     {isActive('/farmers/create') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
     + List Your Farm
 </a>
+
+<a href="/family"
+    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+    {isActive('/family') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+    👨‍👩‍👧‍👦 Family Hub
+</a>
+<a href="/family/parks/submit"
+    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+    {isActive('/family/parks/submit') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+    + Submit a Place
+</a>
+
     </div>
 </nav>
 

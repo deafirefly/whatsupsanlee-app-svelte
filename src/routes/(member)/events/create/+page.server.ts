@@ -51,6 +51,8 @@ export const actions = {
                 areaId: formData.get('areaId') ? Number(formData.get('areaId')) : null,
                 communityId: formData.get('communityId') ? Number(formData.get('communityId')) : null,
 
+                isFamilyFriendly: formData.get('isFamilyFriendly') === 'on',
+
                 status: 'pending',
                 createdAt: new Date(),
                 updatedAt: new Date(),
