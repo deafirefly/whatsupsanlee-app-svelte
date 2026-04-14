@@ -1,6 +1,7 @@
 <!-- src/routes/(public)/listings/[id]/+page.svelte -->
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import ShareBar from '$lib/components/ShareBar.svelte';
     let { data, form } = $props();
     const { listing, photos, menu, schedule, specificDates, confirmedBookings, vendorAvailability } = data;
 
@@ -658,14 +659,7 @@
                 {/if}
 
                 <!-- Share -->
-                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Share</h4>
-                    <button
-                        onclick={() => { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }}
-                        class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 rounded-2xl font-black text-sm transition-all">
-                        🔗 Copy Link
-                    </button>
-                </div>
+                <ShareBar title={listing.businessName} description={listing.category.replace('_', ' ')} />
 
             </div>
         </div>

@@ -286,6 +286,18 @@
                                             Get Directions →
                                         </a>
                                     {/if}
+
+                                    <!-- Share button -->
+<button onclick={(e) => {
+    e.preventDefault();
+    const url = `${window.location.origin}/events/${date}`;
+    const text = encodeURIComponent(`${item.title} | WhatsUp SanLee`);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+}}
+class="flex items-center gap-1 text-xs font-black text-slate-400 hover:text-indigo-600 transition-colors">
+    🔗 Share
+</button>
+
                                 </div>
                             </div>
 

@@ -1,6 +1,7 @@
 <!-- src/routes/(public)/family/parks/[id]/+page.svelte -->
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import ShareBar from '$lib/components/ShareBar.svelte';
     let { data } = $props();
     const { place, currentUserId, isAdmin } = data;
 
@@ -155,13 +156,7 @@
         {/if}
 
         <!-- Share -->
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-            <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Share</h2>
-            <button onclick={() => { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }}
-                class="flex items-center gap-3 px-5 py-3 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 rounded-2xl font-black text-sm transition-all">
-                🔗 Copy Link
-            </button>
-        </div>
+        <ShareBar title={place.name} description={place.type.replace('_', ' ')} />
 
         <div class="text-center pt-4">
             <a href="/family" class="text-sm font-bold text-sky-600 hover:underline">← Back to Family Hub</a>
