@@ -145,21 +145,27 @@
                 {#each filteredItems as item}
                     <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
 
-                        <!-- Media -->
-                         <div class="w-full h-full flex items-center justify-center transition-all duration-500
-    {item.type === 'farmer'
-        ? 'bg-gradient-to-br from-green-500 to-emerald-600'
-        : item.type === 'creator'
-        ? 'bg-gradient-to-br from-violet-500 to-indigo-600'
-        : 'bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-indigo-500'}">
-    <span class="text-6xl opacity-40">
-        {item.type === 'farmer' ? '🌾'
-            : item.type === 'creator' ? '📱'
-            : item.category === 'food_truck' ? '🚚'
-            : item.category === 'photographer' ? '📸' : '🎨'}
-    </span>
-                                </div>
-                            {/if}
+
+                            <!-- Media -->
+<div class="relative w-full aspect-video overflow-hidden">
+    {#if item.imageUrl}
+        <img src={item.imageUrl} alt={item.businessName}
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+    {:else}
+        <div class="w-full h-full flex items-center justify-center transition-all duration-500
+            {item.type === 'farmer'
+                ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+                : item.type === 'creator'
+                ? 'bg-gradient-to-br from-violet-500 to-indigo-600'
+                : 'bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-indigo-500'}">
+            <span class="text-6xl opacity-40">
+                {item.type === 'farmer' ? '🌾'
+                    : item.type === 'creator' ? '📱'
+                    : item.category === 'food_truck' ? '🚚'
+                    : item.category === 'photographer' ? '📸' : '🎨'}
+            </span>
+        </div>
+    {/if}
 
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                                 {#if item.isFeatured || item.isVip}
