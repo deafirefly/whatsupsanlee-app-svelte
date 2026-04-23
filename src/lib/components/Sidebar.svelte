@@ -43,6 +43,7 @@
     { name: 'Events', href: '/events-admin', icon: Calendar },
     { name: 'Yard Sales', href: '/yard-sales-admin', icon: ListFilter },
     { name: 'Open Houses', href: '/open-houses-admin', icon: ListFilter },
+    { name: 'Creators', href: '/creators-admin', icon: ListFilter },
     { name: 'Farmers Market', href: '/farmers-admin', icon: ListFilter },
     { name: 'Family Hub', href: '/family-admin', icon: ListFilter },
     { name: 'Areas', href: '/areas', icon: MapPin },

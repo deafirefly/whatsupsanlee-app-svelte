@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { users, listings, events, posts, bookings, contactMessages, yardSales, farmerListings, parksTrails, openHouses } from '$lib/server/db/schema';
+import { users, listings, events, posts, bookings, contactMessages, yardSales, farmerListings, parksTrails, openHouses, creators } from '$lib/server/db/schema';
 import { error, redirect } from '@sveltejs/kit';
 import { desc, eq, count } from 'drizzle-orm';
 
@@ -25,6 +25,7 @@ export const load = async ({ locals }) => {
         const allOpenHouses = await db.select().from(openHouses);
         const allFarmers = await db.select().from(farmerListings);
         const allParksTrails = await db.select().from(parksTrails);
+        const allCreators = await db.select().from(creators);
 
 
         // Check DB connection
@@ -58,6 +59,8 @@ export const load = async ({ locals }) => {
                 pendingFarmers: allFarmers.filter(f => f.status === 'pending').length,
                 totalParksTrails: allParksTrails.length,
                 pendingParksTrails: allParksTrails.filter(p => p.status === 'pending').length,
+                totalCreators: allCreators.length,
+                pendingCreators: allCreators.filter(c => c.status === 'pending').length,
             },
             systemStatus: {
                 database: dbStatus,
@@ -77,6 +80,9 @@ export const load = async ({ locals }) => {
                 pendingBookings: 0, unreadMessages: 0,
                 totalYardSales: 0, pendingYardSales: 0,
                 totalFarmers: 0, pendingFarmers: 0,
+                totalCreators: 0, pendingCreators: 0,
+                totalParksTrails: 0, pendingParksTrails: 0,
+                totalOpenHouses: 0, pendingOpenHouses: 0,
             },
             systemStatus: { database: 'error', uptime: 'unknown', version: '0.4.0' },
             recentUsers: []
