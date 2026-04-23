@@ -1,6 +1,7 @@
 <!-- src/routes/(public)/farmers/[id]/+page.svelte -->
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import ShareBar from '$lib/components/ShareBar.svelte';
     let { data } = $props();
     const { farmer, currentUserId, isAdmin } = data;
 </script>
