@@ -95,6 +95,10 @@
 
                         <!-- Actions -->
                         <div class="flex flex-col gap-2 min-w-[130px]">
+                            <a href="/yard-sales/{sale.id}"
+                                class="w-full text-center px-4 py-2 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-xs font-black hover:bg-indigo-100 transition-all block">
+                                View →
+                            </a>
                             {#if sale.status !== 'approved'}
                                 <form method="POST" action="?/approve" use:enhance>
                                     <input type="hidden" name="id" value={sale.id} />
