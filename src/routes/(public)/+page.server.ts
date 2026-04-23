@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { listings, users, yardSales, farmerListings } from '$lib/server/db/schema';
+import { listings, users, yardSales, farmerListings, openHouses } from '$lib/server/db/schema';
 import { eq, desc, and, gte } from 'drizzle-orm';
 
 export const load = async () => {
@@ -67,6 +67,24 @@ export const load = async () => {
         items: (() => { try { return JSON.parse(s.items); } catch { return []; } })()
     }));
 
+    const upcomingOpenHouses = await db.select({
+    id: openHouses.id,
+    title: openHouses.title,
+    address: openHouses.address,
+    price: openHouses.price,
+    bedrooms: openHouses.bedrooms,
+    bathrooms: openHouses.bathrooms,
+    openDate: openHouses.openDate,
+    startTime: openHouses.startTime,
+    endTime: openHouses.endTime,
+    propertyType: openHouses.propertyType,
+    isFeatured: openHouses.isFeatured,
+})
+.from(openHouses)
+.where(and(eq(openHouses.status, 'approved'), gte(openHouses.openDate, today)))
+.orderBy(openHouses.openDate)
+.limit(3);
+
     return {
         approvedListings: sortedListings.map(listing => ({
             ...listing,
@@ -75,5 +93,7 @@ export const load = async () => {
         })),
         approvedFarmers: normalizedFarmers,
         upcomingYardSales: parsedYardSales,
+        upcomingOpenHouses: upcomingOpenHouses,
+
     };
 };

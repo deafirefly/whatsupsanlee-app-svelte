@@ -53,11 +53,32 @@
 	</main>
 
     <!-- Community Listings -->
-	<div class="max-w-7xl mx-auto w-full p-6">
-        <header class="mb-12 text-center">
-            <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Discover Our Community</h1>
-            <p class="text-lg text-muted-foreground">Local food trucks, farmers, and creators in one place.</p>
-        </header>
+<div class="max-w-7xl mx-auto w-full p-6">
+
+    <!-- Quick Nav Links -->
+    <div class="flex flex-wrap gap-3 justify-center mb-10">
+        {#each [
+            { href: '/yard-sales', emoji: '🏷️', label: 'Yard Sales' },
+            { href: '/open-houses', emoji: '🏠', label: 'Open Houses' },
+            { href: '/farmers', emoji: '🌾', label: "Farmers Market" },
+            { href: '/family', emoji: '👨‍👩‍👧', label: 'Family Hub' },
+            { href: '/events/' + new Date().toISOString().split('T')[0], emoji: '📅', label: "Today's Events" },
+        ] as link}
+            <a href={link.href}
+                class="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-black text-slate-700 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm transition-all">
+                {link.emoji} {link.label}
+            </a>
+        {/each}
+    </div>
+
+    <header class="mb-12 text-center">
+        <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Discover Our Community</h1>
+        <p class="text-lg text-muted-foreground">Local food trucks, farmers, and creators in one place.</p>
+    </header>
+
+
+
+
 
         <div class="max-w-2xl mx-auto mb-8">
             <div class="relative group">
@@ -235,6 +256,38 @@
                 <a href="/yard-sales" class="mt-4 inline-block text-sm font-bold text-indigo-600 hover:underline">View all yard sales →</a>
             </div>
         {/if}
+
+
+        <!-- Upcoming Open Houses -->
+{#if data.upcomingOpenHouses?.length > 0}
+    <div class="mt-12 pt-10 border-t border-slate-100">
+        <h2 class="text-2xl font-black text-slate-900 mb-6">🏠 Upcoming Open Houses</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {#each data.upcomingOpenHouses as house}
+                <a href="/open-houses/{house.id}" class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all block">
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <p class="font-black text-slate-900">{house.title}</p>
+                        {#if house.isFeatured}
+                            <span class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full flex-shrink-0">✨ Featured</span>
+                        {/if}
+                    </div>
+                    <p class="text-lg font-black text-indigo-600">
+                        {house.price ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(house.price) : 'Contact for price'}
+                    </p>
+                    <p class="text-sm text-slate-500 mt-1">📍 {house.address}</p>
+                    <div class="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
+                        {#if house.bedrooms}<span>🛏 {house.bedrooms} beds</span>{/if}
+                        {#if house.bathrooms}<span>🚿 {house.bathrooms} baths</span>{/if}
+                    </div>
+                    <div class="mt-2 flex items-center gap-1 text-xs font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
+                        📅 {new Date(house.openDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </div>
+                </a>
+            {/each}
+        </div>
+        <a href="/open-houses" class="mt-4 inline-block text-sm font-bold text-indigo-600 hover:underline">View all open houses →</a>
+    </div>
+{/if}
 
     </div><!-- end max-w-7xl -->
 
