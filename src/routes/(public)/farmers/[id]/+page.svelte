@@ -33,6 +33,39 @@
 
     <div class="max-w-3xl mx-auto px-6 py-8 space-y-6">
 
+        <!-- Status Banners (owner/admin only) -->
+        {#if farmer.status === 'pending'}
+            <div class="flex items-center justify-between gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">⏳</span>
+                    <p class="font-bold">Pending admin approval — we'll notify you once it's live!</p>
+                </div>
+                {#if currentUserId === farmer.userId || isAdmin}
+                    <a href="/farmers/{farmer.id}/edit"
+                        class="flex-shrink-0 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-black hover:bg-amber-700 transition-all">
+                        ✏️ Edit
+                    </a>
+                {/if}
+            </div>
+        {:else if farmer.status === 'rejected'}
+            <div class="flex items-center justify-between gap-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-2xl p-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">❌</span>
+                    <div>
+                        <p class="font-bold">This listing was not approved.</p>
+                        <p class="text-xs mt-0.5">Edit and resubmit, or contact us if you have questions.</p>
+                    </div>
+                </div>
+                {#if currentUserId === farmer.userId || isAdmin}
+                    <a href="/farmers/{farmer.id}/edit"
+                        class="flex-shrink-0 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-black hover:bg-red-700 transition-all">
+                        ✏️ Edit & Resubmit
+                    </a>
+                {/if}
+            </div>
+        {/if}
+
+
         <!-- Header -->
         <div class="bg-gradient-to-br from-green-600 to-emerald-700 rounded-3xl p-8 text-white relative overflow-hidden">
             <div class="absolute -right-6 -top-6 text-white/10 text-[120px] font-black select-none leading-none">🌾</div>

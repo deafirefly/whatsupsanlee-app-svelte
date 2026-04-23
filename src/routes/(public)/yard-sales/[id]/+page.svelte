@@ -52,17 +52,33 @@
 
         <!-- Status Banners (owner/admin only) -->
         {#if sale.status === 'pending'}
-            <div class="flex items-center gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                <span class="text-lg">⏳</span>
-                <p class="font-bold">Your listing is pending admin approval. We'll notify you once it's live!</p>
+            <div class="flex items-center justify-between gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">⏳</span>
+                    <p class="font-bold">Pending admin approval — we'll notify you once it's live!</p>
+                </div>
+                {#if currentUserId === sale.userId || isAdmin}
+                    <a href="/yard-sales/{sale.id}/edit"
+                        class="flex-shrink-0 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-black hover:bg-amber-700 transition-all">
+                        ✏️ Edit
+                    </a>
+                {/if}
             </div>
         {:else if sale.status === 'rejected'}
-            <div class="flex items-center gap-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-2xl p-4">
-                <span class="text-lg">❌</span>
-                <div>
-                    <p class="font-bold">This listing was not approved.</p>
-                    <p class="text-xs mt-0.5">Please contact us if you have questions or would like to resubmit.</p>
+            <div class="flex items-center justify-between gap-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-2xl p-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">❌</span>
+                    <div>
+                        <p class="font-bold">This listing was not approved.</p>
+                        <p class="text-xs mt-0.5">Edit and resubmit, or contact us if you have questions.</p>
+                    </div>
                 </div>
+                {#if currentUserId === sale.userId || isAdmin}
+                    <a href="/yard-sales/{sale.id}/edit"
+                        class="flex-shrink-0 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-black hover:bg-red-700 transition-all">
+                        ✏️ Edit & Resubmit
+                    </a>
+                {/if}
             </div>
         {/if}
 
