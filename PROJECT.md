@@ -9,24 +9,24 @@
 
 A community web platform for **Sanford & Lee County, NC** ("SanLee = Sanford + Lee County").
 Connects local food trucks, farmers, photographers, artists, and residents.
-Version: **0.3.5** | Status: Active development
+Version: **0.4.0** | Status: Active development
 
 ---
 
 ## Tech Stack
 
-| Layer | Tech |
-|---|---|
-| Framework | SvelteKit 2 + Svelte 5 + TypeScript |
-| Styling | Tailwind CSS v4 |
-| Database | Turso (libSQL / SQLite) via `@libsql/client` |
-| ORM | Drizzle ORM + drizzle-kit |
-| UI Components | bits-ui + shadcn-svelte style components |
-| Icons | lucide-svelte |
-| File Uploads | Uploadthing |
-| Mobile | Capacitor (iOS & Android — in progress) |
-| Testing | Playwright (e2e) |
-| Deployment | Docker + CapRover (`captain-definition`) |
+| Layer         | Tech                                         |
+| ------------- | -------------------------------------------- |
+| Framework     | SvelteKit 2 + Svelte 5 + TypeScript          |
+| Styling       | Tailwind CSS v4                              |
+| Database      | Turso (libSQL / SQLite) via `@libsql/client` |
+| ORM           | Drizzle ORM + drizzle-kit                    |
+| UI Components | bits-ui + shadcn-svelte style components     |
+| Icons         | lucide-svelte                                |
+| File Uploads  | Uploadthing                                  |
+| Mobile        | Capacitor (iOS & Android — in progress)      |
+| Testing       | Playwright (e2e)                             |
+| Deployment    | Docker + CapRover (`captain-definition`)     |
 
 ---
 
@@ -106,28 +106,28 @@ src/routes/
 
 ## Database Schema (Drizzle + Turso/SQLite)
 
-| Table | Purpose |
-|---|---|
-| `users` | Accounts — email, password (bcrypt), roles (JSON array), vipExpiresAt |
-| `profiles` | Member profile — displayName, avatar, bio, area/community, social links, privacy, onboarding flags |
-| `listings` | Business listings — name, category, contact, location, bio, image, social, schedule, booking config, slug, tags (JSON), status |
-| `listing_photos` | VIP gallery photos per listing (max 4) |
-| `menu_items` | Menu items per listing (food trucks) |
-| `listing_schedule` | Daily location schedule — date, location, lat/lng, times |
-| `areas` | Lee County areas (Sanford, Tramway, Broadway, etc.) |
-| `communities` | Neighborhoods within areas |
-| `events` | Community events — title, dates, location, area/community, isFamilyFriendly, status |
-| `posts` | Community feed posts |
-| `post_likes` / `post_comments` / `post_reports` | Feed interactions |
-| `bookings` | Booking requests for vendor listings |
-| `availability` | Weekly availability per listing |
-| `specific_availability` | One-off date availability |
-| `contact_messages` | Contact form submissions |
-| `logs` | System activity log |
-| `system_meta` | Key-value store (e.g. maintenance_mode) |
-| `yard_sales` | Yard sale listings — title, date, time, address, items (JSON), status |
-| `farmer_listings` | Farm listings — produce categories, seasonal availability, markets, features, status |
-| `parks_trails` | Parks/trails directory — type, age range, features (JSON), trail difficulty/length, status |
+| Table                                           | Purpose                                                                                                                        |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `users`                                         | Accounts — email, password (bcrypt), roles (JSON array), vipExpiresAt                                                          |
+| `profiles`                                      | Member profile — displayName, avatar, bio, area/community, social links, privacy, onboarding flags                             |
+| `listings`                                      | Business listings — name, category, contact, location, bio, image, social, schedule, booking config, slug, tags (JSON), status |
+| `listing_photos`                                | VIP gallery photos per listing (max 4)                                                                                         |
+| `menu_items`                                    | Menu items per listing (food trucks)                                                                                           |
+| `listing_schedule`                              | Daily location schedule — date, location, lat/lng, times                                                                       |
+| `areas`                                         | Lee County areas (Sanford, Tramway, Broadway, etc.)                                                                            |
+| `communities`                                   | Neighborhoods within areas                                                                                                     |
+| `events`                                        | Community events — title, dates, location, area/community, isFamilyFriendly, status                                            |
+| `posts`                                         | Community feed posts                                                                                                           |
+| `post_likes` / `post_comments` / `post_reports` | Feed interactions                                                                                                              |
+| `bookings`                                      | Booking requests for vendor listings                                                                                           |
+| `availability`                                  | Weekly availability per listing                                                                                                |
+| `specific_availability`                         | One-off date availability                                                                                                      |
+| `contact_messages`                              | Contact form submissions                                                                                                       |
+| `logs`                                          | System activity log                                                                                                            |
+| `system_meta`                                   | Key-value store (e.g. maintenance_mode)                                                                                        |
+| `yard_sales`                                    | Yard sale listings — title, date, time, address, items (JSON), status                                                          |
+| `farmer_listings`                               | Farm listings — produce categories, seasonal availability, markets, features, status                                           |
+| `parks_trails`                                  | Parks/trails directory — type, age range, features (JSON), trail difficulty/length, status                                     |
 
 **Listing categories:** `food_truck` | `farmer` | `photographer` | `artist`
 **Status pattern (all content tables):** `pending` | `approved` | `rejected`
@@ -164,6 +164,7 @@ src/lib/components/
 ## Dashboard Layout (member)
 
 4 clean sections:
+
 1. **Status** — Total listings count, Plan (VIP/Member), Business listing status, Member since
 2. **Profile** — My Profile, Edit Profile, Settings
 3. **Community** — Post to Feed, Post Event, Post Yard Sale, List Your Farm + VIP Lounge link
@@ -174,6 +175,7 @@ src/lib/components/
 ## Admin Dashboard
 
 Single **Community Listings** table card with rows for:
+
 - 🏪 Listings, 🌾 Farmers Market, 🏷️ Yard Sales, 📅 Events, 👨‍👩‍👧 Family Hub
 - Columns: Type, Total, Pending (amber badge or green "Clear"), Review link
 - Separate stat cards for Posts, Messages, Bookings
@@ -192,6 +194,7 @@ UPLOADTHING_TOKEN=your_uploadthing_token
 ```
 
 **Important:**
+
 - `drizzle-kit` reads `.env` only — not `.env.production`
 - Production token must be set in CapRover env vars — not just files
 - To run with explicit env: `TURSO_URL=... TURSO_AUTH_TOKEN=... npx drizzle-kit push`
@@ -209,10 +212,12 @@ git push
 ```
 
 **Schema changes** — run SQL in Turso dashboard (app.turso.tech):
+
 - Database → Edit Data → SQL scratches → paste → Run
 - OR use `npx drizzle-kit push` with valid `.env`
 
 **If production goes 500:**
+
 - Check CapRover logs
 - Most common: expired `TURSO_AUTH_TOKEN` in CapRover env vars
 - Fix: Turso → Generate Token → update CapRover App Configs → Save & Restart
@@ -222,6 +227,7 @@ git push
 ## Features Completed ✅
 
 ### Core Platform
+
 - Auth (register, login, logout, VIP expiry)
 - Listings (create, edit, approve/reject, vanity slugs, QR codes)
 - Listing photos (VIP gallery, max 4, Uploadthing)
@@ -234,6 +240,7 @@ git push
 - Maintenance mode
 
 ### Yard Sales ✅
+
 - Create form with item picker, date/time, address
 - Public list + detail page (`/yard-sales/[id]`)
 - Merged into events page on sale day + "Yard Sales Today" collapsible
@@ -242,6 +249,7 @@ git push
 - Pending preview for owner + admin
 
 ### Farmer Listings ✅
+
 - Create form: produce categories, seasonal availability, markets, features
 - Special flags: U-Pick, SNAP/EBT, delivery, organic, pre-orders
 - Public list (`/farmers`) with search + produce filter
@@ -251,6 +259,7 @@ git push
 - Pending preview for owner + admin
 
 ### Artist & Photographer Galleries ✅
+
 - `tags` column on listings (JSON)
 - Tags input in edit-listing with suggestion chips
 - Enhanced listing detail: masonry gallery, fullscreen lightbox, tags badges
@@ -258,6 +267,7 @@ git push
 - VIP photo limit respected (max 4 gallery photos)
 
 ### Family Activities Hub ✅
+
 - `/family` public page with Events / Parks / Trails tabs
 - `isFamilyFriendly` flag on events + checkbox on event create form
 - `parks_trails` table — parks, playgrounds, trails, sports fields, swimming, picnic
@@ -268,6 +278,7 @@ git push
 - Family Hub links in MemberSidebar + admin Sidebar + admin dashboard table
 
 ### Home Page ✅
+
 - Farmers merged into main grid alongside listings
 - Category filter buttons: All 🌟, Food Trucks 🚚, Farmers 🌾, Photographers 📸, Artists 🎨
 - Unified search across names, bios, produce categories
