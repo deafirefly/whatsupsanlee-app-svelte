@@ -50,13 +50,15 @@ src/routes/
 │   ├── login/
 │   ├── register/
 │   ├── feed/          # Community post feed
-│   ├── events/        # Events calendar + [date] detail (yard sales merged in)
+│   ├── events/        # Events calendar + [date] detail (yard sales + open houses merged in)
 │   ├── listings/[id]  # Listing detail (enhanced gallery for artists/photographers)
 │   ├── profile/[id]   # Public member profile
 │   ├── yard-sales/    # Public yard sales listing
 │   ├── yard-sales/[id] # Yard sale detail
 │   ├── farmers/       # Farmers market public listing
 │   ├── farmers/[id]   # Farmer detail
+│   ├── open-houses/   # Open houses public listing (upcoming + past)
+│   ├── open-houses/[id] # Open house detail with property stats + agent contact
 │   ├── family/        # Family Activities Hub (events/parks/trails tabs)
 │   ├── family/parks/[id]     # Park or trail detail
 │   ├── family/parks/submit   # Member submit a park/trail
@@ -76,6 +78,7 @@ src/routes/
 │   ├── listings/create/
 │   ├── yard-sales/create/
 │   ├── farmers/create/
+│   ├── open-houses/create/    # Submit open house listing
 │   └── settings/
 │   │
 │   └── (vip)/         # Requires vip/admin/superadmin role
@@ -95,6 +98,7 @@ src/routes/
 │           ├── yard-sales-admin/
 │           ├── farmers-admin/
 │           ├── family-admin/         # Approve/reject parks & trails
+│           ├── open-houses-admin/    # Approve/reject/feature open houses
 │           └── users/
 │
 ├── api/posts/[id]/comments/
@@ -128,8 +132,10 @@ src/routes/
 | `yard_sales`                                    | Yard sale listings — title, date, time, address, items (JSON), status                                                          |
 | `farmer_listings`                               | Farm listings — produce categories, seasonal availability, markets, features, status                                           |
 | `parks_trails`                                  | Parks/trails directory — type, age range, features (JSON), trail difficulty/length, status                                     |
+| `open_houses`                                   | Open house listings — price, beds/baths/sqft/lot/year, property type, agent info, date/time, status                            |
 
 **Listing categories:** `food_truck` | `farmer` | `photographer` | `artist`
+**Property types:** `single_family` | `condo` | `townhouse` | `land` | `commercial` | `other`
 **Status pattern (all content tables):** `pending` | `approved` | `rejected`
 **Profile visibility:** `public` | `members` | `private`
 
@@ -141,7 +147,8 @@ src/routes/
 src/lib/components/
 ├── TopBar.svelte         # Public top navigation
 ├── Sidebar.svelte        # Admin sidebar (dark, role-based)
-├── MemberSidebar.svelte  # Member sidebar — yard sales, farmers, family hub links
+├── MemberSidebar.svelte  # Member sidebar — yard sales, farmers, family hub, open houses
+├── ShareBar.svelte       # Reusable share bar (Facebook, X, Bluesky, Copy Link, Native Share)
 └── PageHeader.svelte     # Reusable page header
 ```
 
@@ -156,6 +163,7 @@ src/lib/components/
 - **`svelte:element`** for conditional `<a>` vs `<div>` rendering
 - **Pending preview** — owners + admins can see pending listings; public gets 404
 - **JSON fields** parsed with try/catch on load: `items`, `produceCategories`, `features`, `tags`
+- **ShareBar** — drop `<ShareBar title={...} description={...} />` into any detail page
 - Server-side auth checks in `+layout.server.ts` per route group
 - Maintenance mode via `system_meta` table in `hooks.server.ts`
 
@@ -168,7 +176,12 @@ src/lib/components/
 1. **Status** — Total listings count, Plan (VIP/Member), Business listing status, Member since
 2. **Profile** — My Profile, Edit Profile, Settings
 3. **Community** — Post to Feed, Post Event, Post Yard Sale, List Your Farm + VIP Lounge link
-4. **Your Community Presence** — All listings in one card (business, farms, yard sales) with status badges and action buttons
+4. **Your Community Presence** — All listings in one card:
+   - Business listing (Edit/View/Bookings buttons)
+   - Farm listings (View + status)
+   - Yard sales (View + status)
+   - Open houses (View + status)
+   - Dashed "create" prompt when empty
 
 ---
 
@@ -176,7 +189,7 @@ src/lib/components/
 
 Single **Community Listings** table card with rows for:
 
-- 🏪 Listings, 🌾 Farmers Market, 🏷️ Yard Sales, 📅 Events, 👨‍👩‍👧 Family Hub
+- 🏪 Listings, 🌾 Farmers Market, 🏷️ Yard Sales, 📅 Events, 👨‍👩‍👧 Family Hub, 🏠 Open Houses
 - Columns: Type, Total, Pending (amber badge or green "Clear"), Review link
 - Separate stat cards for Posts, Messages, Bookings
 
@@ -238,6 +251,7 @@ git push
 - Bookings + availability (weekly + specific dates)
 - Admin panel (full — users, listings, posts, events, logs, areas, communities, settings)
 - Maintenance mode
+- **ShareBar component** — Facebook, X, Bluesky, Copy Link, Native mobile share
 
 ### Yard Sales ✅
 
@@ -276,6 +290,19 @@ git push
 - Admin approve/reject/feature/delete (`/family-admin`)
 - Pending preview for owner + admin
 - Family Hub links in MemberSidebar + admin Sidebar + admin dashboard table
+
+### Open Houses ✅
+
+- Create form with photo upload, full property details (price, beds, baths, sq ft, lot size, year built, property type), agent info
+- Public list (`/open-houses`) with upcoming + past sections
+- Detail page with property stats grid, agent contact card, directions, share bar
+- "🔴 Today!" badge on open house day
+- Shows on events page on open house date
+- Member dashboard section in "Your Community Presence"
+- Admin approve/reject/feature/delete (`/open-houses-admin`)
+- Admin dashboard Community Listings table row
+- MemberSidebar links
+- Pending preview for owner + admin
 
 ### Home Page ✅
 
