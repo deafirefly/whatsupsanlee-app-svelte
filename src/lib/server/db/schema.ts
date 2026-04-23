@@ -474,3 +474,47 @@ export const openHouses = sqliteTable('open_houses', {
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
 });
+
+export const creators = sqliteTable('creators', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+ 
+    // Core Identity
+    name: text('name').notNull(),
+    tagline: text('tagline'),
+    bio: text('bio'),
+    imageUrl: text('image_url'),
+ 
+    // Location
+    area: text('area'),
+ 
+    // Content categories (JSON array)
+    contentCategories: text('content_categories').default('[]'),
+    // ["Gaming", "Food", "Music", "Art", "Local News", "Podcast", "Comedy",
+    //  "Education", "Sports", "Lifestyle", "Tech", "Faith", "Family", "Other"]
+ 
+    // Platform Links
+    youtube: text('youtube'),
+    tiktok: text('tiktok'),
+    instagram: text('instagram'),
+    twitch: text('twitch'),
+    podcast: text('podcast'),
+    facebook: text('facebook'),
+    twitter: text('twitter'),
+    bluesky: text('bluesky'),
+    website: text('website'),
+ 
+    // Optional self-reported stats
+    youtubeSubs: text('youtube_subs'),
+    tiktokFollowers: text('tiktok_followers'),
+    instagramFollowers: text('instagram_followers'),
+    twitchFollowers: text('twitch_followers'),
+    podcastListeners: text('podcast_listeners'),
+ 
+    // Status
+    status: text('status').default('pending').notNull(),
+    isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
+ 
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});

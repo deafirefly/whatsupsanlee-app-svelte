@@ -7,14 +7,16 @@
     // Merge listings and farmers into one searchable array
     let allItems = $derived([
         ...data.approvedListings,
-        ...data.approvedFarmers
+        ...data.approvedFarmers,
+        ...data.approvedCreators,
     ]);
 
     let filteredItems = $derived(
         allItems.filter(item => {
             const matchesCategory = activeCategory === 'all' 
                 || item.category === activeCategory
-                || (activeCategory === 'farmer_listing' && item.type === 'farmer');
+                || (activeCategory === 'farmer_listing' && item.type === 'farmer')
+                || (activeCategory === 'creator' && item.type === 'creator');
             const searchLower = searchQuery.toLowerCase();
             const matchesSearch =
                 (item.businessName?.toLowerCase().includes(searchLower)) ||
@@ -115,6 +117,7 @@
                 { value: 'farmer_listing', label: 'Farmers', emoji: '🌾' },
                 { value: 'photographer', label: 'Photographers', emoji: '📸' },
                 { value: 'artist', label: 'Artists', emoji: '🎨' },
+                { value: 'creator', label: 'Creators', emoji: '📱' },
             ] as cat}
                 <button onclick={() => activeCategory = cat.value}
                     class="px-4 py-2 rounded-full text-xs font-black transition-all border
@@ -143,20 +146,18 @@
                     <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
 
                         <!-- Media -->
-                        <div class="relative w-full aspect-video overflow-hidden">
-                            {#if item.imageUrl}
-                                <img src={item.imageUrl} alt={item.businessName}
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                            {:else}
-                                <div class="w-full h-full flex items-center justify-center transition-all duration-500
-                                    {item.type === 'farmer'
-                                        ? 'bg-gradient-to-br from-green-500 to-emerald-600'
-                                        : 'bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-indigo-500'}">
-                                    <span class="text-6xl opacity-40">
-                                        {item.type === 'farmer' ? '🌾'
-                                            : item.category === 'food_truck' ? '🚚'
-                                            : item.category === 'photographer' ? '📸' : '🎨'}
-                                    </span>
+                         <div class="w-full h-full flex items-center justify-center transition-all duration-500
+    {item.type === 'farmer'
+        ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+        : item.type === 'creator'
+        ? 'bg-gradient-to-br from-violet-500 to-indigo-600'
+        : 'bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-600 group-hover:to-indigo-500'}">
+    <span class="text-6xl opacity-40">
+        {item.type === 'farmer' ? '🌾'
+            : item.type === 'creator' ? '📱'
+            : item.category === 'food_truck' ? '🚚'
+            : item.category === 'photographer' ? '📸' : '🎨'}
+    </span>
                                 </div>
                             {/if}
 
@@ -176,7 +177,9 @@
                                 {/if}
                                 <h2 class="text-white font-black text-lg leading-tight line-clamp-1">{item.businessName}</h2>
                                 <span class="text-white/70 text-xs font-bold uppercase tracking-widest">
-                                    {item.type === 'farmer' ? 'Farmers Market' : item.category?.replace('_', ' ')}
+                                    {item.type === 'farmer' ? 'Farmers Market'
+                                        : item.type === 'creator' ? 'Local Creator'
+                                        : item.category?.replace('_', ' ')}
                                 </span>
                             </div>
                         </div>
@@ -192,14 +195,20 @@
                                 <p class="text-sm text-slate-400 italic flex-1">No description yet.</p>
                             {/if}
 
-                            <!-- Farmer produce tags -->
+
                             {#if item.type === 'farmer' && item.produceCategories?.length > 0}
-                                <div class="mt-2 flex flex-wrap gap-1">
-                                    {#each item.produceCategories.slice(0, 3) as cat}
-                                        <span class="px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-[10px] font-bold">{cat}</span>
-                                    {/each}
-                                </div>
-                            {/if}
+    <div class="mt-2 flex flex-wrap gap-1">
+        {#each item.produceCategories.slice(0, 3) as cat}
+            <span class="px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-[10px] font-bold">{cat}</span>
+        {/each}
+    </div>
+{:else if item.type === 'creator' && item.contentCategories?.length > 0}
+    <div class="mt-2 flex flex-wrap gap-1">
+        {#each item.contentCategories.slice(0, 3) as cat}
+            <span class="px-2 py-0.5 bg-violet-50 text-violet-700 rounded-full text-[10px] font-bold">{cat}</span>
+        {/each}
+    </div>
+{/if}
 
                             {#if item.address}
                                 <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
@@ -211,14 +220,19 @@
 
                         <!-- Footer -->
                         <div class="px-4 py-3 border-t border-slate-100 flex items-center justify-between">
-                            <a href={item.type === 'farmer' ? `/farmers/${item.id}` : `/listings/${item.id}`}
+                            <a href={item.type === 'farmer' ? `/farmers/${item.id}`
+                                : item.type === 'creator' ? `/creators/${item.id}`
+                                : `/listings/${item.id}`}
                                 class="text-xs font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">
                                 View Profile
                             </a>
                             <button
                                 onclick={() => {
+
                                     const url = item.type === 'farmer'
                                         ? `${window.location.origin}/farmers/${item.id}`
+                                        : item.type === 'creator'
+                                        ? `${window.location.origin}/creators/${item.id}`
                                         : `${window.location.origin}/listings/${item.id}`;
                                     navigator.clipboard.writeText(url);
                                 }}

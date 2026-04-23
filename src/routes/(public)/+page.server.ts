@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { listings, users, yardSales, farmerListings, openHouses } from '$lib/server/db/schema';
+import { listings, users, yardSales, farmerListings, openHouses, creators } from '$lib/server/db/schema';
 import { eq, desc, and, gte } from 'drizzle-orm';
 
 export const load = async () => {
@@ -85,6 +85,26 @@ export const load = async () => {
 .orderBy(openHouses.openDate)
 .limit(3);
 
+    const approvedCreators = await db.select()
+    .from(creators)
+    .where(eq(creators.status, 'approved'))
+    .orderBy(desc(creators.isFeatured), desc(creators.createdAt));
+
+const normalizedCreators = approvedCreators.map(c => ({
+    id: c.id,
+    type: 'creator' as const,
+    businessName: c.name,
+    bio: c.bio,
+    imageUrl: c.imageUrl,
+    address: c.area,
+    isFeatured: c.isFeatured,
+    isVip: false,
+    category: 'creator',
+    tagline: c.tagline,
+    contentCategories: (() => { try { return JSON.parse(c.contentCategories ?? '[]'); } catch { return []; } })(),
+    createdAt: c.createdAt,
+}));const approvedCreators = await db.select(
+
     return {
         approvedListings: sortedListings.map(listing => ({
             ...listing,
@@ -94,6 +114,7 @@ export const load = async () => {
         approvedFarmers: normalizedFarmers,
         upcomingYardSales: parsedYardSales,
         upcomingOpenHouses: upcomingOpenHouses,
+        approvedCreators: normalizedCreators,
 
     };
 };
