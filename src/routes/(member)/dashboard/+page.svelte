@@ -406,6 +406,45 @@
     {/if}
 </div>
 
+<!-- Creators -->
+            <div class="pt-4 border-t border-slate-100">
+                <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2">Creator Profiles ({data.myCreators?.length ?? 0})</p>
+                {#if data.myCreators?.length > 0}
+                    <div class="space-y-2">
+                        {#each data.myCreators as creator}
+                            <div class="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl flex-wrap">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📱</span>
+                                    <div>
+                                        <p class="font-black text-slate-900">{creator.name}</p>
+                                        {#if creator.tagline}
+                                            <p class="text-xs text-slate-500">{creator.tagline}</p>
+                                        {/if}
+                                        <span class="text-[10px] font-black uppercase tracking-widest
+                                            {creator.status === 'approved' ? 'text-emerald-500' :
+                                             creator.status === 'pending' ? 'text-amber-500' : 'text-red-400'}">
+                                            ● {creator.status}
+                                        </span>
+                                    </div>
+                                </div>
+                                <a href="/creators/{creator.id}" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition-all">
+                                    View
+                                </a>
+                            </div>
+                        {/each}
+                    </div>
+                {:else}
+                    <a href="/creators/create" class="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-violet-300 hover:bg-violet-50 transition-all group">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">📱</span>
+                        <div>
+                            <p class="font-black text-slate-700 text-sm">Submit Your Creator Profile</p>
+                            <p class="text-xs text-slate-400">Get discovered by the Lee County community</p>
+                        </div>
+                        <span class="ml-auto text-slate-400 font-black">→</span>
+                    </a>
+                {/if}
+            </div>
+
         </div>
     </div>
 
