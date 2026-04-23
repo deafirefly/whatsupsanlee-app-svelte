@@ -79,6 +79,18 @@
     {isActive('/open-houses/create') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
     + Post Open House
 </a>
+
+<a href="/creators"
+    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+    {isActive('/creators') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+    📱 Creators
+</a>
+<a href="/creators/create"
+    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+    {isActive('/creators/create') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+    + Submit Profile
+</a>
+
         <a href="/farmers"
     class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
     {isActive('/farmers') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
