@@ -1,5 +1,6 @@
 <!-- src/routes/(public)/farmers/+page.svelte -->
 <script lang="ts">
+    import ShareBar from '$lib/components/ShareBar.svelte';
     let { data } = $props();
 
     let searchQuery = $state('');

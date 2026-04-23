@@ -107,6 +107,24 @@
         isYardSale: true,
         items: sale.items,
         phone: sale.phone,
+    })),
+    ...(data.openHouses ?? []).map(oh => ({
+    id: oh.id,
+    title: oh.title,
+    category: 'open_house',
+    address: oh.address,
+    locationName: null,
+    latitude: null,
+    longitude: null,
+    startTime: oh.startTime,
+    endTime: oh.endTime,
+    description: oh.description,
+    imageUrl: oh.imageUrl,
+    isFeatured: oh.isFeatured,
+    isOpenHouse: true,
+    price: oh.price,
+    bedrooms: oh.bedrooms,
+    bathrooms: oh.bathrooms,
     }))
 ]);
 
@@ -223,8 +241,8 @@
                 {#each filteredItems as item}
                     {@const cat = getCategory(item.category)}
                     <svelte:element
-    this={item.isYardSale ? 'a' : 'div'}
-    href={item.isYardSale ? `/yard-sales/${item.id}` : undefined}
+                    this={item.isOpenHouse ? 'a' : item.isYardSale ? 'a' : 'div'}
+                    href={item.isOpenHouse ? `/open-houses/${item.id}` : item.isYardSale ? `/yard-sales/${item.id}` : undefined}
     class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden block">
     <div class="flex gap-4 p-6">
 

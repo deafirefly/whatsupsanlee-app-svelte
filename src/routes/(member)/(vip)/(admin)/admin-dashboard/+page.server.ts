@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { users, listings, events, posts, bookings, contactMessages, yardSales, farmerListings, parksTrails } from '$lib/server/db/schema';
+import { users, listings, events, posts, bookings, contactMessages, yardSales, farmerListings, parksTrails, openHouses } from '$lib/server/db/schema';
 import { error, redirect } from '@sveltejs/kit';
 import { desc, eq, count } from 'drizzle-orm';
 
@@ -22,6 +22,7 @@ export const load = async ({ locals }) => {
         const allBookings = await db.select().from(bookings);
         const allMessages = await db.select().from(contactMessages);
         const allYardSales = await db.select().from(yardSales);
+        const allOpenHouses = await db.select().from(openHouses);
         const allFarmers = await db.select().from(farmerListings);
         const allParksTrails = await db.select().from(parksTrails);
 
@@ -51,6 +52,8 @@ export const load = async ({ locals }) => {
                 unreadMessages: allMessages.filter(m => m.status === 'unread').length,
                 totalYardSales: allYardSales.length,                                        // ← ADD
                 pendingYardSales: allYardSales.filter(y => y.status === 'pending').length,  // ← ADD
+                totalOpenHouses: allOpenHouses.length,
+                pendingOpenHouses: allOpenHouses.filter(o => o.status === 'pending').length,
                 totalFarmers: allFarmers.length,
                 pendingFarmers: allFarmers.filter(f => f.status === 'pending').length,
                 totalParksTrails: allParksTrails.length,

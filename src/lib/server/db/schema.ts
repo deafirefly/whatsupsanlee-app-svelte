@@ -434,3 +434,43 @@ export const parksTrails = sqliteTable('parks_trails', {
     createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
 });
+
+export const openHouses = sqliteTable('open_houses', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+ 
+    // Core Info
+    title: text('title').notNull(),
+    description: text('description'),
+    imageUrl: text('image_url'),
+ 
+    // Property Details
+    address: text('address').notNull(),
+    locationPin: text('location_pin'),
+    price: integer('price'),                    // in dollars
+    bedrooms: integer('bedrooms'),
+    bathrooms: real('bathrooms'),               // 2.5 etc
+    sqFt: integer('sq_ft'),
+    lotSize: text('lot_size'),                  // e.g. "0.45 acres"
+    yearBuilt: integer('year_built'),
+    propertyType: text('property_type').default('single_family'),
+    // 'single_family' | 'condo' | 'townhouse' | 'land' | 'commercial' | 'other'
+ 
+    // Agent / Contact
+    agentName: text('agent_name').notNull(),
+    agentPhone: text('agent_phone'),
+    agentEmail: text('agent_email'),
+    agentCompany: text('agent_company'),
+ 
+    // Open House Schedule
+    openDate: text('open_date').notNull(),      // '2026-04-20'
+    startTime: text('start_time').notNull(),    // '13:00'
+    endTime: text('end_time').notNull(),        // '16:00'
+ 
+    // Status
+    status: text('status').default('pending').notNull(),
+    isFeatured: integer('is_featured', { mode: 'boolean' }).default(false),
+ 
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull(),
+});

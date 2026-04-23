@@ -29,6 +29,13 @@
             href: '/yard-sales-admin',
         },
         {
+    emoji: '🏠',
+    label: 'Open Houses',
+    total: data.contentStats.totalOpenHouses,
+    pending: data.contentStats.pendingOpenHouses,
+    href: '/open-houses-admin',
+},
+        {
             emoji: '📅',
             label: 'Events',
             total: data.contentStats.totalEvents,

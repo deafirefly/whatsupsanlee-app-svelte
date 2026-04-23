@@ -69,6 +69,16 @@
             {isActive('/yard-sales/create') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
             + Post Yard Sale
         </a>
+        <a href="/open-houses"
+    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+    {isActive('/open-houses') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+    🏠 Open Houses
+</a>
+<a href="/open-houses/create"
+    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
+    {isActive('/open-houses/create') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">
+    + Post Open House
+</a>
         <a href="/farmers"
     class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-all
     {isActive('/farmers') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'}">

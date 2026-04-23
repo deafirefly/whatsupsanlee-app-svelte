@@ -369,6 +369,43 @@
                 {/if}
             </div>
 
+            <!-- Open Houses -->
+<div class="pt-4 border-t border-slate-100">
+    <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2">Open Houses ({data.myOpenHouses?.length ?? 0})</p>
+    {#if data.myOpenHouses?.length > 0}
+        <div class="space-y-2">
+            {#each data.myOpenHouses as house}
+                <div class="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl flex-wrap">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">🏠</span>
+                        <div>
+                            <p class="font-black text-slate-900">{house.title}</p>
+                            <p class="text-xs text-slate-500">{house.openDate}</p>
+                            <span class="text-[10px] font-black uppercase tracking-widest
+                                {house.status === 'approved' ? 'text-emerald-500' :
+                                 house.status === 'pending' ? 'text-amber-500' : 'text-red-400'}">
+                                ● {house.status}
+                            </span>
+                        </div>
+                    </div>
+                    <a href="/open-houses/{house.id}" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition-all">
+                        View
+                    </a>
+                </div>
+            {/each}
+        </div>
+    {:else}
+        <a href="/open-houses/create" class="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
+            <span class="text-2xl">🏠</span>
+            <div>
+                <p class="font-black text-slate-700 text-sm">Post an Open House</p>
+                <p class="text-xs text-slate-400">Let buyers know about your open house</p>
+            </div>
+            <span class="ml-auto text-slate-400 font-black">→</span>
+        </a>
+    {/if}
+</div>
+
         </div>
     </div>
 
