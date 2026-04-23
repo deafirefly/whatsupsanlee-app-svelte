@@ -36,7 +36,6 @@ export const load = async () => {
         .where(eq(farmerListings.status, 'approved'))
         .orderBy(desc(farmerListings.isFeatured), desc(farmerListings.createdAt));
 
-    // Normalize farmers to match listing card shape
     const normalizedFarmers = approvedFarmers.map(f => ({
         id: f.id,
         type: 'farmer' as const,
@@ -56,6 +55,7 @@ export const load = async () => {
     }));
 
     const today = new Date().toISOString().split('T')[0];
+
     const upcomingYardSales = await db.select()
         .from(yardSales)
         .where(and(eq(yardSales.status, 'approved'), gte(yardSales.saleDate, today)))
@@ -68,42 +68,43 @@ export const load = async () => {
     }));
 
     const upcomingOpenHouses = await db.select({
-    id: openHouses.id,
-    title: openHouses.title,
-    address: openHouses.address,
-    price: openHouses.price,
-    bedrooms: openHouses.bedrooms,
-    bathrooms: openHouses.bathrooms,
-    openDate: openHouses.openDate,
-    startTime: openHouses.startTime,
-    endTime: openHouses.endTime,
-    propertyType: openHouses.propertyType,
-    isFeatured: openHouses.isFeatured,
-})
-.from(openHouses)
-.where(and(eq(openHouses.status, 'approved'), gte(openHouses.openDate, today)))
-.orderBy(openHouses.openDate)
-.limit(3);
+        id: openHouses.id,
+        title: openHouses.title,
+        address: openHouses.address,
+        price: openHouses.price,
+        bedrooms: openHouses.bedrooms,
+        bathrooms: openHouses.bathrooms,
+        openDate: openHouses.openDate,
+        startTime: openHouses.startTime,
+        endTime: openHouses.endTime,
+        propertyType: openHouses.propertyType,
+        isFeatured: openHouses.isFeatured,
+    })
+    .from(openHouses)
+    .where(and(eq(openHouses.status, 'approved'), gte(openHouses.openDate, today)))
+    .orderBy(openHouses.openDate)
+    .limit(3);
 
+    // Load all approved creators
     const approvedCreators = await db.select()
-    .from(creators)
-    .where(eq(creators.status, 'approved'))
-    .orderBy(desc(creators.isFeatured), desc(creators.createdAt));
+        .from(creators)
+        .where(eq(creators.status, 'approved'))
+        .orderBy(desc(creators.isFeatured), desc(creators.createdAt));
 
-const normalizedCreators = approvedCreators.map(c => ({
-    id: c.id,
-    type: 'creator' as const,
-    businessName: c.name,
-    bio: c.bio,
-    imageUrl: c.imageUrl,
-    address: c.area,
-    isFeatured: c.isFeatured,
-    isVip: false,
-    category: 'creator',
-    tagline: c.tagline,
-    contentCategories: (() => { try { return JSON.parse(c.contentCategories ?? '[]'); } catch { return []; } })(),
-    createdAt: c.createdAt,
-}));const approvedCreators = await db.select(
+    const normalizedCreators = approvedCreators.map(c => ({
+        id: c.id,
+        type: 'creator' as const,
+        businessName: c.name,
+        bio: c.bio,
+        imageUrl: c.imageUrl,
+        address: c.area,
+        isFeatured: c.isFeatured,
+        isVip: false,
+        category: 'creator',
+        tagline: c.tagline,
+        contentCategories: (() => { try { return JSON.parse(c.contentCategories ?? '[]'); } catch { return []; } })(),
+        createdAt: c.createdAt,
+    }));
 
     return {
         approvedListings: sortedListings.map(listing => ({
@@ -112,9 +113,8 @@ const normalizedCreators = approvedCreators.map(c => ({
             isVip: isVipUser(listing.userId)
         })),
         approvedFarmers: normalizedFarmers,
-        upcomingYardSales: parsedYardSales,
-        upcomingOpenHouses: upcomingOpenHouses,
         approvedCreators: normalizedCreators,
-
+        upcomingYardSales: parsedYardSales,
+        upcomingOpenHouses,
     };
 };
