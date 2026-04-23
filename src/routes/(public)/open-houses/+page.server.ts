@@ -1,8 +1,8 @@
 // src/routes/(public)/open-houses/+page.server.ts
 
 import { db } from '$lib/server/db';
-import { openHouses, users, profiles } from '$lib/server/db/schema';
-import { eq, and, gte, lt } from 'drizzle-orm';
+import { openHouses } from '$lib/server/db/schema';
+import { eq, gte } from 'drizzle-orm';
 
 export const load = async () => {
     const today = new Date().toISOString().split('T')[0];
