@@ -1,3 +1,4 @@
+<!-- src/routes/(public)/yard-sales/[id]/+page.svelte -->
 <script lang="ts">
     import ShareBar from '$lib/components/ShareBar.svelte';
     let { data } = $props();
@@ -17,7 +18,6 @@
         return `${hour}:${m.toString().padStart(2, '0')} ${ampm}`;
     }
 
-    // Is the sale today or in the future?
     const today = new Date().toISOString().split('T')[0];
     const isPast = sale.saleDate < today;
     const isToday = sale.saleDate === today;
@@ -26,29 +26,45 @@
 <div class="min-h-screen bg-slate-50/50 pb-20">
 
     <div class="bg-white border-b sticky top-0 z-10">
-    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="/yard-sales" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-            ← Back to Yard Sales
-        </a>
-        <div class="flex items-center gap-2">
-            {#if currentUserId === sale.userId || isAdmin}
-                <form method="POST" action="?/delete">
-                    <button
-                        onclick={(e) => { if (!confirm('Delete this yard sale?')) e.preventDefault(); }}
-                        class="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl text-xs font-black hover:bg-red-100 transition-all">
-                        🗑 Delete
-                    </button>
-                </form>
-            {/if}
-            <a href="/yard-sales/create"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 transition-all">
-                + Post Your Sale
+        <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="/yard-sales" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                ← Back to Yard Sales
             </a>
+            <div class="flex items-center gap-2">
+                {#if currentUserId === sale.userId || isAdmin}
+                    <form method="POST" action="?/delete">
+                        <button
+                            onclick={(e) => { if (!confirm('Delete this yard sale?')) e.preventDefault(); }}
+                            class="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl text-xs font-black hover:bg-red-100 transition-all">
+                            🗑 Delete
+                        </button>
+                    </form>
+                {/if}
+                <a href="/yard-sales/create"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 transition-all">
+                    + Post Your Sale
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
     <div class="max-w-3xl mx-auto px-6 py-8 space-y-6">
+
+        <!-- Status Banners (owner/admin only) -->
+        {#if sale.status === 'pending'}
+            <div class="flex items-center gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                <span class="text-lg">⏳</span>
+                <p class="font-bold">Your listing is pending admin approval. We'll notify you once it's live!</p>
+            </div>
+        {:else if sale.status === 'rejected'}
+            <div class="flex items-center gap-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-2xl p-4">
+                <span class="text-lg">❌</span>
+                <div>
+                    <p class="font-bold">This listing was not approved.</p>
+                    <p class="text-xs mt-0.5">Please contact us if you have questions or would like to resubmit.</p>
+                </div>
+            </div>
+        {/if}
 
         <!-- Header Card -->
         <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-8 text-white relative overflow-hidden">
@@ -86,7 +102,6 @@
             <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest">When & Where</h2>
 
             <div class="flex items-start gap-4">
-                <!-- Date badge -->
                 <div class="flex-shrink-0 bg-indigo-50 border border-indigo-100 rounded-2xl p-4 text-center min-w-[72px]">
                     <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">
                         {new Date(sale.saleDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })}
@@ -113,7 +128,6 @@
                 </div>
             </div>
 
-            <!-- Address -->
             <div class="pt-4 border-t border-slate-100">
                 <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Address</p>
                 <p class="font-bold text-slate-900">📍 {sale.address}</p>
@@ -175,10 +189,11 @@
             </div>
         {/if}
 
-        <!-- Share -->
-        <ShareBar title={sale.title} description="Yard Sale in Lee County" />
+        <!-- Share — only show if approved -->
+        {#if sale.status === 'approved'}
+            <ShareBar title={sale.title} description="Yard Sale in Lee County" />
+        {/if}
 
-        <!-- Back link -->
         <div class="text-center pt-4">
             <a href="/yard-sales" class="text-sm font-bold text-indigo-600 hover:underline">
                 ← See all upcoming yard sales

@@ -1,6 +1,8 @@
+// src/routes/(public)/yard-sales/[id]/+page.server.ts
+
 import { db } from '$lib/server/db';
 import { yardSales, users, profiles } from '$lib/server/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { error, fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ params, locals }) => {
@@ -21,6 +23,7 @@ export const load = async ({ params, locals }) => {
         startTime: yardSales.startTime,
         endTime: yardSales.endTime,
         items: yardSales.items,
+        status: yardSales.status,
         isFeatured: yardSales.isFeatured,
         createdAt: yardSales.createdAt,
         authorName: profiles.displayName,
@@ -29,12 +32,19 @@ export const load = async ({ params, locals }) => {
     .from(yardSales)
     .innerJoin(users, eq(yardSales.userId, users.id))
     .leftJoin(profiles, eq(yardSales.userId, profiles.userId))
-    .where(and(eq(yardSales.id, id), eq(yardSales.status, 'approved')))
+    .where(eq(yardSales.id, id))
     .limit(1);
 
     if (!result.length) throw error(404, 'Yard sale not found');
 
     const sale = result[0];
+
+    // Only owner or admin can see non-approved listings
+    const isOwner = locals.user?.id === sale.userId;
+    const isAdmin = locals.user?.isAdmin ?? false;
+    if (sale.status !== 'approved' && !isOwner && !isAdmin) {
+        throw error(404, 'Yard sale not found');
+    }
 
     return {
         sale: {
@@ -42,7 +52,7 @@ export const load = async ({ params, locals }) => {
             items: (() => { try { return JSON.parse(sale.items); } catch { return []; } })()
         },
         currentUserId: locals.user?.id ?? null,
-        isAdmin: locals.user?.isAdmin ?? false
+        isAdmin,
     };
 };
 
@@ -65,7 +75,6 @@ export const actions = {
         }
 
         await db.delete(yardSales).where(eq(yardSales.id, id));
-
         redirect(303, '/yard-sales');
     }
 };
