@@ -161,7 +161,7 @@
     </div>
 
     <!-- Pending Approvals Alert -->
-    {#if data.contentStats.pendingListings > 0 || data.contentStats.pendingEvents > 0 || data.contentStats.pendingYardSales > 0 || data.contentStats.pendingFarmers > 0 || data.contentStats.pendingCreators > 0 || data.contentStats.unreadMessages > 0}
+    {#if data.contentStats.pendingListings > 0 || data.contentStats.pendingEvents > 0 || data.contentStats.pendingYardSales > 0 || data.contentStats.pendingFarmers > 0 || data.contentStats.pendingCreators > 0 || data.contentStats.pendingOpenHouses > 0 || data.contentStats.pendingParksTrails > 0 || data.contentStats.unreadMessages > 0}
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
             <span class="text-xl">⚠️</span>
             <div>
@@ -185,6 +185,16 @@
                     {#if data.contentStats.pendingFarmers > 0}
                         <a href="/farmers-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
                             {data.contentStats.pendingFarmers} farmer listing{data.contentStats.pendingFarmers > 1 ? 's' : ''} pending →
+                        </a>
+                    {/if}
+                    {#if data.contentStats.pendingOpenHouses > 0}
+                        <a href="/open-houses-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
+                            {data.contentStats.pendingOpenHouses} open house{data.contentStats.pendingOpenHouses > 1 ? 's' : ''} pending →
+                        </a>
+                    {/if}
+                    {#if data.contentStats.pendingParksTrails > 0}
+                        <a href="/family-admin" class="text-xs font-black text-amber-700 underline hover:text-amber-900">
+                            {data.contentStats.pendingParksTrails} park/trail{data.contentStats.pendingParksTrails > 1 ? 's' : ''} pending →
                         </a>
                     {/if}
                     {#if data.contentStats.pendingCreators > 0}
