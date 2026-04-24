@@ -13,7 +13,6 @@ export const load = async ({ locals }) => {
     });
 
     if (!listing) throw redirect(302, '/dashboard');
-    if (listing.category !== 'food_truck') throw error(403, 'Schedule is only for food trucks');
 
     const today = new Date().toISOString().split('T')[0];
 
