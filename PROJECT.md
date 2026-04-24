@@ -9,7 +9,7 @@
 
 A community web platform for **Sanford & Lee County, NC** ("SanLee = Sanford + Lee County").
 Connects local food trucks, farmers, photographers, artists, and residents.
-Version: **0.4.0** | Status: Active development
+Version: **0.4.1** | Status: Active development
 
 ---
 
@@ -46,7 +46,7 @@ Version: **0.4.0** | Status: Active development
 ```
 src/routes/
 ├── (public)/          # No auth required
-│   ├── +page          # Home — listing grid + farmers + upcoming yard sales + category filter
+│   ├── +page          # Home — listing grid + farmers + creators + upcoming yard sales + open houses
 │   ├── login/
 │   ├── register/
 │   ├── feed/          # Community post feed
@@ -54,13 +54,15 @@ src/routes/
 │   ├── listings/[id]  # Listing detail (enhanced gallery for artists/photographers)
 │   ├── profile/[id]   # Public member profile
 │   ├── yard-sales/    # Public yard sales listing
-│   ├── yard-sales/[id] # Yard sale detail
+│   ├── yard-sales/[id] # Yard sale detail (pending/rejected banners + edit button)
 │   ├── farmers/       # Farmers market public listing
-│   ├── farmers/[id]   # Farmer detail
+│   ├── farmers/[id]   # Farmer detail (pending/rejected banners + edit button)
 │   ├── open-houses/   # Open houses public listing (upcoming + past)
-│   ├── open-houses/[id] # Open house detail with property stats + agent contact
+│   ├── open-houses/[id] # Open house detail (pending/rejected banners + edit button)
+│   ├── creators/      # Digital creators directory
+│   ├── creators/[id]  # Creator profile (pending/rejected banners + edit button)
 │   ├── family/        # Family Activities Hub (events/parks/trails tabs)
-│   ├── family/parks/[id]     # Park or trail detail
+│   ├── family/parks/[id]     # Park or trail detail (pending/rejected banners + edit button)
 │   ├── family/parks/submit   # Member submit a park/trail
 │   ├── [slug]/        # Vanity URL for listings
 │   ├── about, contact, privacy, terms, support, subscribe, beta
@@ -77,8 +79,13 @@ src/routes/
 │   ├── events/create/         # Includes family-friendly checkbox
 │   ├── listings/create/
 │   ├── yard-sales/create/
+│   ├── yard-sales/[id]/edit/  # Edit + resubmit yard sale
 │   ├── farmers/create/
-│   ├── open-houses/create/    # Submit open house listing
+│   ├── farmers/[id]/edit/     # Edit + resubmit farmer listing
+│   ├── open-houses/create/
+│   ├── open-houses/[id]/edit/ # Edit + resubmit open house
+│   ├── creators/create/
+│   ├── creators/[id]/edit/    # Edit + resubmit creator profile
 │   └── settings/
 │   │
 │   └── (vip)/         # Requires vip/admin/superadmin role
@@ -95,10 +102,11 @@ src/routes/
 │           ├── listings-admin/
 │           ├── messages-admin/
 │           ├── posts-admin/
-│           ├── yard-sales-admin/
+│           ├── yard-sales-admin/     # Approve/reject/feature + View link
 │           ├── farmers-admin/
-│           ├── family-admin/         # Approve/reject parks & trails
-│           ├── open-houses-admin/    # Approve/reject/feature open houses
+│           ├── family-admin/
+│           ├── open-houses-admin/    # Approve/reject/feature + View link
+│           ├── creators-admin/       # Approve/reject/feature + View link
 │           └── users/
 │
 ├── api/posts/[id]/comments/
@@ -132,9 +140,10 @@ src/routes/
 | `yard_sales`                                    | Yard sale listings — title, date, time, address, items (JSON), status                                                          |
 | `farmer_listings`                               | Farm listings — produce categories, seasonal availability, markets, features, status                                           |
 | `parks_trails`                                  | Parks/trails directory — type, age range, features (JSON), trail difficulty/length, status                                     |
-| `open_houses`                                   | Open house listings — price, beds/baths/sqft/lot/year, property type, agent info, date/time, status                            |
+| `open_houses`                                   | Open house listings — price, beds/baths/sqft/lot/year, agent info, date/time, status                                           |
+| `creators`                                      | Digital creators — platforms (JSON), content categories (JSON), follower stats, status                                         |
 
-**Listing categories:** `food_truck` | `farmer` | `photographer` | `artist`
+**Listing categories:** `food_truck` | `photographer` | `artist`
 **Property types:** `single_family` | `condo` | `townhouse` | `land` | `commercial` | `other`
 **Status pattern (all content tables):** `pending` | `approved` | `rejected`
 **Profile visibility:** `public` | `members` | `private`
@@ -147,7 +156,7 @@ src/routes/
 src/lib/components/
 ├── TopBar.svelte         # Public top navigation
 ├── Sidebar.svelte        # Admin sidebar (dark, role-based)
-├── MemberSidebar.svelte  # Member sidebar — yard sales, farmers, family hub, open houses
+├── MemberSidebar.svelte  # Member sidebar — all content type links
 ├── ShareBar.svelte       # Reusable share bar (Facebook, X, Bluesky, Copy Link, Native Share)
 └── PageHeader.svelte     # Reusable page header
 ```
@@ -161,8 +170,10 @@ src/lib/components/
 - **`use:enhance`** for progressive form enhancement
 - **`page` from `$app/stores`** in Sidebar components (not `$app/state`)
 - **`svelte:element`** for conditional `<a>` vs `<div>` rendering
-- **Pending preview** — owners + admins can see pending listings; public gets 404
-- **JSON fields** parsed with try/catch on load: `items`, `produceCategories`, `features`, `tags`
+- **Pending/rejected preview** — owners + admins can see pending/rejected listings; public gets 404
+- **Status banners** — ALL detail pages show ⏳ pending (amber) or ❌ rejected (red) banners with ✏️ Edit / Edit & Resubmit buttons (visible to owner + admin only)
+- **Edit & Resubmit** — all content types have edit pages at `[type]/[id]/edit/` — saving resets status to `pending`
+- **JSON fields** parsed with try/catch on load: `items`, `produceCategories`, `features`, `tags`, `contentCategories`
 - **ShareBar** — drop `<ShareBar title={...} description={...} />` into any detail page
 - Server-side auth checks in `+layout.server.ts` per route group
 - Maintenance mode via `system_meta` table in `hooks.server.ts`
@@ -178,10 +189,11 @@ src/lib/components/
 3. **Community** — Post to Feed, Post Event, Post Yard Sale, List Your Farm + VIP Lounge link
 4. **Your Community Presence** — All listings in one card:
    - Business listing (Edit/View/Bookings buttons)
-   - Farm listings (View + status)
-   - Yard sales (View + status)
-   - Open houses (View + status)
-   - Dashed "create" prompt when empty
+   - Farm listings (View + status badge)
+   - Yard sales (View + status badge)
+   - Open houses (View + status badge)
+   - Creator profiles (View + status badge)
+   - Dashed "create" prompt when empty for each type
 
 ---
 
@@ -189,8 +201,9 @@ src/lib/components/
 
 Single **Community Listings** table card with rows for:
 
-- 🏪 Listings, 🌾 Farmers Market, 🏷️ Yard Sales, 📅 Events, 👨‍👩‍👧 Family Hub, 🏠 Open Houses
+- 🏪 Listings, 🌾 Farmers Market, 🏷️ Yard Sales, 🏠 Open Houses, 📅 Events, 👨‍👩‍👧 Family Hub, 📱 Creators
 - Columns: Type, Total, Pending (amber badge or green "Clear"), Review link
+- Action Required alert for ALL pending types including open houses, parks, creators
 - Separate stat cards for Posts, Messages, Bookings
 
 ---
@@ -256,66 +269,63 @@ git push
 ### Yard Sales ✅
 
 - Create form with item picker, date/time, address
-- Public list + detail page (`/yard-sales/[id]`)
-- Merged into events page on sale day + "Yard Sales Today" collapsible
-- Home page upcoming section
-- Member dashboard card + admin approve/reject/feature
-- Pending preview for owner + admin
+- Public list + detail page with status banners
+- Edit & Resubmit page (`/yard-sales/[id]/edit/`)
+- Merged into events page on sale day
+- Member dashboard + admin approve/reject/feature/view
 
 ### Farmer Listings ✅
 
 - Create form: produce categories, seasonal availability, markets, features
 - Special flags: U-Pick, SNAP/EBT, delivery, organic, pre-orders
-- Public list (`/farmers`) with search + produce filter
-- Detail page with directions
-- Home page grid with green theme + produce tags
-- Member dashboard card + admin approve/reject/feature
-- Pending preview for owner + admin
+- Public list + detail page with status banners
+- Edit & Resubmit page (`/farmers/[id]/edit/`)
+- Member dashboard + admin approve/reject/feature/view
 
 ### Artist & Photographer Galleries ✅
 
 - `tags` column on listings (JSON)
-- Tags input in edit-listing with suggestion chips
 - Enhanced listing detail: masonry gallery, fullscreen lightbox, tags badges
-- "Book a Session" language for creatives
 - VIP photo limit respected (max 4 gallery photos)
 
 ### Family Activities Hub ✅
 
 - `/family` public page with Events / Parks / Trails tabs
-- `isFamilyFriendly` flag on events + checkbox on event create form
-- `parks_trails` table — parks, playgrounds, trails, sports fields, swimming, picnic
-- Detail page with features, trail info, directions
-- Member submission form (`/family/parks/submit`)
-- Admin approve/reject/feature/delete (`/family-admin`)
-- Pending preview for owner + admin
-- Family Hub links in MemberSidebar + admin Sidebar + admin dashboard table
+- `isFamilyFriendly` flag on events
+- `parks_trails` table with full CRUD
+- Detail page with status banners + Edit & Resubmit
+- Admin approve/reject/feature/delete
 
 ### Open Houses ✅
 
-- Create form with photo upload, full property details (price, beds, baths, sq ft, lot size, year built, property type), agent info
-- Public list (`/open-houses`) with upcoming + past sections
-- Detail page with property stats grid, agent contact card, directions, share bar
-- "🔴 Today!" badge on open house day
+- Full property details (price, beds, baths, sq ft, lot size, year built, property type)
+- Public list (upcoming + past) + detail page with status banners
+- Edit & Resubmit page (`/open-houses/[id]/edit/`)
 - Shows on events page on open house date
-- Member dashboard section in "Your Community Presence"
-- Admin approve/reject/feature/delete (`/open-houses-admin`)
-- Admin dashboard Community Listings table row
-- MemberSidebar links
-- Pending preview for owner + admin
+- Member dashboard + admin approve/reject/feature/view
+
+### Digital Creators Directory ✅
+
+- All 9 platforms: YouTube, TikTok, Instagram, Twitch, Podcast, Facebook, X/Twitter, Bluesky, Website
+- Self-reported follower/subscriber counts
+- Public directory with search + 14 content category filters
+- Detail page with status banners + Edit & Resubmit
+- Shows on home page grid with 📱 filter button
+- Member dashboard + admin approve/reject/feature/view
 
 ### Home Page ✅
 
-- Farmers merged into main grid alongside listings
-- Category filter buttons: All 🌟, Food Trucks 🚚, Farmers 🌾, Photographers 📸, Artists 🎨
-- Unified search across names, bios, produce categories
-- Upcoming Yard Sales section below grid
+- All approved listings + farmers + creators in one searchable grid
+- Category filter: All 🌟, Food Trucks 🚚, Farmers 🌾, Photographers 📸, Artists 🎨, Creators 📱
+- Quick nav links: Yard Sales, Open Houses, Farmers Market, Family Hub, Today's Events
+- Upcoming Yard Sales section
+- Upcoming Open Houses section
 
 ---
 
 ## Roadmap
 
-1. 📱 **Local Digital Creators Directory** — TikTok, YouTube, Instagram, podcasts. Needs: `creators` table, public directory, admin approval.
+1. 🚚 **Food Truck Enhancements** — pending/rejected banners + edit/resubmit for listings, plus monthly schedule feature (different location each day, up to 30 days)
 
 2. 🔔 **Push Notifications** — web push for events, yard sales, posts. Needs: service worker, `push_subscriptions` table, VAPID keys, `web-push` npm package.
 
