@@ -1,22 +1,28 @@
+// src/routes/(public)/listings/[id]/+page.server.ts
+
 import { db } from '$lib/server/db';
 import { listings, listingPhotos, menuItems, listingSchedule, specificAvailability } from '$lib/server/db/schema';
 import { bookings, availability } from '$lib/server/db/schema';
 import { eq, and, gte } from 'drizzle-orm';
 import { error, fail } from '@sveltejs/kit';
 
-export const load = async ({ params }) => {
+export const load = async ({ params, locals }) => {
     const listingId = Number(params.id);
-
     if (isNaN(listingId)) throw error(404, 'Listing not found');
 
+    // Load without status filter so owner/admin can see pending/rejected
     const listing = await db.query.listings.findFirst({
-        where: and(
-            eq(listings.id, listingId),
-            eq(listings.status, 'approved')
-        )
+        where: eq(listings.id, listingId)
     });
 
     if (!listing) throw error(404, 'Listing not found');
+
+    // Only owner or admin can see non-approved listings
+    const isOwner = locals.user?.id === listing.userId;
+    const isAdmin = locals.user?.isAdmin ?? false;
+    if (listing.status !== 'approved' && !isOwner && !isAdmin) {
+        throw error(404, 'Listing not found');
+    }
 
     // Load photos ordered by sortOrder
     const photos = await db.select()
@@ -70,8 +76,17 @@ export const load = async ({ params }) => {
             .orderBy(specificAvailability.date)
         : [];
 
-    return { listing, photos, menu, schedule, vendorAvailability, confirmedBookings, specificDates };
-
+    return {
+        listing,
+        photos,
+        menu,
+        schedule,
+        vendorAvailability,
+        confirmedBookings,
+        specificDates,
+        currentUserId: locals.user?.id ?? null,
+        isAdmin,
+    };
 };
 
 export const actions = {

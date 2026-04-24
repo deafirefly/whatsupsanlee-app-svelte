@@ -268,6 +268,11 @@
                             <a href="/dashboard/edit-listing" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs hover:bg-indigo-700 transition-all">
                                 Edit
                             </a>
+                            {#if userListing.category === 'food_truck'}
+                                <a href="/dashboard/schedule" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 transition-all">
+                                    📅 Schedule
+                                </a>
+                            {/if}
                             <a href="/dashboard/bookings" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-200 transition-all">
                                 Bookings
                             </a>

@@ -99,6 +99,7 @@ export const actions = {
             bookingEnabled: formData.get('bookingEnabled') === 'on',
             bookingSlotDuration: Number(formData.get('bookingSlotDuration')) || 60,
             availabilityMode: formData.get('availabilityMode') as string || 'weekly',
+            status: 'pending',
             updatedAt: new Date()
         };
 

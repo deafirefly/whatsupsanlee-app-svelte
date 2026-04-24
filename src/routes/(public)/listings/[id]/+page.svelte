@@ -3,7 +3,7 @@
     import { enhance } from '$app/forms';
     import ShareBar from '$lib/components/ShareBar.svelte';
     let { data, form } = $props();
-    const { listing, photos, menu, schedule, specificDates, confirmedBookings, vendorAvailability } = data;
+    const { listing, photos, menu, schedule, specificDates, confirmedBookings, vendorAvailability, currentUserId, isAdmin } = data;
 
     const categoryLabel = listing.category?.replace('_', ' ') || 'Community';
     const isCreative = listing.category === 'artist' || listing.category === 'photographer';
@@ -163,6 +163,39 @@
     </div>
 
     <div class="max-w-5xl mx-auto p-6 mt-8">
+
+        <!-- Status Banners (owner/admin only) -->
+        {#if listing.status === 'pending'}
+            <div class="flex items-center justify-between gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">⏳</span>
+                    <p class="font-bold">Pending admin approval — we'll notify you once it's live!</p>
+                </div>
+                {#if currentUserId === listing.userId || isAdmin}
+                    <a href="/dashboard/edit-listing"
+                        class="flex-shrink-0 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-black hover:bg-amber-700 transition-all">
+                        ✏️ Edit
+                    </a>
+                {/if}
+            </div>
+        {:else if listing.status === 'rejected'}
+            <div class="flex items-center justify-between gap-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">❌</span>
+                    <div>
+                        <p class="font-bold">This listing was not approved.</p>
+                        <p class="text-xs mt-0.5">Edit and resubmit, or contact us if you have questions.</p>
+                    </div>
+                </div>
+                {#if currentUserId === listing.userId || isAdmin}
+                    <a href="/dashboard/edit-listing"
+                        class="flex-shrink-0 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-black hover:bg-red-700 transition-all">
+                        ✏️ Edit & Resubmit
+                    </a>
+                {/if}
+            </div>
+        {/if}
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             <!-- LEFT COLUMN -->
