@@ -311,12 +311,6 @@
                                             Get Directions →
                                         </a>
                                     {/if}
-                                    {#if item.isFoodTruckSchedule && item.listingId}
-                                        <a href="/listings/{item.listingId}"
-                                            class="flex items-center gap-1 text-xs font-black text-orange-600 hover:underline">
-                                            🚚 View Profile →
-                                        </a>
-                                    {/if}
 
                                     <!-- Share button -->
 <button onclick={(e) => {
