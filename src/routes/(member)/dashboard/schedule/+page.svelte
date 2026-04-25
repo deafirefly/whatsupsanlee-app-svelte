@@ -79,6 +79,19 @@
 
     // Days that already have entries
     let scheduledDates = $derived(new Set(upcoming.map(s => s.date)));
+
+    function copyEntry(entry: any) {
+        newLocation = entry.locationName ?? '';
+        newAddress = entry.address ?? '';
+        newStartTime = entry.startTime ?? '';
+        newEndTime = entry.endTime ?? '';
+        newNotes = entry.notes ?? '';
+        newDate = '';
+        showBulkAdd = false;
+        // Scroll to top form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
 </script>
 
 <div class="max-w-3xl mx-auto p-6 pb-20">
@@ -360,11 +373,29 @@
     {#if past.length > 0}
         <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
             <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Past Entries</h2>
-            <div class="space-y-2 opacity-50">
+            <div class="space-y-2">
                 {#each past.filter(p => p.date < today).slice(-5) as entry}
-                    <div class="flex items-center gap-3 p-3 rounded-xl">
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl opacity-70 hover:opacity-100 transition-all flex-wrap">
                         <p class="text-xs font-black text-slate-400 w-20 flex-shrink-0">{formatDate(entry.date)}</p>
-                        <p class="text-xs text-slate-500 flex-1">{entry.locationName} · {entry.address}</p>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-slate-600">{entry.locationName}</p>
+                            <p class="text-xs text-slate-400">{entry.address}</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <button type="button"
+                                onclick={() => copyEntry(entry)}
+                                class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-xs font-black hover:bg-indigo-100 transition-all">
+                                📋 Copy
+                            </button>
+                            <form method="POST" action="?/deleteEntry" use:enhance>
+                                <input type="hidden" name="id" value={entry.id} />
+                                <button
+                                    onclick={(e) => { if (!confirm('Remove this past entry?')) e.preventDefault(); }}
+                                    class="px-3 py-1.5 bg-red-50 text-red-500 border border-red-100 rounded-xl text-xs font-black hover:bg-red-100 transition-all">
+                                    🗑
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 {/each}
             </div>
