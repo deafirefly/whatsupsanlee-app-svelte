@@ -89,7 +89,8 @@
         endTime: ft.endTime,
         description: ft.notes,
         imageUrl: ft.imageUrl,
-        isFoodTruckSchedule: true
+        isFoodTruckSchedule: true,
+        listingId: ft.listingId,
     })),
     ...(data.yardSales ?? []).map(sale => ({
         id: sale.id,
@@ -291,6 +292,12 @@
 {/if}
 
                                 <div class="flex items-center gap-4 mt-3 flex-wrap">
+                                    {#if item.isFoodTruckSchedule && item.listingId}
+                                        <a href="/listings/{item.listingId}"
+                                            class="flex items-center gap-1 text-xs font-black text-orange-600 hover:underline">
+                                            🚚 View Profile →
+                                        </a>
+                                    {/if}
                                     {#if item.locationName || item.address}
                                         <div class="flex items-center gap-1.5 text-xs text-slate-500">
                                             <span>📍</span>
@@ -302,6 +309,12 @@
                                             target="_blank" rel="noopener noreferrer"
                                             class="flex items-center gap-1 text-xs font-black text-indigo-600 hover:underline">
                                             Get Directions →
+                                        </a>
+                                    {/if}
+                                    {#if item.isFoodTruckSchedule && item.listingId}
+                                        <a href="/listings/{item.listingId}"
+                                            class="flex items-center gap-1 text-xs font-black text-orange-600 hover:underline">
+                                            🚚 View Profile →
                                         </a>
                                     {/if}
 

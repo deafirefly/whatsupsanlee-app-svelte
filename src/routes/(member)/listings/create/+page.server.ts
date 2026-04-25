@@ -22,6 +22,8 @@ export const actions = {
                 category: data.category as string,
                 contactPerson: data.contactPerson as string,
 
+                bookingEnabled: ['photographer', 'artist'].includes(data.category as string),
+
                 // Communication
                 phone: (data.phone as string) || null,
                 email: (data.email as string) || null,
